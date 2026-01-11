@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Eye, EyeOff, Shield, User, Mail, Lock } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import register from "./Register";
 
@@ -402,7 +402,7 @@ const Login = () => {
 
             {/* Footer */}
             {!isAdminLogin && (
-              <div className="mt-6 pt-6 border-t border-slate-200 text-center">
+              <div className="mt-6 pt-6 border-t border-slate-200 text-center space-y-2">
                 <p className="text-sm text-slate-600">
                   Don't have an account?{" "}
                   <button 
@@ -412,6 +412,11 @@ const Login = () => {
                     Create account
                   </button>
                 </p>
+                <div className="text-sm">
+                  <Link to="/forgot-password" className="font-medium text-blue-600 hover:text-blue-500 transition-colors">
+                    Forgot your password?
+                  </Link>
+                </div>
               </div>
             )}
 

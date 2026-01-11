@@ -14,12 +14,12 @@ const VisitCalendar = ({ tickets, serviceRequests, onEventSelect }) => {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
 
-  // MAP VISITS
+  // MAP VISITS - Only include non-completed tickets and service requests
   const visitDates = useMemo(() => {
     const dates = new Map();
 
-    tickets.forEach(ticket => {
-      if (ticket.assignedVisitAt) {
+    (Array.isArray(tickets) ? tickets : []).forEach(ticket => {
+      if (ticket.assignedVisitAt && ticket.status !== 'Closed') {
         const d = new Date(ticket.assignedVisitAt);
         d.setHours(0, 0, 0, 0);
         const key = d.toDateString();
@@ -28,8 +28,8 @@ const VisitCalendar = ({ tickets, serviceRequests, onEventSelect }) => {
       }
     });
 
-    serviceRequests.forEach(req => {
-      if (req.assignedVisitAt) {
+    (Array.isArray(serviceRequests) ? serviceRequests : []).forEach(req => {
+      if (req.assignedVisitAt && req.status !== 'Completed') {
         const d = new Date(req.assignedVisitAt);
         d.setHours(0, 0, 0, 0);
         const key = d.toDateString();

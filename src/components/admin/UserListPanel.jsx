@@ -1,4 +1,4 @@
-import { Search, Users, User, Loader2, Home } from 'lucide-react';
+import { Search, Users, User, Loader2, Home, AlertCircle } from 'lucide-react';
 
 const UserListPanel = ({
   users,
@@ -7,7 +7,8 @@ const UserListPanel = ({
   selectedUser,
   onUserClick,
   loading,
-  onBackToDashboard
+  onBackToDashboard,
+  onRefresh
 }) => {
   const filteredUsers = users.filter((user) => {
     const searchLower = userSearchTerm.toLowerCase();
@@ -43,9 +44,20 @@ const UserListPanel = ({
               <p className="text-xs text-slate-500 mt-0.5">Manage registered users</p>
             </div>
           </div>
-          <span className="px-3 py-1.5 bg-blue-100 text-blue-700 rounded-lg text-sm font-semibold">
-            {users.length}
-          </span>
+          <div className="flex items-center gap-2">
+            {onRefresh && (
+              <button
+                onClick={onRefresh}
+                className="flex items-center gap-2 px-4 py-2 bg-gradient-to-br from-blue-600 to-blue-700 text-white rounded-xl font-semibold hover:from-blue-700 hover:to-blue-800 transition-all shadow-md hover:shadow-lg text-sm"
+              >
+                <AlertCircle className="w-4 h-4" />
+                Refresh Data
+              </button>
+            )}
+            <span className="px-3 py-1.5 bg-blue-100 text-blue-700 rounded-lg text-sm font-semibold">
+              {users.length}
+            </span>
+          </div>
         </div>
         
         {/* Search */}

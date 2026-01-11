@@ -1,7 +1,8 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import api from '../services/api';
 import { useAuth } from '../context/AuthContext';
-import { X, Eye } from 'lucide-react';
+import { X, Eye, Loader2 } from 'lucide-react';
+import { useInView } from 'react-intersection-observer';
 
 const statusStyles = {
   'New': 'bg-emerald-50 text-emerald-700',
@@ -10,45 +11,116 @@ const statusStyles = {
   'Closed': 'bg-slate-100 text-slate-700'
 };
 
-const ServiceRequestListUser = () => {
+const ServiceRequestListUser = ({ onRefresh }) => {
   const { user } = useAuth();
   const [requests, setRequests] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [isRefreshing, setIsRefreshing] = useState(false);
   const [error, setError] = useState('');
   const [selectedImage, setSelectedImage] = useState(null);
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
+  const observer = useRef();
+  const lastRequestRef = useCallback(node => {
+    if (loading) return;
+    if (observer.current) observer.current.disconnect();
+    observer.current = new IntersectionObserver(entries => {
+      if (entries[0].isIntersecting && hasMore) {
+        setPage(prevPage => prevPage + 1);
+      }
+    });
+    if (node) observer.current.observe(node);
+  }, [loading, hasMore]);
 
-  useEffect(() => {
-    fetchRequests();
-  }, []);
-
-  const fetchRequests = async () => {
+  // Fetch requests with pagination and server-side filtering
+  const fetchRequests = useCallback(async (isLoadMore = false) => {
     try {
-      const response = await api.get('/service-requests');
-      const data = Array.isArray(response.data) ? response.data : [];
-      // If API returns all, filter to current user as a safeguard
-      const filtered = user ? data.filter(r => r.userId?._id === user._id || r.userId === user._id) : data;
-      setRequests(filtered);
+      if (!isLoadMore) {
+        setLoading(true);
+        setRequests([]);
+      } else {
+        setIsRefreshing(true);
+      }
+
+      const currentPage = isLoadMore ? page + 1 : 1;
+      const response = await api.get(`/service-requests?page=${currentPage}&limit=10`);
+      
+      const newRequests = Array.isArray(response.data?.requests) ? response.data.requests : [];
+      
+      setRequests(prevRequests => 
+        isLoadMore ? [...prevRequests, ...newRequests] : newRequests
+      );
+      
+      setHasMore(response.data?.hasMore || false);
       setError('');
+      
+      if (isLoadMore) {
+        setPage(currentPage);
+      } else {
+        setPage(1);
+      }
+
+      if (isLoadMore && onRefresh) {
+        onRefresh();
+      }
     } catch (err) {
       setError('Failed to load service requests');
       console.error(err);
     } finally {
       setLoading(false);
+      setIsRefreshing(false);
     }
-  };
+  }, [page, user?._id, user?.role, onRefresh]);
 
-  if (loading) {
-    return <div className="text-center py-8">Loading service requests...</div>;
+  // Initial load and refresh effect
+  useEffect(() => {
+    fetchRequests(false);
+  }, [fetchRequests]);
+
+  // Auto-refresh effect
+  useEffect(() => {
+    if (!document.hidden) {
+      const interval = setInterval(() => {
+        fetchRequests(false);
+      }, 30000);
+      
+      return () => clearInterval(interval);
+    }
+  }, [fetchRequests]);
+
+  if (loading && !isRefreshing) {
+    return (
+      <div className="flex justify-center items-center py-12">
+        <Loader2 className="w-8 h-8 text-purple-600 animate-spin" />
+        <span className="ml-2 text-gray-600">Loading service requests...</span>
+      </div>
+    );
   }
 
   if (error) {
-    return <div className="text-center py-8 text-red-600">{error}</div>;
+    return (
+      <div className="text-center py-8 text-red-600">
+        {error}
+        <button 
+          onClick={() => fetchRequests(false)}
+          className="ml-2 px-3 py-1 bg-purple-100 text-purple-700 rounded hover:bg-purple-200"
+        >
+          Retry
+        </button>
+      </div>
+    );
   }
 
-  if (requests.length === 0) {
+  if (requests.length === 0 && !loading) {
     return (
-      <div className="text-center py-8 text-gray-600">
-        No service requests found. Create one from the dashboard!
+      <div className="text-center py-12">
+        <div className="text-gray-500 mb-4">No service requests found</div>
+        <button
+          onClick={() => fetchRequests(false)}
+          className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+        >
+          Refresh
+        </button>
       </div>
     );
   }
@@ -72,12 +144,17 @@ const ServiceRequestListUser = () => {
 
   return (
     <div className="space-y-4">
-      {requests.map((request) => {
+      {requests.map((request, index) => {
         const adminRepliesInfo = getAdminRepliesInfo(request);
         const baseUrl = import.meta.env.VITE_API_URL?.replace('/api', '') || 'http://localhost:5000';
 
+        const isLastRequest = index === requests.length - 1;
         return (
-          <div key={request._id} className={`bg-white rounded-lg shadow-md p-6 ${adminRepliesInfo.hasReplies ? 'ring-2 ring-purple-400' : ''}`}>
+          <div 
+            key={request._id} 
+            ref={isLastRequest && hasMore ? lastRequestRef : null}
+            className="bg-white rounded-lg shadow-md p-6 ring-2 ring-purple-400"
+          >
             <div className="flex justify-between items-start mb-4">
               <div className="flex-1">
                 <div className="flex items-center gap-2 mb-1">
@@ -197,6 +274,18 @@ const ServiceRequestListUser = () => {
               onClick={(e) => e.stopPropagation()}
             />
           </div>
+        </div>
+      )}
+      
+      {isRefreshing && (
+        <div className="flex justify-center py-4">
+          <Loader2 className="w-6 h-6 text-purple-600 animate-spin" />
+        </div>
+      )}
+      
+      {!hasMore && requests.length > 0 && (
+        <div className="text-center py-4 text-sm text-gray-500">
+          No more requests to load
         </div>
       )}
     </div>

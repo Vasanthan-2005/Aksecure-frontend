@@ -1,5 +1,4 @@
 import { User, Mail, Phone, Building, MapPin } from 'lucide-react';
-import { getGoogleMapsUrl } from './utils.jsx';
 
 const UserInfo = ({ userData }) => {
   if (!userData) return null;
@@ -52,19 +51,6 @@ const UserInfo = ({ userData }) => {
               <span className="text-xs text-slate-500 font-medium uppercase tracking-wide">Address</span>
             </div>
             <p className="font-semibold text-slate-900">{userData.address}</p>
-          </div>
-        )}
-        {userData.location && (
-          <div className="md:col-span-2">
-            <a
-              href={getGoogleMapsUrl({ userId: { location: userData.location } })}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-5 py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-xl hover:from-blue-700 hover:to-blue-800 transition-all text-sm font-semibold shadow-md hover:shadow-lg"
-            >
-              <MapPin className="w-4 h-4" />
-              View on Google Maps
-            </a>
           </div>
         )}
       </div>

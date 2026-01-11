@@ -1,5 +1,4 @@
-import { User, Building, Phone, MapPin, Ticket as TicketIcon, Trash2, Loader2, Users, ExternalLink, Mail, Calendar, Clock } from 'lucide-react';
-import { getGoogleMapsUrl } from './utils.jsx';
+import { User, Building, Phone, MapPin, Ticket as TicketIcon, Trash2, Loader2, Users, Mail, Calendar, Clock } from 'lucide-react';
 
 const UserDetailsPanel = ({ user, onDelete, deleting }) => {
   if (!user) {
@@ -207,21 +206,6 @@ const UserDetailsPanel = ({ user, onDelete, deleting }) => {
               </div>
             </div>
 
-            {/* Google Maps Link */}
-            {user.location && (
-              <div className="md:col-span-2 pt-2">
-                <a
-                  href={`https://www.google.com/maps?q=${user.location.lat},${user.location.lng}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-3 px-6 py-3.5 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-xl hover:from-blue-700 hover:to-blue-800 transition-all font-semibold shadow-lg hover:shadow-xl"
-                >
-                  <MapPin className="w-5 h-5" />
-                  <span>View Location on Google Maps</span>
-                  <ExternalLink className="w-4 h-4" />
-                </a>
-              </div>
-            )}
           </div>
         </div>
       </div>

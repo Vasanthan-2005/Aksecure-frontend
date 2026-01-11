@@ -29,7 +29,8 @@ const AdminReplies = ({ refreshKey = 0 }) => {
       const userId = user?._id || user?.id;
 
       const collectReplies = (collection, type) => {
-        collection.forEach(entry => {
+        if (!Array.isArray(collection)) return;
+        (collection || []).forEach(entry => {
           if (entry.timeline && entry.timeline.length > 0) {
             entry.timeline.forEach((item, index) => {
               if (item.addedBy !== user.name) {

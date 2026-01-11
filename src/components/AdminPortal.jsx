@@ -164,11 +164,40 @@ const AdminPortal = () => {
     }
   }, [selectedServiceRequest]);
 
-  const fetchTickets = async () => {
+  // Mark tickets as viewed by admin
+  const markTicketsAsViewed = async (ticketIds) => {
+    try {
+      await api.post('/tickets/mark-viewed', { ticketIds });
+    } catch (err) {
+      console.error('Failed to mark tickets as viewed:', err);
+      // Don't show error to user as it's not critical
+    }
+  };
+
+  const fetchTickets = async (markAsViewed = false) => {
     try {
       setLoading(true);
       const response = await api.get("/tickets");
-      setTickets(response.data);
+      const ticketsData = response.data;
+      
+      // Mark tickets as viewed if needed
+      if (markAsViewed && ticketsData.length > 0) {
+        const newTickets = ticketsData.filter(
+          ticket => ticket.status === 'New' || ticket.status === 'Open'
+        );
+        if (newTickets.length > 0) {
+          await markTicketsAsViewed(newTickets.map(t => t._id));
+          // Update local state to reflect that tickets are now viewed
+          const updatedTickets = ticketsData.map(ticket => ({
+            ...ticket,
+            viewedByAdmin: true
+          }));
+          setTickets(updatedTickets);
+          return;
+        }
+      }
+      
+      setTickets(ticketsData);
       setError("");
     } catch (err) {
       setError("Failed to load tickets");
@@ -196,7 +225,9 @@ const AdminPortal = () => {
     try {
       setServiceRequestsLoading(true);
       const response = await api.get("/service-requests");
-      setServiceRequests(response.data);
+      // Handle the paginated response
+      const serviceRequestsData = response.data.requests || [];
+      setServiceRequests(serviceRequestsData);
       setError("");
     } catch (err) {
       setError("Failed to load service requests");
@@ -325,6 +356,7 @@ const AdminPortal = () => {
       visitDateTime: "",
     }));
 
+    // Only validate visitDateTime if it's being updated
     if (visitDateTime) {
       const selectedDate = new Date(visitDateTime);
       const now = new Date();
@@ -341,11 +373,27 @@ const AdminPortal = () => {
     try {
       setUpdating(true);
       const updateData = {};
+      
+      // Only update status if it's provided and different from current status
       if (updateStatus && updateStatus !== selectedTicket.status) {
         updateData.status = updateStatus;
       }
+      
+      // Only update assignedVisitAt if visitDateTime is explicitly set in the form
+      // and different from current value
       if (visitDateTime) {
-        updateData.assignedVisitAt = new Date(visitDateTime).toISOString();
+        const currentVisitTime = selectedTicket.assignedVisitAt 
+          ? new Date(selectedTicket.assignedVisitAt).toISOString() 
+          : null;
+        const newVisitTime = new Date(visitDateTime).toISOString();
+        
+        // Only include in update if the time has actually changed
+        if (currentVisitTime !== newVisitTime) {
+          updateData.assignedVisitAt = newVisitTime;
+        }
+      } else if (selectedTicket.assignedVisitAt) {
+        // If visitDateTime is not being updated, ensure we don't modify the existing assignedVisitAt
+        updateData.assignedVisitAt = selectedTicket.assignedVisitAt;
       }
 
       if (Object.keys(updateData).length > 0) {
@@ -490,32 +538,26 @@ const AdminPortal = () => {
       visitDateTime: "",
     }));
 
-    if (serviceRequestVisitDateTime) {
-      const selectedDate = new Date(serviceRequestVisitDateTime);
-      const now = new Date();
-      if (selectedDate < now) {
-        setServiceRequestErrors((prev) => ({
-          ...prev,
-          visitDateTime: "Visit time cannot be in the past",
-          update: "Please fix the errors before updating",
-        }));
-        return;
-      }
-    }
-
     try {
       setUpdating(true);
       const updateData = {};
-      if (
-        serviceRequestUpdateStatus &&
-        serviceRequestUpdateStatus !== selectedServiceRequest.status
-      ) {
+      
+      // Only update status if it's provided and different from current status
+      if (serviceRequestUpdateStatus && serviceRequestUpdateStatus !== selectedServiceRequest.status) {
         updateData.status = serviceRequestUpdateStatus;
       }
+      
+      // Only update assignedVisitAt if serviceRequestVisitDateTime is explicitly set and different from current value
       if (serviceRequestVisitDateTime) {
-        updateData.assignedVisitAt = new Date(
-          serviceRequestVisitDateTime
-        ).toISOString();
+        const currentVisitTime = selectedServiceRequest.assignedVisitAt 
+          ? new Date(selectedServiceRequest.assignedVisitAt).toISOString() 
+          : null;
+        const newVisitTime = new Date(serviceRequestVisitDateTime).toISOString();
+        
+        // Only include in update if the time has actually changed
+        if (currentVisitTime !== newVisitTime) {
+          updateData.assignedVisitAt = newVisitTime;
+        }
       }
 
       if (Object.keys(updateData).length > 0) {
@@ -667,15 +709,17 @@ const AdminPortal = () => {
   };
 
   const stats = getTicketStats(tickets);
-  const serviceRequestStats = getServiceRequestStats(serviceRequests);
+  const serviceRequestStats = getServiceRequestStats(Array.isArray(serviceRequests) ? serviceRequests : []);
 
   const newTickets = tickets
     .filter((ticket) => ticket.status === "New" || ticket.status === "Open")
     .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
-  const newServiceRequests = serviceRequests
-    .filter((sr) => sr.status === "New")
-    .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+  const newServiceRequests = Array.isArray(serviceRequests) 
+    ? serviceRequests
+        .filter((sr) => sr.status === "New")
+        .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+    : [];
 
   if (loading) {
     return (
@@ -1242,6 +1286,7 @@ const AdminPortal = () => {
               setActiveTab("tickets");
               setViewMode("dashboard");
             }}
+            onRefresh={fetchUsers}
           />
           <div className="flex-1 flex flex-col overflow-hidden bg-gradient-to-br from-slate-50 to-slate-100 h-[calc(100vh-4rem)]">
             <div className="flex-1 overflow-y-auto">
