@@ -1,4 +1,4 @@
-import { Search, Users, User, Loader2, Home, AlertCircle } from 'lucide-react';
+import { Search, Users, User, Loader2, Home, AlertCircle, Trash2 } from 'lucide-react';
 
 const UserListPanel = ({
   users,
@@ -8,7 +8,8 @@ const UserListPanel = ({
   onUserClick,
   loading,
   onBackToDashboard,
-  onRefresh
+  onRefresh,
+  onDelete
 }) => {
   const filteredUsers = users.filter((user) => {
     const searchLower = userSearchTerm.toLowerCase();
@@ -21,75 +22,75 @@ const UserListPanel = ({
   });
 
   return (
-    <div className="w-96 border-r border-slate-200 bg-white overflow-hidden flex flex-col shadow-inner">
-      <div className="p-6 border-b border-slate-200 bg-white sticky top-0 z-10 shadow-sm">
+    <div className="w-96 border-r border-white/5 bg-slate-900/50 backdrop-blur-sm overflow-hidden flex flex-col relative z-20">
+      <div className="p-6 border-b border-white/5 bg-slate-900/50 backdrop-blur-md sticky top-0 z-10 w-full">
         {onBackToDashboard && (
-          <div className="mb-3">
+          <div className="mb-4">
             <button
               onClick={onBackToDashboard}
-              className="flex items-center gap-2 px-3 py-1.5 text-sm font-semibold text-slate-700 hover:bg-slate-50 rounded-lg transition-colors bg-slate-100 border border-slate-200"
+              className="flex items-center gap-2 px-3 py-1.5 text-xs font-semibold text-slate-400 hover:text-white hover:bg-white/5 rounded-lg transition-colors border border-transparent hover:border-white/10"
             >
-              <Home className="w-4 h-4" />
+              <Home className="w-3.5 h-3.5" />
               Dashboard
             </button>
           </div>
         )}
-        <div className="flex items-center justify-between mb-5">
+        <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-slate-600 to-slate-700 flex items-center justify-center">
-              <Users className="w-5 h-5 text-white" />
+            <div className="w-10 h-10 rounded-xl bg-violet-500/10 border border-violet-500/20 flex items-center justify-center">
+              <Users className="w-5 h-5 text-violet-400" />
             </div>
             <div>
-              <h2 className="text-xl font-bold text-slate-900 tracking-tight">All Users</h2>
-              <p className="text-xs text-slate-500 mt-0.5">Manage registered users</p>
+              <h2 className="text-xl font-bold text-white tracking-tight">All Users</h2>
+              <p className="text-xs text-slate-400 mt-0.5 font-medium">Manage registered users</p>
             </div>
           </div>
           <div className="flex items-center gap-2">
             {onRefresh && (
               <button
                 onClick={onRefresh}
-                className="flex items-center gap-2 px-4 py-2 bg-gradient-to-br from-blue-600 to-blue-700 text-white rounded-xl font-semibold hover:from-blue-700 hover:to-blue-800 transition-all shadow-md hover:shadow-lg text-sm"
+                className="flex items-center gap-2 p-2 bg-slate-800 text-slate-300 hover:text-white rounded-xl hover:bg-slate-700 transition-all border border-slate-700 hover:border-slate-600"
+                title="Refresh Data"
               >
                 <AlertCircle className="w-4 h-4" />
-                Refresh Data
               </button>
             )}
-            <span className="px-3 py-1.5 bg-blue-100 text-blue-700 rounded-lg text-sm font-semibold">
+            <span className="px-3 py-1 bg-violet-500/10 text-violet-300 border border-violet-500/20 rounded-lg text-xs font-bold">
               {users.length}
             </span>
           </div>
         </div>
-        
+
         {/* Search */}
-        <div className="relative mb-4">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-4 h-4" />
+        <div className="relative mb-4 group">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-500 group-focus-within:text-violet-400 transition-colors w-4 h-4" />
           <input
             type="text"
             placeholder="Search by name, email, company..."
             value={userSearchTerm}
             onChange={(e) => setUserSearchTerm(e.target.value)}
-            className="w-full pl-10 pr-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-slate-500 focus:border-slate-500 text-sm bg-white shadow-sm transition-all"
+            className="w-full pl-10 pr-4 py-3 bg-slate-800/50 border border-slate-700 rounded-xl focus:ring-2 focus:ring-violet-500/20 focus:border-violet-500/50 text-sm text-slate-200 placeholder-slate-500 transition-all outline-none"
           />
         </div>
-        
-        <div className="text-xs text-slate-500 font-medium">
-          <span className="text-slate-700 font-semibold">{filteredUsers.length}</span> user{filteredUsers.length !== 1 ? 's' : ''} found
+
+        <div className="text-xs text-slate-500 font-medium px-1">
+          <span className="text-slate-300 font-bold">{filteredUsers.length}</span> user{filteredUsers.length !== 1 ? 's' : ''} found
         </div>
       </div>
 
       {/* Users List */}
-      <div className="flex-1 overflow-y-auto p-5 space-y-4">
+      <div className="flex-1 overflow-y-auto p-4 space-y-3 custom-scrollbar">
         {loading ? (
           <div className="flex items-center justify-center py-12">
-            <Loader2 className="w-8 h-8 text-slate-600 animate-spin" />
+            <Loader2 className="w-8 h-8 text-violet-500 animate-spin" />
           </div>
         ) : filteredUsers.length === 0 ? (
           <div className="text-center py-12 px-4">
-            <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-slate-100 flex items-center justify-center">
-              <Users className="w-8 h-8 text-slate-400" />
+            <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-slate-800/50 flex items-center justify-center border border-white/5">
+              <Users className="w-8 h-8 text-slate-600" />
             </div>
-            <p className="text-slate-500 font-medium mb-1">No users found</p>
-            <p className="text-xs text-slate-400 mt-1">
+            <p className="text-slate-400 font-medium mb-1">No users found</p>
+            <p className="text-xs text-slate-600 mt-1">
               {userSearchTerm ? 'Try adjusting your search' : 'Users will appear here once registered'}
             </p>
           </div>
@@ -98,37 +99,58 @@ const UserListPanel = ({
             <button
               key={userItem._id}
               onClick={() => onUserClick(userItem)}
-              className={`w-full text-left p-5 rounded-xl border-2 transition-all group ${
-                selectedUser?._id === userItem._id
-                  ? 'border-blue-500 bg-gradient-to-br from-blue-50 to-blue-100/50 shadow-lg ring-2 ring-blue-100'
-                  : 'border-slate-200 bg-white hover:border-blue-300 hover:shadow-md hover:bg-slate-50'
-              }`}
+              className={`w-full text-left p-4 rounded-xl border transition-all group relative overflow-hidden ${selectedUser?._id === userItem._id
+                ? 'bg-violet-500/10 border-violet-500/50 shadow-[0_0_20px_rgba(139,92,246,0.1)]'
+                : 'bg-slate-800/30 border-white/5 hover:border-violet-500/30 hover:bg-slate-800/60'
+                }`}
             >
+              {selectedUser?._id === userItem._id && (
+                <div className="absolute left-0 top-0 bottom-0 w-1 bg-violet-500" />
+              )}
               {/* User Avatar and Name */}
-              <div className="flex items-center gap-3 mb-4">
-                <div className="w-14 h-14 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center ring-2 ring-blue-100 flex-shrink-0">
-                  <User className="w-7 h-7 text-white" />
+              <div className="flex items-center gap-3 mb-3 pl-2">
+                <div className={`w-10 h-10 rounded-full flex items-center justify-center ring-2 flex-shrink-0 transition-all ${selectedUser?._id === userItem._id
+                  ? 'bg-violet-500 ring-violet-500/30'
+                  : 'bg-slate-700 ring-slate-600 group-hover:ring-violet-500/30 group-hover:bg-slate-600'
+                  }`}>
+                  <User className="w-5 h-5 text-white" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <h3 className="font-bold text-slate-900 text-base mb-1 truncate group-hover:text-blue-700 transition-colors">
+                  <h3 className={`font-bold text-sm mb-0.5 truncate transition-colors ${selectedUser?._id === userItem._id ? 'text-white' : 'text-slate-300 group-hover:text-white'
+                    }`}>
                     {userItem.name}
                   </h3>
-                  <p className="text-xs text-slate-500 truncate">{userItem.email}</p>
+                  <p className="text-xs text-slate-500 truncate group-hover:text-slate-400 transition-colors">{userItem.email}</p>
                 </div>
               </div>
 
               {/* Company and Tickets Info */}
-              <div className="grid grid-cols-2 gap-4 pt-4 border-t border-slate-200/80">
-                <div className="min-w-0">
-                  <span className="text-xs text-slate-500 font-medium uppercase tracking-wide block mb-1.5">Company</span>
-                  <p className="text-sm font-semibold text-slate-900 truncate" title={userItem.companyName || 'N/A'}>
-                    {userItem.companyName || 'N/A'}
-                  </p>
+              <div className="flex items-center justify-between pt-3 border-t border-white/5 pl-2">
+                <div className="grid grid-cols-2 gap-4 flex-1">
+                  <div className="min-w-0">
+                    <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider block mb-1">Company</span>
+                    <p className="text-xs font-semibold text-slate-300 truncate group-hover:text-white transition-colors" title={userItem.companyName || 'N/A'}>
+                      {userItem.companyName || 'N/A'}
+                    </p>
+                  </div>
+                  <div className="min-w-0">
+                    <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider block mb-1">Tickets</span>
+                    <p className={`text-sm font-bold ${selectedUser?._id === userItem._id ? 'text-violet-400' : 'text-slate-400 group-hover:text-violet-400'
+                      }`}>{userItem.ticketCount || 0}</p>
+                  </div>
                 </div>
-                <div className="min-w-0">
-                  <span className="text-xs text-slate-500 font-medium uppercase tracking-wide block mb-1.5">Tickets</span>
-                  <p className="text-xl font-bold text-blue-600">{userItem.ticketCount || 0}</p>
-                </div>
+                {onDelete && (
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onDelete(userItem);
+                    }}
+                    className="p-1.5 text-red-400 hover:text-red-300 bg-red-500/10 hover:bg-red-500/20 rounded-lg transition-colors border border-red-500/20 hover:border-red-500/40 flex-shrink-0"
+                    title="Delete user"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                  </button>
+                )}
               </div>
             </button>
           ))

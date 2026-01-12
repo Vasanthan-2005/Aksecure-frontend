@@ -5,12 +5,13 @@ import TicketForm from './TicketForm';
 import ServiceRequestForm from './ServiceRequestForm';
 import ServiceSelectionDialog from './ServiceSelectionDialog';
 import AdminReplies from './AdminReplies';
-import { Shield, LogOut, User as UserIcon, Ticket } from 'lucide-react';
+import UserNavigation from './UserNavigation';
+import { Shield, Sparkles, ArrowRight } from 'lucide-react';
 
 const categories = ['CCTV', 'Fire Alarm', 'Security Alarm', 'Electrical', 'Plumbing', 'Air Conditioning'];
 
 const UserDashboard = () => {
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
   const navigate = useNavigate();
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [showTicketForm, setShowTicketForm] = useState(false);
@@ -65,138 +66,115 @@ const UserDashboard = () => {
 
   if (showTicketForm) {
     return (
-      <TicketForm
-        category={selectedCategory}
-        onSuccess={handleTicketCreated}
-        onCancel={handleCancel}
-      />
+      <div className="min-h-screen bg-slate-950">
+        <UserNavigation />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <TicketForm
+            category={selectedCategory}
+            onSuccess={handleTicketCreated}
+            onCancel={handleCancel}
+          />
+        </div>
+      </div>
     );
   }
 
   if (showServiceRequestForm) {
     return (
-      <ServiceRequestForm
-        category={selectedCategory}
-        onSuccess={handleServiceRequestCreated}
-        onCancel={handleCancel}
-      />
+      <div className="min-h-screen bg-slate-950">
+        <UserNavigation />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <ServiceRequestForm
+            category={selectedCategory}
+            onSuccess={handleServiceRequestCreated}
+            onCancel={handleCancel}
+          />
+        </div>
+      </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-500 to-slate-100">
-      {/* Navigation */}
-      <nav className="bg-white/90 backdrop-blur-sm border-b border-slate-200 shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center gap-3">
-              <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-blue-600 to-blue-700 flex items-center justify-center shadow-lg">
-                <Shield className="w-5 h-5 text-white" />
-              </div>
-              <div>
-                <p className="text-sm font-semibold text-slate-900">AK SecureTech Ltd</p>
-                <p className="text-xs text-slate-500">Service Ticket Portal</p>
-              </div>
-            </div>
-            <div className="flex items-center gap-3">
-              <button
-                onClick={() => navigate('/tickets')}
-                className="inline-flex items-center gap-2 rounded-lg border border-slate-200 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 hover:border-slate-300 transition-all shadow-sm"
-              >
-                <Ticket className="w-4 h-4" />
-                My Tickets
-              </button>
-              <button
-                onClick={() => navigate('/service-requests')}
-                className="inline-flex items-center gap-2 rounded-lg border border-slate-200 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 hover:border-slate-300 transition-all shadow-sm"
-              >
-                <Ticket className="w-4 h-4" />
-                My Service Requests
-              </button>
-              <button
-                onClick={() => navigate('/profile')}
-                className="hidden sm:flex items-center gap-3 px-4 py-2 rounded-lg bg-slate-50 border border-slate-200 hover:bg-slate-100 hover:border-slate-300 transition-all cursor-pointer"
-              >
-                <div className="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center">
-                  <UserIcon className="w-4 h-4 text-blue-600" />
-                </div>
-                <div className="flex flex-col items-start">
-                  <span className="text-sm font-medium text-slate-900">{user?.name}</span>
-                  <span className="text-xs text-slate-500">{user?.companyName}</span>
-                </div>
-              </button>
-              <button
-                onClick={logout}
-                className="inline-flex items-center gap-2 rounded-lg border border-slate-200 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 hover:border-slate-300 transition-all shadow-sm"
-              >
-                <LogOut className="w-4 h-4" />
-                Logout
-              </button>
-            </div>
-          </div>
-        </div>
-      </nav>
+    <div className="min-h-screen bg-slate-950 relative overflow-hidden">
+      {/* Background gradients */}
+      <div className="fixed top-0 left-0 w-full h-full overflow-hidden pointer-events-none z-0">
+        <div className="absolute top-[10%] left-[20%] w-[30%] h-[30%] rounded-full bg-blue-600/5 blur-[100px]" />
+        <div className="absolute bottom-[20%] right-[10%] w-[40%] h-[40%] rounded-full bg-violet-600/5 blur-[100px]" />
+      </div>
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+      <UserNavigation />
+
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8 relative z-10">
         {/* Header */}
-        <header className="bg-white rounded-2xl shadow-xl border border-slate-200 p-6">
-          <div>
-            <h1 className="text-3xl font-bold text-slate-900 mb-2">
-              Welcome back, {user?.name?.split(' ')[0] || 'there'} 👋
+        <header className="glass-card p-8 rounded-3xl animate-fade-in-up relative overflow-hidden">
+          <div className="absolute top-0 right-0 p-12 opacity-5 pointer-events-none">
+            <Shield className="w-64 h-64 text-white" />
+          </div>
+          <div className="relative z-10">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs font-medium mb-4">
+              <Sparkles className="w-3 h-3" />
+              <span>Enterprise Dashboard</span>
+            </div>
+            <h1 className="text-3xl md:text-4xl font-bold text-white mb-4 tracking-tight">
+              Welcome back, <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-violet-400">{user?.name?.split(' ')[0] || 'there'}</span> 👋
             </h1>
-            <p className="text-slate-600">
-              Installation and Services for CCTV, Fire Alarm, Security Alarm, Electrical, Plumbing & Air Conditioning
+            <p className="text-slate-400 max-w-2xl text-lg leading-relaxed">
+              Manage your installation and service requests for CCTV, Fire Alarm, Security Systems, and more directly from your dashboard.
             </p>
           </div>
         </header>
 
         {/* Service Categories */}
-        <section>
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-sm font-semibold text-slate-900 tracking-wide uppercase">
-              Service categories
+        <section className="animate-fade-in-up" style={{ animationDelay: '0.1s' }}>
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-sm font-bold text-slate-400 tracking-wider uppercase flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-blue-500"></span>
+              Service Categories
             </h2>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {categories.map((category) => (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+            {categories.map((category, index) => (
               <button
                 key={category}
                 type="button"
                 onClick={() => handleCategoryClick(category)}
-                className="group relative overflow-hidden rounded-xl border border-slate-200 bg-white px-5 py-5 text-left shadow-sm transition-all hover:-translate-y-1 hover:shadow-lg hover:border-blue-300"
+                className="group relative overflow-hidden rounded-2xl border border-white/5 bg-slate-900/40 p-6 text-left hover:bg-slate-800/60 hover:border-blue-500/30 transition-all duration-300 hover:-translate-y-1 shadow-lg hover:shadow-blue-500/10"
               >
-                <div className="flex items-center justify-between gap-3">
-                  <div className="flex-1">
-                    <p className="text-base font-semibold text-slate-900 mb-1">{category}</p>
-                    <p className="text-xs text-slate-500">
-                      Create a ticket related to {category.toLowerCase()} services.
-                    </p>
+                <div className="flex items-start justify-between gap-4 mb-4">
+                  <div className="h-12 w-12 rounded-2xl bg-gradient-to-br from-slate-800 to-slate-900 border border-white/5 flex items-center justify-center group-hover:from-blue-600/20 group-hover:to-violet-600/20 group-hover:border-blue-500/30 transition-all">
+                    <span className="text-xl group-hover:scale-110 transition-transform duration-300">
+                      {index === 0 ? '📹' : index === 1 ? '🔥' : index === 2 ? '🚨' : index === 3 ? '⚡' : index === 4 ? '💧' : '❄️'}
+                    </span>
                   </div>
-                  <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-blue-50 to-blue-100 text-blue-600 group-hover:from-blue-100 group-hover:to-blue-200 transition-all">
-                    <span className="text-xl">✦</span>
+                  <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 transform translate-x-2 group-hover:translate-x-0">
+                    <ArrowRight className="w-5 h-5 text-blue-400" />
                   </div>
                 </div>
-                <span className="mt-4 inline-flex items-center text-xs font-semibold text-blue-600">
-                  Raise ticket
-                  <span className="ml-1 transition-transform group-hover:translate-x-1">
-                    →
-                  </span>
-                </span>
+
+                <div>
+                  <h3 className="text-lg font-bold text-slate-200 group-hover:text-white mb-2 transition-colors">{category}</h3>
+                  <p className="text-sm text-slate-500 group-hover:text-slate-400 leading-relaxed">
+                    Raise a ticket or request new service for {category.toLowerCase()} systems.
+                  </p>
+                </div>
               </button>
             ))}
           </div>
         </section>
 
         {/* Admin Replies */}
-        <section>
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-sm font-semibold text-slate-900 tracking-wide uppercase">
-              Admin Replies
+        <section className="animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-sm font-bold text-slate-400 tracking-wider uppercase flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-violet-500"></span>
+              Recent Updates
             </h2>
           </div>
-          <div className="bg-white rounded-2xl border border-slate-200 shadow-xl p-6">
-            <AdminReplies key={refreshKey} refreshKey={refreshKey} />
+          <div className="glass-card rounded-2xl overflow-hidden p-1">
+            <div className="bg-slate-950/30 rounded-xl p-4 sm:p-6">
+              <AdminReplies key={refreshKey} refreshKey={refreshKey} />
+            </div>
           </div>
         </section>
       </main>

@@ -8,11 +8,12 @@ const normalizeStatus = (status) => {
 export const getStatusColor = (status) => {
   const normalizedStatus = normalizeStatus(status);
   const colors = {
-    'New': 'bg-emerald-50 text-emerald-700 border-emerald-200 ring-emerald-100',
-    'In Progress': 'bg-blue-50 text-blue-700 border-blue-200 ring-blue-100',
-    'Closed': 'bg-slate-50 text-slate-700 border-slate-200 ring-slate-100'
+    'New': 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20 ring-1 ring-emerald-500/20',
+    'In Progress': 'bg-blue-500/10 text-blue-400 border-blue-500/20 ring-1 ring-blue-500/20',
+    'Closed': 'bg-slate-500/10 text-slate-400 border-slate-500/20 ring-1 ring-slate-500/20',
+    'Completed': 'bg-blue-500/10 text-blue-400 border-blue-500/20 ring-1 ring-blue-500/20'
   };
-  return colors[normalizedStatus] || 'bg-slate-50 text-slate-700 border-slate-200 ring-slate-100';
+  return colors[normalizedStatus] || 'bg-slate-500/10 text-slate-400 border-slate-500/20 ring-1 ring-slate-500/20';
 };
 
 export const getStatusIcon = (status) => {
@@ -23,6 +24,7 @@ export const getStatusIcon = (status) => {
     case 'In Progress':
       return <Loader2 className="w-3.5 h-3.5 animate-spin" />;
     case 'Closed':
+    case 'Completed':
       return <XCircle className="w-3.5 h-3.5" />;
     default:
       return <CircleDot className="w-3.5 h-3.5" />;
@@ -31,14 +33,14 @@ export const getStatusIcon = (status) => {
 
 export const getCategoryColor = (category) => {
   const colors = {
-    'CCTV': 'bg-cyan-100 text-cyan-700 border-cyan-200',
-    'Fire Alarm': 'bg-red-100 text-red-700 border-red-200',
-    'Security Alarm': 'bg-orange-100 text-orange-700 border-orange-200',
-    'Electrical': 'bg-yellow-100 text-yellow-700 border-yellow-200',
-    'Plumbing': 'bg-blue-100 text-blue-700 border-blue-200',
-    'Air Conditioning': 'bg-green-100 text-green-700 border-green-200'
+    'CCTV': 'bg-cyan-500/10 text-cyan-400 border-cyan-500/20',
+    'Fire Alarm': 'bg-red-500/10 text-red-400 border-red-500/20',
+    'Security Alarm': 'bg-orange-500/10 text-orange-400 border-orange-500/20',
+    'Electrical': 'bg-yellow-500/10 text-yellow-400 border-yellow-500/20',
+    'Plumbing': 'bg-blue-500/10 text-blue-400 border-blue-500/20',
+    'Air Conditioning': 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20'
   };
-  return colors[category] || 'bg-slate-100 text-slate-700 border-slate-200';
+  return colors[category] || 'bg-slate-500/10 text-slate-400 border-slate-500/20';
 };
 
 export const getTicketStats = (tickets) => {

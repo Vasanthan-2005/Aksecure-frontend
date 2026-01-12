@@ -50,17 +50,17 @@ const ReplyModal = ({ isOpen, onClose, ticket, onReply, updating }) => {
   const removeImage = (index) => {
     const newImages = selectedImages.filter((_, i) => i !== index);
     const newPreviews = imagePreviews.filter((_, i) => i !== index);
-    
+
     // Revoke object URL to prevent memory leaks
     URL.revokeObjectURL(imagePreviews[index]);
-    
+
     setSelectedImages(newImages);
     setImagePreviews(newPreviews);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     setErrors({ message: '', schedule: '' });
 
     if (!replyMessage.trim()) {
@@ -78,7 +78,7 @@ const ReplyModal = ({ isOpen, onClose, ticket, onReply, updating }) => {
       setErrors(prev => ({ ...prev, schedule: 'Please select both scheduling date and time slot' }));
       return;
     }
-    
+
     const combined = new Date(`${preferredDate}T${preferredSlot}`);
     const now = new Date();
     if (isNaN(combined.getTime()) || combined < now) {
@@ -90,11 +90,11 @@ const ReplyModal = ({ isOpen, onClose, ticket, onReply, updating }) => {
     // Call the parent handler and wait for result
     try {
       const success = await onReply(replyMessage.trim(), visitDateTimeIso, selectedImages);
-      
+
       if (success !== false) {
         // Clean up preview URLs
         imagePreviews.forEach(url => URL.revokeObjectURL(url));
-        
+
         setReplyMessage('');
         setPreferredDate('');
         setPreferredSlot('');
@@ -112,7 +112,7 @@ const ReplyModal = ({ isOpen, onClose, ticket, onReply, updating }) => {
     if (!updating) {
       // Clean up preview URLs
       imagePreviews.forEach(url => URL.revokeObjectURL(url));
-      
+
       setReplyMessage('');
       setPreferredDate('');
       setPreferredSlot('');
@@ -124,17 +124,17 @@ const ReplyModal = ({ isOpen, onClose, ticket, onReply, updating }) => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-      <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto border border-slate-200">
+    <div className="fixed top-20 left-0 right-0 bottom-0 z-40 flex items-start justify-center pt-8 pb-8 px-4 bg-black/60 backdrop-blur-sm animate-fade-in overflow-y-auto">
+      <div className="bg-slate-900 rounded-2xl shadow-2xl max-w-2xl w-full max-h-[calc(100vh-8rem)] overflow-y-auto border border-slate-700/50 ring-1 ring-white/10 animate-scale-in">
         {/* Header */}
-        <div className="sticky top-0 bg-white border-b border-slate-200 px-6 py-4 flex items-center justify-between z-10">
+        <div className="sticky top-0 bg-slate-900/95 backdrop-blur-xl border-b border-white/5 px-6 py-4 flex items-center justify-between z-10">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center ring-2 ring-blue-100">
-              <MessageSquare className="w-5 h-5 text-white" />
+            <div className="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center ring-1 ring-blue-500/20">
+              <MessageSquare className="w-5 h-5 text-blue-400" />
             </div>
             <div>
-              <h2 className="text-xl font-bold text-slate-900">Reply to User</h2>
-              <p className="text-sm text-slate-500">
+              <h2 className="text-xl font-bold text-white tracking-tight">Reply to User</h2>
+              <p className="text-sm text-slate-400">
                 {ticket?.ticketId ? `Ticket: ${ticket.ticketId}` : ticket?.requestId ? `Service Request: ${ticket.requestId}` : 'Reply'}
               </p>
             </div>
@@ -142,29 +142,34 @@ const ReplyModal = ({ isOpen, onClose, ticket, onReply, updating }) => {
           <button
             onClick={handleClose}
             disabled={updating}
-            className="p-2 hover:bg-slate-100 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="p-2 hover:bg-white/5 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-slate-400 hover:text-white"
           >
-            <X className="w-5 h-5 text-slate-600" />
+            <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* Content */}
         <form onSubmit={handleSubmit} className="p-6 space-y-6">
           {/* Ticket/Service Request Info */}
-          <div className="bg-slate-50 rounded-xl p-4 border border-slate-200">
-            <p className="text-sm font-medium text-slate-700 mb-1">
-              {ticket?.ticketId ? 'Ticket Title:' : ticket?.requestId ? 'Service Request Title:' : 'Title:'}
+          <div className="bg-slate-800/40 rounded-xl p-4 border border-white/5">
+            <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">
+              {ticket?.ticketId ? 'Ticket Title' : ticket?.requestId ? 'Service Request Title' : 'Title'}
             </p>
-            <p className="text-base font-semibold text-slate-900">{ticket?.title}</p>
-            <p className="text-sm font-medium text-slate-700 mt-3 mb-1">User:</p>
-            <p className="text-base text-slate-900">{ticket?.userId?.name} ({ticket?.userId?.companyName})</p>
+            <p className="text-base font-bold text-white mb-3">{ticket?.title}</p>
+            <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">User</p>
+            <p className="text-sm text-slate-300 font-medium flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-blue-500"></span>
+              {ticket?.userId?.name} <span className="text-slate-500 font-normal">({ticket?.userId?.companyName})</span>
+            </p>
           </div>
 
           {/* Reply Message */}
           <div>
-            <label className="block text-sm font-semibold text-slate-700 mb-2">
-              <MessageSquare className="inline w-4 h-4 mr-1" />
-              Reply Message *
+            <label className="block text-sm font-bold text-slate-300 mb-2">
+              <div className="flex items-center gap-2">
+                <MessageSquare className="w-4 h-4 text-blue-400" />
+                Reply Message <span className="text-red-400">*</span>
+              </div>
             </label>
             <textarea
               value={replyMessage}
@@ -175,22 +180,23 @@ const ReplyModal = ({ isOpen, onClose, ticket, onReply, updating }) => {
               placeholder="Type your reply message here..."
               rows={6}
               disabled={updating}
-              className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:border-transparent resize-none transition-colors font-medium ${
-                errors.message
-                  ? 'border-red-300 focus:ring-red-500 bg-red-50'
-                  : 'border-slate-300 focus:ring-blue-500 bg-white'
-              } disabled:opacity-50 disabled:cursor-not-allowed`}
+              className={`w-full px-4 py-3 bg-slate-950/50 border rounded-xl focus:ring-2 focus:border-transparent resize-none transition-colors font-medium text-slate-200 placeholder:text-slate-600 ${errors.message
+                ? 'border-red-500/50 focus:ring-red-500/50'
+                : 'border-slate-700 focus:ring-blue-500/50 hover:border-slate-600'
+                } disabled:opacity-50 disabled:cursor-not-allowed`}
             />
             {errors.message && (
-              <p className="mt-1 text-sm text-red-600">{errors.message}</p>
+              <p className="mt-1.5 text-xs text-red-400 font-medium">{errors.message}</p>
             )}
           </div>
 
           {/* Image Upload */}
           <div>
-            <label className="block text-sm font-semibold text-slate-700 mb-2">
-              <ImageIcon className="inline w-4 h-4 mr-1" />
-              Attach Images (Optional)
+            <label className="block text-sm font-bold text-slate-300 mb-2">
+              <div className="flex items-center gap-2">
+                <ImageIcon className="w-4 h-4 text-violet-400" />
+                Attach Images (Optional)
+              </div>
             </label>
             <input
               ref={fileInputRef}
@@ -204,16 +210,15 @@ const ReplyModal = ({ isOpen, onClose, ticket, onReply, updating }) => {
             />
             <label
               htmlFor="image-upload"
-              className={`inline-flex items-center gap-2 px-4 py-2 border rounded-xl cursor-pointer transition-colors font-medium ${
-                updating || selectedImages.length >= 3
-                  ? 'border-slate-200 bg-slate-100 text-slate-400 cursor-not-allowed'
-                  : 'border-slate-300 bg-white text-slate-700 hover:bg-slate-50 hover:border-slate-400'
-              }`}
+              className={`inline-flex items-center gap-2 px-4 py-2 border rounded-xl cursor-pointer transition-all font-medium text-sm ${updating || selectedImages.length >= 3
+                ? 'border-slate-700 bg-slate-800 text-slate-500 cursor-not-allowed'
+                : 'border-slate-600 bg-slate-800/50 text-slate-300 hover:bg-slate-700 hover:border-slate-500 hover:text-white'
+                }`}
             >
               <ImageIcon className="w-4 h-4" />
               {selectedImages.length >= 3 ? 'Maximum 3 images' : 'Select Images'}
             </label>
-            <p className="mt-1 text-xs text-slate-500">You can attach up to 3 images (max 5MB each)</p>
+            <p className="mt-1.5 text-xs text-slate-500">You can attach up to 3 images (max 5MB each)</p>
 
             {/* Image Previews */}
             {imagePreviews.length > 0 && (
@@ -223,17 +228,17 @@ const ReplyModal = ({ isOpen, onClose, ticket, onReply, updating }) => {
                     <img
                       src={preview}
                       alt={`Preview ${index + 1}`}
-                      className="w-full h-24 object-cover rounded-lg border-2 border-slate-200"
+                      className="w-full h-24 object-cover rounded-lg border border-white/10 group-hover:border-white/20 transition-all"
                     />
                     <button
                       type="button"
                       onClick={() => removeImage(index)}
-                      className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-600"
+                      className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all hover:bg-red-600 shadow-lg transform group-hover:scale-100 scale-90"
                       disabled={updating}
                     >
                       <XCircle className="w-4 h-4" />
                     </button>
-                    <p className="mt-1 text-xs text-slate-500 truncate">
+                    <p className="mt-1 text-xs text-slate-500 truncate px-1">
                       {selectedImages[index].name}
                     </p>
                   </div>
@@ -245,9 +250,11 @@ const ReplyModal = ({ isOpen, onClose, ticket, onReply, updating }) => {
           {/* Scheduling Date & Time Slot */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-semibold text-slate-700 mb-2">
-                <Clock className="inline w-4 h-4 mr-1" />
-                Scheduling Date *
+              <label className="block text-sm font-bold text-slate-300 mb-2">
+                <div className="flex items-center gap-2">
+                  <Clock className="w-4 h-4 text-emerald-400" />
+                  Scheduling Date <span className="text-red-400">*</span>
+                </div>
               </label>
               <input
                 type="date"
@@ -259,17 +266,18 @@ const ReplyModal = ({ isOpen, onClose, ticket, onReply, updating }) => {
                 min={today}
                 disabled={updating}
                 required
-                className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:border-transparent transition-colors font-medium ${
-                  errors.schedule
-                    ? 'border-red-300 focus:ring-red-500 bg-red-50'
-                    : 'border-slate-300 focus:ring-blue-500 bg-white'
-                } disabled:opacity-50 disabled:cursor-not-allowed`}
+                className={`w-full px-4 py-3 bg-slate-950/50 border rounded-xl focus:ring-2 focus:border-transparent transition-colors font-medium text-slate-200 scheme-dark ${errors.schedule
+                  ? 'border-red-500/50 focus:ring-red-500/50'
+                  : 'border-slate-700 focus:ring-blue-500/50 hover:border-slate-600'
+                  } disabled:opacity-50 disabled:cursor-not-allowed`}
               />
             </div>
             <div>
-              <label className="block text-sm font-semibold text-slate-700 mb-2">
-                <Clock className="inline w-4 h-4 mr-1" />
-                Scheduling Time Slot *
+              <label className="block text-sm font-bold text-slate-300 mb-2">
+                <div className="flex items-center gap-2">
+                  <Clock className="w-4 h-4 text-emerald-400" />
+                  Time Slot <span className="text-red-400">*</span>
+                </div>
               </label>
               <select
                 value={preferredSlot}
@@ -279,13 +287,12 @@ const ReplyModal = ({ isOpen, onClose, ticket, onReply, updating }) => {
                 }}
                 disabled={updating}
                 required
-                className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:border-transparent transition-colors font-medium ${
-                  errors.schedule
-                    ? 'border-red-300 focus:ring-red-500 bg-red-50'
-                    : 'border-slate-300 focus:ring-blue-500 bg-white'
-                } disabled:opacity-50 disabled:cursor-not-allowed`}
+                className={`w-full px-4 py-3 bg-slate-950/50 border rounded-xl focus:ring-2 focus:border-transparent transition-colors font-medium text-slate-200 outline-none cursor-pointer ${errors.schedule
+                  ? 'border-red-500/50 focus:ring-red-500/50'
+                  : 'border-slate-700 focus:ring-blue-500/50 hover:border-slate-600'
+                  } disabled:opacity-50 disabled:cursor-not-allowed`}
               >
-                <option value="">Select a scheduling slot</option>
+                <option value="">Select a time slot</option>
                 {timeSlotOptions.map((slot) => (
                   <option key={slot.value} value={slot.value}>
                     {slot.label}
@@ -295,32 +302,32 @@ const ReplyModal = ({ isOpen, onClose, ticket, onReply, updating }) => {
             </div>
           </div>
           {errors.schedule && (
-            <p className="mt-1 text-sm text-red-600">{errors.schedule}</p>
+            <p className="mt-1 text-xs text-red-400 font-medium">{errors.schedule}</p>
           )}
 
           {/* Actions */}
-          <div className="flex items-center gap-3 pt-4 border-t border-slate-200">
+          <div className="flex items-center gap-3 pt-6 border-t border-white/5">
             <button
               type="button"
               onClick={handleClose}
               disabled={updating}
-              className="flex-1 px-5 py-3 border border-slate-300 text-slate-700 rounded-xl hover:bg-slate-50 transition-all disabled:opacity-50 disabled:cursor-not-allowed font-semibold"
+              className="flex-1 px-5 py-3 border border-slate-700 text-slate-300 rounded-xl hover:bg-slate-800 hover:text-white transition-all disabled:opacity-50 disabled:cursor-not-allowed font-semibold text-sm"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={!replyMessage.trim() || !preferredDate || !preferredSlot || updating}
-              className="flex-1 inline-flex items-center justify-center gap-2 px-5 py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-xl hover:from-blue-700 hover:to-blue-800 transition-all disabled:opacity-50 disabled:cursor-not-allowed font-semibold shadow-md hover:shadow-lg disabled:shadow-sm"
+              className="flex-1 inline-flex items-center justify-center gap-2 px-5 py-3 bg-blue-600 hover:bg-blue-500 text-white rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed font-bold text-sm shadow-lg shadow-blue-500/20"
             >
               {updating ? (
                 <>
-                  <Loader2 className="w-5 h-5 animate-spin" />
+                  <Loader2 className="w-4 h-4 animate-spin" />
                   Sending...
                 </>
               ) : (
                 <>
-                  <Send className="w-5 h-5" />
+                  <Send className="w-4 h-4" />
                   Send Reply
                 </>
               )}

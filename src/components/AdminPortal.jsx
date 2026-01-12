@@ -46,7 +46,7 @@ const AdminPortal = () => {
   };
   const { user, logout } = useAuth();
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState("tickets");
+  const [activeTab, setActiveTab] = useState("dashboard");
   const [viewMode, setViewMode] = useState("dashboard");
   const [tickets, setTickets] = useState([]);
   const [serviceRequests, setServiceRequests] = useState([]);
@@ -112,21 +112,15 @@ const AdminPortal = () => {
       fetchUsers();
       setSelectedTicket(null);
       setSelectedServiceRequest(null);
-      setViewMode("dashboard");
     } else if (activeTab === "service-requests") {
       fetchServiceRequests();
       setSelectedTicket(null);
-      if (
-        viewMode !== "new-service-requests" &&
-        viewMode !== "all-service-requests"
-      ) {
-        setViewMode("dashboard");
-      }
     } else if (activeTab === "tickets") {
-      if (viewMode !== "new-tickets" && viewMode !== "all") {
-        setViewMode("dashboard");
-      }
+      fetchTickets();
       setSelectedServiceRequest(null);
+    } else if (activeTab === "dashboard") {
+      fetchTickets();
+      fetchServiceRequests();
     }
   }, [activeTab]);
 
@@ -154,8 +148,8 @@ const AdminPortal = () => {
       setServiceRequestVisitDateTime(
         selectedServiceRequest.assignedVisitAt
           ? new Date(selectedServiceRequest.assignedVisitAt)
-              .toISOString()
-              .slice(0, 16)
+            .toISOString()
+            .slice(0, 16)
           : ""
       );
       setServiceRequestErrors({
@@ -183,7 +177,7 @@ const AdminPortal = () => {
       setLoading(true);
       const response = await api.get("/tickets");
       const ticketsData = response.data;
-      
+
       // Mark tickets as viewed if needed
       if (markAsViewed && ticketsData.length > 0) {
         const newTickets = ticketsData.filter(
@@ -200,7 +194,7 @@ const AdminPortal = () => {
           return;
         }
       }
-      
+
       setTickets(ticketsData);
       setError("");
     } catch (err) {
@@ -262,7 +256,7 @@ const AdminPortal = () => {
     } catch (err) {
       alert(
         "Failed to delete user: " +
-          (err.response?.data?.message || "Unknown error")
+        (err.response?.data?.message || "Unknown error")
       );
       console.error(err);
     } finally {
@@ -283,7 +277,7 @@ const AdminPortal = () => {
     } catch (err) {
       alert(
         "Failed to delete ticket: " +
-          (err.response?.data?.message || "Unknown error")
+        (err.response?.data?.message || "Unknown error")
       );
       console.error(err);
     }
@@ -302,7 +296,7 @@ const AdminPortal = () => {
     } catch (err) {
       alert(
         "Failed to delete service request: " +
-          (err.response?.data?.message || "Unknown error")
+        (err.response?.data?.message || "Unknown error")
       );
       console.error(err);
     }
@@ -415,20 +409,20 @@ const AdminPortal = () => {
     try {
       setUpdating(true);
       const updateData = {};
-      
+
       // Only update status if it's provided and different from current status
       if (updateStatus && updateStatus !== selectedTicket.status) {
         updateData.status = updateStatus;
       }
-      
+
       // Only update assignedVisitAt if visitDateTime is explicitly set in the form
       // and different from current value
       if (visitDateTime) {
-        const currentVisitTime = selectedTicket.assignedVisitAt 
-          ? new Date(selectedTicket.assignedVisitAt).toISOString() 
+        const currentVisitTime = selectedTicket.assignedVisitAt
+          ? new Date(selectedTicket.assignedVisitAt).toISOString()
           : null;
         const newVisitTime = new Date(visitDateTime).toISOString();
-        
+
         // Only include in update if the time has actually changed
         if (currentVisitTime !== newVisitTime) {
           updateData.assignedVisitAt = newVisitTime;
@@ -573,7 +567,7 @@ const AdminPortal = () => {
       console.error("Failed to send reply:", err);
       alert(
         "Failed to send reply: " +
-          (err.response?.data?.message || "Unknown error")
+        (err.response?.data?.message || "Unknown error")
       );
       return false;
     } finally {
@@ -594,19 +588,19 @@ const AdminPortal = () => {
     try {
       setUpdating(true);
       const updateData = {};
-      
+
       // Only update status if it's provided and different from current status
       if (serviceRequestUpdateStatus && serviceRequestUpdateStatus !== selectedServiceRequest.status) {
         updateData.status = serviceRequestUpdateStatus;
       }
-      
+
       // Only update assignedVisitAt if serviceRequestVisitDateTime is explicitly set and different from current value
       if (serviceRequestVisitDateTime) {
-        const currentVisitTime = selectedServiceRequest.assignedVisitAt 
-          ? new Date(selectedServiceRequest.assignedVisitAt).toISOString() 
+        const currentVisitTime = selectedServiceRequest.assignedVisitAt
+          ? new Date(selectedServiceRequest.assignedVisitAt).toISOString()
           : null;
         const newVisitTime = new Date(serviceRequestVisitDateTime).toISOString();
-        
+
         // Only include in update if the time has actually changed
         if (currentVisitTime !== newVisitTime) {
           updateData.assignedVisitAt = newVisitTime;
@@ -764,7 +758,7 @@ const AdminPortal = () => {
       console.error("Failed to send reply:", err);
       alert(
         "Failed to send reply: " +
-          (err.response?.data?.message || "Unknown error")
+        (err.response?.data?.message || "Unknown error")
       );
       return false;
     } finally {
@@ -779,10 +773,10 @@ const AdminPortal = () => {
     .filter((ticket) => ticket.status === "New" || ticket.status === "Open")
     .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
-  const newServiceRequests = Array.isArray(serviceRequests) 
+  const newServiceRequests = Array.isArray(serviceRequests)
     ? serviceRequests
-        .filter((sr) => sr.status === "New")
-        .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+      .filter((sr) => sr.status === "New")
+      .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
     : [];
 
   if (loading) {
@@ -799,7 +793,12 @@ const AdminPortal = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-500 to-slate-100">
+    <div className="min-h-screen bg-slate-950 relative overflow-hidden">
+      {/* Background gradients */}
+      <div className="fixed top-0 left-0 w-full h-full overflow-hidden pointer-events-none z-0">
+        <div className="absolute top-[10%] left-[20%] w-[30%] h-[30%] rounded-full bg-blue-600/5 blur-[100px]" />
+        <div className="absolute bottom-[20%] right-[10%] w-[40%] h-[40%] rounded-full bg-violet-600/5 blur-[100px]" />
+      </div>
       <AdminNavigation
         user={user}
         logout={logout}
@@ -813,19 +812,18 @@ const AdminPortal = () => {
       {viewMode !== "all" &&
         viewMode !== "all-service-requests" &&
         activeTab !== "users" && (
-          <div className="bg-white border-b border-slate-200 px-6">
-            <div className="flex gap-2 items-center">
+          <div className="px-6 pt-6 pb-2">
+            <div className="inline-flex bg-slate-800/50 p-1.5 rounded-2xl border border-white/5 backdrop-blur-md">
               <button
                 onClick={() => {
-                  setActiveTab("tickets");
+                  setActiveTab("dashboard");
                   setViewMode("dashboard");
                   fetchTickets();
                 }}
-                className={`px-4 py-2 font-semibold rounded-t-lg transition-colors relative ${
-                  activeTab === "tickets" && viewMode === "dashboard"
-                    ? "bg-slate-50 text-slate-900 border-b-2 border-slate-900"
-                    : "text-slate-600 hover:text-slate-900"
-                }`}
+                className={`px-5 py-2.5 text-sm font-semibold rounded-xl transition-all relative ${(activeTab === "tickets" || activeTab === "dashboard") && viewMode === "dashboard"
+                  ? "bg-blue-600 text-white shadow-lg shadow-blue-500/20"
+                  : "text-slate-400 hover:text-white hover:bg-white/5"
+                  }`}
               >
                 Dashboard
               </button>
@@ -834,15 +832,17 @@ const AdminPortal = () => {
                   setViewMode("new-tickets");
                   setActiveTab("tickets");
                 }}
-                className={`px-4 py-2 font-semibold rounded-t-lg transition-colors relative ${
-                  viewMode === "new-tickets" && activeTab === "tickets"
-                    ? "bg-slate-50 text-slate-900 border-b-2 border-slate-900"
-                    : "text-slate-600 hover:text-slate-900"
-                }`}
+                className={`px-5 py-2.5 text-sm font-semibold rounded-xl transition-all relative flex items-center gap-2 ${viewMode === "new-tickets" && activeTab === "tickets"
+                  ? "bg-blue-600 text-white shadow-lg shadow-blue-500/20"
+                  : "text-slate-400 hover:text-white hover:bg-white/5"
+                  }`}
               >
                 New Tickets
                 {newTickets.length > 0 && (
-                  <span className="absolute top-4 right-1 bg-red-500 text-white text-[10px] font-bold rounded-full w-4 h-4 flex items-center justify-center transform translate-x-1/2 -translate-y-1/2">
+                  <span className={`text-[10px] font-bold rounded-full px-1.5 py-0.5 ${viewMode === "new-tickets" && activeTab === "tickets"
+                    ? "bg-white text-red-600"
+                    : "bg-red-500 text-white"
+                    }`}>
                     {newTickets.length > 9 ? "9+" : newTickets.length}
                   </span>
                 )}
@@ -852,16 +852,18 @@ const AdminPortal = () => {
                   setViewMode("new-service-requests");
                   setActiveTab("service-requests");
                 }}
-                className={`px-4 py-2 font-semibold rounded-t-lg transition-colors relative ${
-                  viewMode === "new-service-requests" &&
+                className={`px-5 py-2.5 text-sm font-semibold rounded-xl transition-all relative flex items-center gap-2 ${viewMode === "new-service-requests" &&
                   activeTab === "service-requests"
-                    ? "bg-slate-50 text-slate-900 border-b-2 border-slate-900"
-                    : "text-slate-600 hover:text-slate-900"
-                }`}
+                  ? "bg-blue-600 text-white shadow-lg shadow-blue-500/20"
+                  : "text-slate-400 hover:text-white hover:bg-white/5"
+                  }`}
               >
                 New Service Requests
                 {newServiceRequests.length > 0 && (
-                  <span className="absolute top-4 right-1 bg-red-500 text-white text-[10px] font-bold rounded-full w-4 h-4 flex items-center justify-center transform translate-x-1/2 -translate-y-1/2">
+                  <span className={`text-[10px] font-bold rounded-full px-1.5 py-0.5 ${viewMode === "new-service-requests" && activeTab === "service-requests"
+                    ? "bg-white text-red-600"
+                    : "bg-red-500 text-white"
+                    }`}>
                     {newServiceRequests.length > 9
                       ? "9+"
                       : newServiceRequests.length}
@@ -872,26 +874,26 @@ const AdminPortal = () => {
           </div>
         )}
 
-      {activeTab === "tickets" && (
+      {(activeTab === "tickets" || activeTab === "dashboard") && (
         <div>
           {viewMode === "new-tickets" && (
             <div className="p-6">
-              <div className="bg-white rounded-2xl border border-slate-200 h-135 shadow-lg p-6 ring-1 ring-slate-100">
+              <div className="glass-card rounded-2xl border border-slate-700/50 shadow-xl p-6 bg-slate-900/60 backdrop-blur-xl min-h-[500px]">
                 <div className="flex items-center justify-between mb-5">
                   <div className="flex items-center gap-3">
-                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-500 to-emerald-600 flex items-center justify-center ring-2 ring-emerald-100">
+                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-500 to-emerald-600 flex items-center justify-center shadow-lg shadow-emerald-500/20">
                       <AlertCircle className="w-6 h-6 text-white" />
                     </div>
                     <div>
-                      <h2 className="text-2xl font-bold text-slate-900">
+                      <h2 className="text-2xl font-bold text-white tracking-tight">
                         New Tickets
                       </h2>
-                      <p className="text-sm text-slate-600">
+                      <p className="text-sm text-slate-400">
                         New tickets requiring attention
                       </p>
                     </div>
                   </div>
-                  <span className="px-4 py-2 bg-emerald-100 text-emerald-700 rounded-full text-sm font-semibold">
+                  <span className="px-4 py-2 bg-emerald-500/10 text-emerald-400 rounded-full text-sm font-bold border border-emerald-500/20">
                     {newTickets.length}{" "}
                     {newTickets.length === 1 ? "Ticket" : "Tickets"}
                   </span>
@@ -899,8 +901,8 @@ const AdminPortal = () => {
 
                 {newTickets.length === 0 ? (
                   <div className="text-center py-12">
-                    <CheckCircle2 className="w-16 h-16 text-slate-300 mx-auto mt-20" />
-                    <p className="text-lg font-semibold text-slate-600 ">
+                    <CheckCircle2 className="w-16 h-16 text-slate-600 mx-auto mb-4" />
+                    <p className="text-lg font-bold text-slate-400">
                       No new tickets
                     </p>
                     <p className="text-sm text-slate-500 mt-1">
@@ -908,26 +910,26 @@ const AdminPortal = () => {
                     </p>
                   </div>
                 ) : (
-                  <div className="space-y-3">
+                  <div className="space-y-3 max-h-[400px] overflow-y-auto custom-scrollbar pr-2">
                     {newTickets.map((ticket) => (
                       <button
                         key={ticket._id}
                         onClick={() => handleTicketClick(ticket)}
-                        className="w-full text-left p-5 rounded-xl border-2 border-slate-200 bg-gradient-to-br from-slate-50 to-white hover:border-emerald-400 hover:shadow-lg transition-all group"
+                        className="w-full text-left p-4 rounded-xl border border-white/5 bg-slate-800/40 hover:border-emerald-500/30 hover:bg-slate-800/70 transition-all group"
                       >
                         <div className="flex items-start justify-between mb-3">
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center gap-3 mb-2 flex-wrap">
-                              <h3 className="font-bold text-lg text-slate-900 group-hover:text-emerald-700 transition-colors">
+                              <h3 className="font-bold text-base text-white group-hover:text-emerald-400 transition-colors">
                                 {ticket.title}
                                 {ticket.userId?.companyName && (
-                                  <span className="text-sm font-normal text-slate-600 ml-2">
+                                  <span className="text-sm font-normal text-slate-500 ml-2">
                                     ({ticket.userId.companyName})
                                   </span>
                                 )}
                               </h3>
                               <span
-                                className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold border flex-shrink-0 ${getStatusColor(
+                                className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[10px] font-bold border uppercase tracking-wider ${getStatusColor(
                                   ticket.status
                                 )}`}
                               >
@@ -937,25 +939,25 @@ const AdminPortal = () => {
                                   : ticket.status}
                               </span>
                             </div>
-                            <p className="text-xs font-mono text-slate-600 mb-2">
+                            <p className="text-[10px] font-mono text-slate-500 mb-2">
                               {ticket.ticketId}
                             </p>
-                            <p className="text-sm text-slate-600 line-clamp-2">
+                            <p className="text-sm text-slate-400 line-clamp-2 group-hover:text-slate-300 transition-colors">
                               {ticket.description}
                             </p>
                           </div>
-                          <ArrowRight className="w-5 h-5 text-slate-400 group-hover:text-emerald-600 transition-colors flex-shrink-0 ml-4" />
+                          <ArrowRight className="w-5 h-5 text-slate-600 group-hover:text-emerald-400 transition-colors flex-shrink-0 ml-4" />
                         </div>
-                        <div className="flex items-center justify-between gap-4 pt-3 border-t border-slate-200">
+                        <div className="flex items-center justify-between gap-4 pt-3 border-t border-white/5">
                           <span
-                            className={`px-3 py-1 rounded-md text-xs font-medium border ${getCategoryColor(
+                            className={`px-2.5 py-1 rounded-lg text-[10px] font-bold border uppercase tracking-wider ${getCategoryColor(
                               ticket.category
                             )}`}
                           >
                             {ticket.category}
                           </span>
                           <div className="flex items-center gap-2 text-xs text-slate-500">
-                            <Calendar className="w-4 h-4" />
+                            <Calendar className="w-3.5 h-3.5" />
                             <span>
                               {new Date(ticket.createdAt).toLocaleDateString(
                                 "en-US",
@@ -979,72 +981,76 @@ const AdminPortal = () => {
           )}
 
           {viewMode === "dashboard" && (
-            <div className="p-6 overflow-x-hidden">
+            <div className="p-6 overflow-x-hidden relative z-10">
               <div className="mb-6 grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <div className="bg-white rounded-2xl border border-slate-200 shadow-lg p-6 h-52 ring-1 ring-slate-100">
-                  <h2 className="text-2xl font-bold text-slate-900 mb-4">
+                <div className="glass-card p-6 h-52 rounded-2xl animate-fade-in-up border border-slate-700/50 shadow-xl bg-slate-900/60 backdrop-blur-xl flex flex-col">
+                  <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
+                    <div className="p-2 rounded-lg bg-blue-500/10 border border-blue-500/20">
+                      <TicketIcon className="w-5 h-5 text-blue-400" />
+                    </div>
                     Ticket Statistics
                   </h2>
                   <TicketStats stats={stats} />
-                  <div className="mt-4 pt-4 border-t border-slate-200">
+                  <div className="mt-auto pt-4 border-t border-white/10">
                     <div className="flex items-center gap-2">
-                      <TicketIcon className="w-5 h-5 text-slate-600" />
-                      <span className="text-sm font-semibold text-slate-700">
+                      <span className="text-sm font-medium text-slate-300">
                         Total Tickets:
                       </span>
-                      <span className="text-lg font-bold text-slate-900">
+                      <span className="text-lg font-bold text-white">
                         {stats.total}
                       </span>
                     </div>
                   </div>
                 </div>
 
-                <div className="bg-white rounded-2xl border border-slate-200 shadow-lg p-6 ring-1 h-52 ring-slate-100">
-                  <h2 className="text-2xl font-bold text-slate-900 mb-4">
+                <div className="glass-card p-6 h-52 rounded-2xl animate-fade-in-up border border-slate-700/50 shadow-xl bg-slate-900/60 backdrop-blur-xl flex flex-col" style={{ animationDelay: '0.1s' }}>
+                  <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
+                    <div className="p-2 rounded-lg bg-emerald-500/10 border border-emerald-500/20">
+                      <FileText className="w-5 h-5 text-emerald-400" />
+                    </div>
                     Service Request Statistics
                   </h2>
-                  <div className="grid grid-cols-3 gap-2">
-                    <div className="bg-gradient-to-br from-emerald-50 to-emerald-100/50 border border-emerald-200 rounded-lg p-2.5">
+                  <div className="grid grid-cols-3 gap-3">
+                    <div className="bg-slate-800/60 border border-emerald-500/20 rounded-xl p-3 hover:bg-slate-800/80 transition-colors group">
                       <div className="flex items-center gap-1.5 mb-1.5">
-                        <AlertCircle className="w-3.5 h-3.5 text-emerald-600 flex-shrink-0" />
-                        <span className="text-xs text-emerald-700 font-medium">
+                        <AlertCircle className="w-3.5 h-3.5 text-emerald-400 group-hover:text-emerald-300 transition-colors flex-shrink-0" />
+                        <span className="text-xs text-emerald-400 group-hover:text-emerald-300 font-medium">
                           New
                         </span>
                       </div>
-                      <p className="text-lg font-bold text-emerald-900">
+                      <p className="text-2xl font-bold text-white group-hover:text-emerald-200 transition-colors">
                         {serviceRequestStats.new}
                       </p>
                     </div>
-                    <div className="bg-gradient-to-br from-blue-50 to-blue-100/50 border border-blue-200 rounded-lg p-2.5">
+                    <div className="bg-slate-800/60 border border-blue-500/20 rounded-xl p-3 hover:bg-slate-800/80 transition-colors group">
                       <div className="flex items-center gap-1.5 mb-1.5">
-                        <Loader2 className="w-3.5 h-3.5 text-blue-600 flex-shrink-0" />
-                        <span className="text-xs text-blue-700 font-medium">
+                        <Loader2 className="w-3.5 h-3.5 text-blue-400 group-hover:text-blue-300 transition-colors flex-shrink-0" />
+                        <span className="text-xs text-blue-400 group-hover:text-blue-300 font-medium">
                           In Progress
                         </span>
                       </div>
-                      <p className="text-lg font-bold text-blue-900">
+                      <p className="text-2xl font-bold text-white group-hover:text-blue-200 transition-colors">
                         {serviceRequestStats.inProgress}
                       </p>
                     </div>
-                    <div className="bg-gradient-to-br from-green-50 to-green-100/50 border border-green-200 rounded-lg p-2.5">
+                    <div className="bg-slate-800/60 border border-green-500/20 rounded-xl p-3 hover:bg-slate-800/80 transition-colors group">
                       <div className="flex items-center gap-1.5 mb-1.5">
-                        <CheckCircle2 className="w-3.5 h-3.5 text-green-600 flex-shrink-0" />
-                        <span className="text-xs text-green-700 font-medium">
+                        <CheckCircle2 className="w-3.5 h-3.5 text-green-400 group-hover:text-green-300 transition-colors flex-shrink-0" />
+                        <span className="text-xs text-green-400 group-hover:text-green-300 font-medium">
                           Completed
                         </span>
                       </div>
-                      <p className="text-lg font-bold text-green-900">
+                      <p className="text-2xl font-bold text-white group-hover:text-green-200 transition-colors">
                         {serviceRequestStats.completed}
                       </p>
                     </div>
                   </div>
-                  <div className="mt-4 pt-4 border-t border-slate-200">
+                  <div className="mt-auto pt-4 border-t border-white/10">
                     <div className="flex items-center gap-2">
-                      <TicketIcon className="w-5 h-5 text-slate-600" />
-                      <span className="text-sm font-semibold text-slate-700">
-                        Total Service Requests:
+                      <span className="text-sm font-medium text-slate-300">
+                        Total Requests:
                       </span>
-                      <span className="text-lg font-bold text-slate-900">
+                      <span className="text-lg font-bold text-white">
                         {serviceRequestStats.total}
                       </span>
                     </div>
@@ -1054,20 +1060,25 @@ const AdminPortal = () => {
 
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <div className="lg:col-span-1">
-                  <div className="bg-white rounded-2xl border border-slate-200 shadow-lg p-6 ring-1 ring-slate-100">
-                    <h2 className="text-xl font-bold text-slate-900 mb-4">
+                  <div className="glass-card p-4 rounded-2xl h-[420px] flex flex-col animate-fade-in-up border border-slate-700/50 shadow-xl bg-slate-900/60 backdrop-blur-xl" style={{ animationDelay: '0.2s' }}>
+                    <h2 className="text-xl font-bold text-white mb-4 flex-shrink-0">
                       Quick Actions
                     </h2>
-                    <div className="flex flex-col gap-3">
+                    <div className="flex flex-col gap-2.5 flex-1 min-h-0">
                       <button
                         onClick={() => {
                           setViewMode("all");
                           setActiveTab("tickets");
                         }}
-                        className="flex items-center gap-2 px-6 py-3 bg-gradient-to-br from-slate-600 to-slate-700 text-white rounded-xl font-semibold hover:from-slate-700 hover:to-slate-800 transition-all shadow-lg hover:shadow-xl"
+                        className="flex-1 flex items-center gap-3 px-4 bg-slate-800/60 hover:bg-slate-700 text-slate-200 hover:text-white rounded-xl font-semibold transition-all border border-slate-700 hover:border-blue-500/50 group shadow-sm hover:shadow-blue-500/10 min-h-0"
                       >
-                        <List className="w-5 h-5" />
-                        All Tickets
+                        <div className="w-9 h-9 rounded-lg bg-blue-500/10 border border-blue-500/20 flex items-center justify-center group-hover:bg-blue-500/20 transition-colors flex-shrink-0">
+                          <List className="w-4 h-4 text-blue-400" />
+                        </div>
+                        <div className="flex flex-col items-start min-w-0">
+                          <span className="text-sm font-bold text-white truncate">All Tickets</span>
+                          <span className="text-[11px] text-slate-400 font-normal truncate">View and manage tickets</span>
+                        </div>
                       </button>
                       <button
                         onClick={() => {
@@ -1075,36 +1086,51 @@ const AdminPortal = () => {
                           setViewMode("all-service-requests");
                           fetchServiceRequests();
                         }}
-                        className="flex items-center gap-2 px-6 py-3 bg-gradient-to-br from-purple-600 to-purple-700 text-white rounded-xl font-semibold hover:from-purple-700 hover:to-purple-800 transition-all shadow-lg hover:shadow-xl"
+                        className="flex-1 flex items-center gap-3 px-4 bg-slate-800/60 hover:bg-slate-700 text-slate-200 hover:text-white rounded-xl font-semibold transition-all border border-slate-700 hover:border-emerald-500/50 group shadow-sm hover:shadow-emerald-500/10 min-h-0"
                       >
-                        <List className="w-5 h-5" />
-                        All Service Requests
+                        <div className="w-9 h-9 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center group-hover:bg-emerald-500/20 transition-colors flex-shrink-0">
+                          <FileText className="w-4 h-4 text-emerald-400" />
+                        </div>
+                        <div className="flex flex-col items-start min-w-0">
+                          <span className="text-sm font-bold text-white truncate">Service Requests</span>
+                          <span className="text-[11px] text-slate-400 font-normal truncate">Track service status</span>
+                        </div>
                       </button>
                       <button
                         onClick={() => {
                           setActiveTab("users");
                           fetchUsers();
                         }}
-                        className="flex items-center gap-2 px-6 py-3 bg-gradient-to-br from-blue-600 to-blue-700 text-white rounded-xl font-semibold hover:from-blue-700 hover:to-blue-800 transition-all shadow-lg hover:shadow-xl"
+                        className="flex-1 flex items-center gap-3 px-4 bg-slate-800/60 hover:bg-slate-700 text-slate-200 hover:text-white rounded-xl font-semibold transition-all border border-slate-700 hover:border-violet-500/50 group shadow-sm hover:shadow-violet-500/10 min-h-0"
                       >
-                        <Users className="w-5 h-5" />
-                        Users
+                        <div className="w-9 h-9 rounded-lg bg-violet-500/10 border border-violet-500/20 flex items-center justify-center group-hover:bg-violet-500/20 transition-colors flex-shrink-0">
+                          <Users className="w-4 h-4 text-violet-400" />
+                        </div>
+                        <div className="flex flex-col items-start min-w-0">
+                          <span className="text-sm font-bold text-white truncate">Manage Users</span>
+                          <span className="text-[11px] text-slate-400 font-normal truncate">User access control</span>
+                        </div>
                       </button>
                       <button
                         onClick={() => {
                           fetchTickets();
                           fetchServiceRequests();
                         }}
-                        className="flex items-center gap-2 px-6 py-3 bg-gradient-to-br from-indigo-600 to-indigo-700 text-white rounded-xl font-semibold hover:from-indigo-700 hover:to-indigo-800 transition-all shadow-lg hover:shadow-xl"
+                        className="flex-1 flex items-center gap-3 px-4 bg-slate-800/60 hover:bg-slate-700 text-slate-200 hover:text-white rounded-xl font-semibold transition-all border border-slate-700 hover:border-amber-500/50 group shadow-sm hover:shadow-amber-500/10 min-h-0"
                       >
-                        <AlertCircle className="w-5 h-5" />
-                        Refresh Data
+                        <div className="w-9 h-9 rounded-lg bg-amber-500/10 border border-amber-500/20 flex items-center justify-center group-hover:bg-amber-500/20 transition-colors flex-shrink-0">
+                          <AlertCircle className="w-4 h-4 text-amber-400" />
+                        </div>
+                        <div className="flex flex-col items-start min-w-0">
+                          <span className="text-sm font-bold text-white truncate">Refresh Data</span>
+                          <span className="text-[11px] text-slate-400 font-normal truncate">Update dashboard</span>
+                        </div>
                       </button>
                     </div>
                   </div>
                 </div>
 
-                <div className="bg-white rounded-2xl border border-slate-200 shadow-lg p-6 ring-1 ring-slate-100 h-80 flex flex-col">
+                <div className="glass-card p-4 rounded-2xl h-[420px] flex flex-col animate-fade-in-up border border-slate-700/50 shadow-xl bg-slate-900/60 backdrop-blur-xl" style={{ animationDelay: '0.3s' }}>
                   <VisitCalendar
                     tickets={tickets}
                     serviceRequests={serviceRequests}
@@ -1114,16 +1140,16 @@ const AdminPortal = () => {
 
                 {/* Event Details Panel */}
                 <div className="lg:col-span-1">
-                  <div className="bg-white rounded-2xl border border-slate-200 shadow-lg p-6 ring-1 ring-slate-100 h-80 flex flex-col">
+                  <div className="glass-card p-4 rounded-2xl h-[420px] flex flex-col animate-fade-in-up border border-slate-700/50 shadow-xl bg-slate-900/60 backdrop-blur-xl" style={{ animationDelay: '0.4s' }}>
                     <div className="flex items-start justify-between mb-4">
-                      <h2 className="text-xl font-bold text-slate-900">
+                      <h2 className="text-xl font-bold text-white">
                         Visit Details
                       </h2>
                       {selectedVisit && selectedVisit.visits && selectedVisit.visits.length > 0 && (
                         <button
                           type="button"
                           onClick={() => setSelectedVisit(null)}
-                          className="inline-flex items-center gap-1 text-sm text-slate-600 hover:text-slate-800 hover:bg-slate-100 px-3 py-1.5 rounded-lg transition-colors"
+                          className="inline-flex items-center gap-1 text-xs text-slate-400 hover:text-white hover:bg-white/10 px-2.5 py-1 rounded-lg transition-colors border border-transparent hover:border-white/10"
                           aria-label="Close visit details"
                         >
                           <XCircle className="w-4 h-4" />
@@ -1134,19 +1160,19 @@ const AdminPortal = () => {
                     {selectedVisit ? (
                       <div className="flex-1 flex flex-col min-h-0">
                         {/* Color Legend */}
-                        <div className="flex items-center gap-4 text-xs text-slate-700 pb-2 flex-shrink-0">
+                        <div className="flex items-center gap-4 text-xs text-slate-400 pb-2 flex-shrink-0">
                           <div className="flex items-center gap-1.5">
-                            <span className="w-3 h-3 rounded-full bg-blue-600 inline-block"></span>
+                            <span className="w-2 h-2 rounded-full bg-blue-500 inline-block shadow-[0_0_8px_rgba(59,130,246,0.6)]"></span>
                             <span className="font-medium">Ticket</span>
                           </div>
                           <div className="flex items-center gap-1.5">
-                            <span className="w-3 h-3 rounded-full bg-fuchsia-600 inline-block"></span>
-                            <span className="font-medium">Service Request</span>
+                            <span className="w-2 h-2 rounded-full bg-fuchsia-500 inline-block shadow-[0_0_8px_rgba(217,70,239,0.6)]"></span>
+                            <span className="font-medium">Service</span>
                           </div>
                         </div>
                         {selectedVisit.visits &&
-                        selectedVisit.visits.length > 0 ? (
-                          <div className="flex-1 overflow-y-auto space-y-3 pr-1 min-h-0">
+                          selectedVisit.visits.length > 0 ? (
+                          <div className="flex-1 overflow-y-auto space-y-3 pr-1 min-h-0 custom-scrollbar">
                             {selectedVisit.visits.map((visit, index) => (
                               <div
                                 key={index}
@@ -1157,73 +1183,59 @@ const AdminPortal = () => {
                                     handleServiceRequestClick({ _id: visit._id, ...visit });
                                   }
                                 }}
-                                className={`p-4 rounded-lg border cursor-pointer hover:shadow-md transition-all ${
-                                  visit.type === "ticket"
-                                    ? "bg-blue-100 border-blue-300/80 hover:bg-blue-200"
-                                    : "bg-fuchsia-100 border-fuchsia-300/80 hover:bg-fuchsia-200"
-                                }`}
+                                className={`p-4 rounded-xl border cursor-pointer hover:shadow-lg transition-all group ${visit.type === "ticket"
+                                  ? "bg-blue-500/5 border-blue-500/20 hover:border-blue-500/40 hover:bg-blue-500/10"
+                                  : "bg-fuchsia-500/5 border-fuchsia-500/20 hover:border-fuchsia-500/40 hover:bg-fuchsia-500/10"
+                                  }`}
                               >
                                 <div className="flex justify-between items-start mb-2">
-                                  <h3 className="font-semibold text-slate-900">
-                                    {visit.category} Category
+                                  <h3 className="font-semibold text-slate-200 group-hover:text-white transition-colors">
+                                    {visit.category}
                                   </h3>
                                   <span
-                                    className={`px-2 py-1 rounded text-xs font-medium ${
-                                      visit.type === "ticket"
-                                        ? "bg-blue-600 text-white"
-                                        : "bg-fuchsia-600 text-white"
-                                    }`}
+                                    className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider ${visit.type === "ticket"
+                                      ? "bg-blue-500/20 text-blue-300"
+                                      : "bg-fuchsia-500/20 text-fuchsia-300"
+                                      }`}
                                   >
                                     {visit.type === "ticket"
                                       ? "Ticket"
-                                      : "Service Request"}
+                                      : "Request"}
                                   </span>
                                 </div>
-                                <p className="text-xs text-slate-600 mt-1 font-mono mb-2">
+                                <p className="text-[10px] text-slate-500 mt-0.5 font-mono mb-3">
                                   {visit.type === "ticket"
-                                    ? `Ticket ID: ${visit.ticketId}`
-                                    : `Service ID: ${visit.requestId}`}
+                                    ? `ID: ${visit.ticketId}`
+                                    : `ID: ${visit.requestId}`}
                                 </p>
-                                <div className="mt-2 space-y-2">
+                                <div className="space-y-2">
                                   <div className="flex items-center gap-2 text-sm">
-                                    <Building2 className="w-4 h-4 text-slate-600 flex-shrink-0" />
-                                    <span className="font-semibold text-slate-800">
+                                    <Building2 className="w-3.5 h-3.5 text-slate-400 flex-shrink-0" />
+                                    <span className="font-medium text-slate-300">
                                       {visit.userId?.companyName ||
                                         visit.companyName ||
                                         "Company N/A"}
                                     </span>
                                   </div>
-                                  <div className="flex items-center gap-2 text-xs text-slate-700 ml-0">
-                                    <User className="w-3.5 h-3.5 text-slate-600 flex-shrink-0" />
+                                  <div className="flex items-center gap-2 text-xs text-slate-400 ml-0">
+                                    <User className="w-3 h-3 text-slate-500 flex-shrink-0" />
                                     <span>
                                       {visit.userId?.name ||
                                         visit.userName ||
                                         "User N/A"}
                                     </span>
                                   </div>
-                                  <div className="flex items-start gap-2 text-xs text-slate-700 ml-0">
-                                    <FileText className="w-3.5 h-3.5 text-slate-600 flex-shrink-0 mt-0.5" />
-                                    <span>Issue: {visit.title || "N/A"}</span>
+                                  <div className="flex items-start gap-2 text-xs text-slate-400 ml-0">
+                                    <FileText className="w-3 h-3 text-slate-500 flex-shrink-0 mt-0.5" />
+                                    <span className="line-clamp-1">{visit.title || "No Title"}</span>
                                   </div>
-                                  <div className="flex items-center gap-2 text-xs text-slate-600 ml-0">
-                                    <Clock className="w-3.5 h-3.5 text-slate-600 flex-shrink-0" />
-                                    <span>Scheduled for this visit</span>
-                                  </div>
-                                  <div className="flex items-center gap-2 text-xs font-bold text-slate-600 ml-0">
-                                    <Calendar className="w-3.5 h-3.5 text-slate-600 font-bold flex-shrink-0" />
+                                  <div className="flex items-center gap-2 text-xs font-bold text-slate-300 ml-0 pt-1 border-t border-white/5 mt-2">
+                                    <Clock className="w-3 h-3 text-emerald-400 flex-shrink-0" />
                                     {visit.visitTime &&
-                                    !isNaN(
-                                      new Date(visit.visitTime).getTime()
-                                    ) ? (
+                                      !isNaN(
+                                        new Date(visit.visitTime).getTime()
+                                      ) ? (
                                       <span>
-                                        {new Date(
-                                          visit.visitTime
-                                        ).toLocaleDateString("en-US", {
-                                          year: "numeric",
-                                          month: "short",
-                                          day: "numeric",
-                                        })}{" "}
-                                        •{" "}
                                         {new Date(
                                           visit.visitTime
                                         ).toLocaleTimeString([], {
@@ -1232,12 +1244,12 @@ const AdminPortal = () => {
                                         })}
                                         {getSlotLabel(visit.visitTime)
                                           ? ` • ${getSlotLabel(
-                                              visit.visitTime
-                                            )}`
+                                            visit.visitTime
+                                          )}`
                                           : ""}
                                       </span>
                                     ) : (
-                                      <span>No scheduled time</span>
+                                      <span>Time TBD</span>
                                     )}
                                   </div>
                                 </div>
@@ -1246,30 +1258,33 @@ const AdminPortal = () => {
                           </div>
                         ) : (
                           <div className="text-center py-8">
-                            <Calendar className="w-12 h-12 text-slate-300 mx-auto mb-3" />
-                            <p className="text-sm text-slate-600">
-                              No visits scheduled for this date
+                            <Calendar className="w-10 h-10 text-slate-700 mx-auto mb-3" />
+                            <p className="text-sm text-slate-500">
+                              No visits scheduled
                             </p>
                           </div>
                         )}
                       </div>
                     ) : (
-                      <div className="text-center py-12">
-                        <Calendar className="w-16 h-16 text-slate-300 mx-auto mb-4" />
-                        <p className="text-lg font-semibold text-slate-600">
-                          No visit selected
+                      <div className="text-center py-10 flex flex-col items-center justify-center h-full">
+                        <div className="w-16 h-16 rounded-full bg-slate-800/50 flex items-center justify-center mb-4 border border-white/5">
+                          <Calendar className="w-8 h-8 text-slate-600" />
+                        </div>
+                        <p className="text-lg font-semibold text-slate-400">
+                          Select a Date
                         </p>
-                        <p className="text-sm text-slate-500 mt-1">
-                          Click on a date with visits to see details
+                        <p className="text-xs text-slate-500 mt-1 max-w-[200px]">
+                          Click on a date in the calendar to view scheduled visits
                         </p>
-                        <div className="mt-auto pt-3 pb-2 flex items-center gap-6 text-xs text-slate-800 mt-2">
-                          <div className="flex items-center gap-2 mt-6">
-                            <span className="w-3 h-3 rounded-full bg-blue-600 inline-block"></span>
-                            <span className="font-medium">Ticket</span>
+
+                        <div className="mt-8 flex items-center gap-4 text-xs text-slate-500">
+                          <div className="flex items-center gap-1.5">
+                            <span className="w-2 h-2 rounded-full bg-blue-500 inline-block shadow-sm"></span>
+                            <span>Ticket</span>
                           </div>
-                          <div className="flex items-center gap-2 mt-6">
-                            <span className="w-3 h-3 rounded-full bg-fuchsia-600 inline-block"></span>
-                            <span className="font-medium">Service Request</span>
+                          <div className="flex items-center gap-1.5">
+                            <span className="w-2 h-2 rounded-full bg-fuchsia-500 inline-block shadow-sm"></span>
+                            <span>Request</span>
                           </div>
                         </div>
                       </div>
@@ -1281,8 +1296,8 @@ const AdminPortal = () => {
           )}
 
           {viewMode === "all" && (
-            <div className="flex h-[calc(100vh-4rem)] gap-0 w-full">
-              <div className="w-[32rem] flex-shrink-0 flex flex-col border-r border-slate-200 bg-slate-50">
+            <div className="flex h-[calc(100vh-5rem)] gap-0 w-full relative z-10">
+              <div className="w-[26rem] flex-shrink-0 flex flex-col border-r border-white/5 bg-slate-900/50 backdrop-blur-sm">
                 <div className="flex-1 overflow-hidden">
                   <TicketListPanel
                     tickets={tickets}
@@ -1295,7 +1310,7 @@ const AdminPortal = () => {
                     error={error}
                     onBackToDashboard={() => {
                       setViewMode("dashboard");
-                      setActiveTab("tickets");
+                      setActiveTab("dashboard");
                     }}
                     onDelete={(ticket) => {
                       setTicketToDelete(ticket);
@@ -1304,7 +1319,7 @@ const AdminPortal = () => {
                   />
                 </div>
               </div>
-              <div className="flex-1 overflow-y-auto bg-slate-50 h-[calc(100vh-4rem)]">
+              <div className="flex-1 overflow-y-auto bg-slate-950 h-[calc(100vh-4rem)]">
                 {selectedTicket ? (
                   <TicketDetailsPanel
                     ticket={selectedTicket}
@@ -1325,10 +1340,10 @@ const AdminPortal = () => {
                     onReply={handleReply}
                   />
                 ) : (
-                  <div className="bg-white rounded-2xl border border-slate-200 shadow-lg p-8 m-6 flex items-center justify-center h-full">
+                  <div className="glass-card rounded-2xl border border-slate-700/50 shadow-xl p-8 m-6 flex items-center justify-center h-full bg-slate-900/60 backdrop-blur-xl">
                     <div className="text-center">
-                      <TicketIcon className="w-16 h-16 text-slate-300 mx-auto mb-4" />
-                      <p className="text-lg font-semibold text-slate-600">
+                      <TicketIcon className="w-16 h-16 text-slate-600 mx-auto mb-4" />
+                      <p className="text-lg font-bold text-slate-400">
                         Select a ticket to view details
                       </p>
                     </div>
@@ -1342,7 +1357,7 @@ const AdminPortal = () => {
       )}
 
       {activeTab === "users" && (
-        <div className="flex h-[calc(100vh-4rem)] gap-0">
+        <div className="flex h-[calc(100vh-5rem)] gap-0 relative z-10">
           <UserListPanel
             users={users}
             userSearchTerm={userSearchTerm}
@@ -1351,12 +1366,13 @@ const AdminPortal = () => {
             onUserClick={handleUserClick}
             loading={usersLoading}
             onBackToDashboard={() => {
-              setActiveTab("tickets");
+              setActiveTab("dashboard");
               setViewMode("dashboard");
             }}
             onRefresh={fetchUsers}
+            onDelete={openDeleteUserModal}
           />
-          <div className="flex-1 flex flex-col overflow-hidden bg-gradient-to-br from-slate-50 to-slate-100 h-[calc(100vh-4rem)]">
+          <div className="flex-1 flex flex-col overflow-hidden bg-slate-950/50 backdrop-blur-md h-[calc(100vh-5rem)]">
             <div className="flex-1 overflow-y-auto">
               <UserDetailsPanel
                 user={selectedUser}
@@ -1372,22 +1388,22 @@ const AdminPortal = () => {
         <div>
           {viewMode === "new-service-requests" && (
             <div className="p-6">
-              <div className="bg-white rounded-2xl border border-slate-200 shadow-lg p-6 ring-1 ring-slate-100 h-135">
+              <div className="glass-card rounded-2xl border border-slate-700/50 shadow-xl p-6 bg-slate-900/60 backdrop-blur-xl min-h-[500px]">
                 <div className="flex items-center justify-between mb-5">
                   <div className="flex items-center gap-3">
-                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-amber-500 to-amber-600 flex items-center justify-center ring-2 ring-amber-100">
+                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-amber-500 to-amber-600 flex items-center justify-center shadow-lg shadow-amber-500/20">
                       <AlertCircle className="w-6 h-6 text-white" />
                     </div>
                     <div>
-                      <h2 className="text-2xl font-bold text-slate-900">
+                      <h2 className="text-2xl font-bold text-white tracking-tight">
                         New Service Requests
                       </h2>
-                      <p className="text-sm text-slate-600">
+                      <p className="text-sm text-slate-400">
                         New service requests requiring attention
                       </p>
                     </div>
                   </div>
-                  <span className="px-4 py-2 bg-amber-100 text-amber-700 rounded-full text-sm font-semibold">
+                  <span className="px-4 py-2 bg-amber-500/10 text-amber-400 rounded-full text-sm font-bold border border-amber-500/20">
                     {newServiceRequests.length}{" "}
                     {newServiceRequests.length === 1 ? "Request" : "Requests"}
                   </span>
@@ -1395,8 +1411,8 @@ const AdminPortal = () => {
 
                 {newServiceRequests.length === 0 ? (
                   <div className="text-center py-12">
-                    <CheckCircle2 className="w-16 h-16 text-slate-300 mx-auto mb-4" />
-                    <p className="text-lg font-semibold text-slate-600">
+                    <CheckCircle2 className="w-16 h-16 text-slate-600 mx-auto mb-4" />
+                    <p className="text-lg font-bold text-slate-400">
                       No new service requests
                     </p>
                     <p className="text-sm text-slate-500 mt-1">
@@ -1404,53 +1420,52 @@ const AdminPortal = () => {
                     </p>
                   </div>
                 ) : (
-                  <div className="space-y-3">
+                  <div className="space-y-3 max-h-[400px] overflow-y-auto custom-scrollbar pr-2">
                     {newServiceRequests.map((request) => (
                       <button
                         key={request._id}
                         onClick={() => handleServiceRequestClick(request)}
-                        className="w-full text-left p-5 rounded-xl border-2 border-slate-200 bg-gradient-to-br from-slate-50 to-white hover:border-amber-400 hover:shadow-lg transition-all group"
+                        className="w-full text-left p-4 rounded-xl border border-white/5 bg-slate-800/40 hover:border-amber-500/30 hover:bg-slate-800/70 transition-all group"
                       >
                         <div className="flex items-start justify-between mb-3">
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center gap-3 mb-2 flex-wrap">
-                              <h3 className="font-bold text-lg text-slate-900 group-hover:text-amber-700 transition-colors">
+                              <h3 className="font-bold text-base text-white group-hover:text-amber-400 transition-colors">
                                 {request.title}
                                 {request.userId?.companyName && (
-                                  <span className="text-sm font-normal text-slate-600 ml-2">
+                                  <span className="text-sm font-normal text-slate-500 ml-2">
                                     ({request.userId.companyName})
                                   </span>
                                 )}
                               </h3>
                               <span
-                                className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold border flex-shrink-0 ${
-                                  request.status === "New"
-                                    ? "bg-emerald-100 text-emerald-700 border-emerald-300"
-                                    : "bg-slate-100 text-slate-700 border-slate-300"
-                                }`}
+                                className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[10px] font-bold border uppercase tracking-wider ${request.status === "New"
+                                  ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
+                                  : "bg-slate-500/10 text-slate-400 border-slate-500/20"
+                                  }`}
                               >
                                 {request.status}
                               </span>
                             </div>
-                            <p className="text-xs font-mono text-slate-600 mb-2">
+                            <p className="text-[10px] font-mono text-slate-500 mb-2">
                               {request.requestId}
                             </p>
-                            <p className="text-sm text-slate-600 line-clamp-2">
+                            <p className="text-sm text-slate-400 line-clamp-2 group-hover:text-slate-300 transition-colors">
                               {request.description}
                             </p>
                           </div>
-                          <ArrowRight className="w-5 h-5 text-slate-400 group-hover:text-amber-600 transition-colors flex-shrink-0 ml-4" />
+                          <ArrowRight className="w-5 h-5 text-slate-600 group-hover:text-amber-400 transition-colors flex-shrink-0 ml-4" />
                         </div>
-                        <div className="flex items-center justify-between gap-4 pt-3 border-t border-slate-200">
+                        <div className="flex items-center justify-between gap-4 pt-3 border-t border-white/5">
                           <span
-                            className={`px-3 py-1 rounded-md text-xs font-medium border ${getCategoryColor(
+                            className={`px-2.5 py-1 rounded-lg text-[10px] font-bold border uppercase tracking-wider ${getCategoryColor(
                               request.category
                             )}`}
                           >
                             {request.category}
                           </span>
                           <div className="flex items-center gap-2 text-xs text-slate-500">
-                            <Calendar className="w-4 h-4" />
+                            <Calendar className="w-3.5 h-3.5" />
                             <span>
                               {new Date(request.createdAt).toLocaleDateString(
                                 "en-US",
@@ -1518,15 +1533,14 @@ const AdminPortal = () => {
                             </p>
                           </div>
                           <span
-                            className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold border ${
-                              request.status === "New"
-                                ? "bg-emerald-100 text-emerald-700 border-emerald-300"
-                                : request.status === "In Progress"
+                            className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold border ${request.status === "New"
+                              ? "bg-emerald-100 text-emerald-700 border-emerald-300"
+                              : request.status === "In Progress"
                                 ? "bg-blue-100 text-blue-700 border-blue-300"
                                 : request.status === "Completed"
-                                ? "bg-green-100 text-green-700 border-green-300"
-                                : "bg-red-100 text-red-700 border-red-300"
-                            }`}
+                                  ? "bg-green-100 text-green-700 border-green-300"
+                                  : "bg-red-100 text-red-700 border-red-300"
+                              }`}
                           >
                             {request.status}
                           </span>
@@ -1554,8 +1568,8 @@ const AdminPortal = () => {
           )}
 
           {viewMode === "all-service-requests" && (
-            <div className="flex h-[calc(100vh-4rem)] gap-0 w-full">
-              <div className="w-[32rem] flex-shrink-0 flex flex-col border-r border-slate-200 bg-slate-50">
+            <div className="flex h-[calc(100vh-5rem)] gap-0 w-full relative z-10">
+              <div className="w-[26rem] flex-shrink-0 flex flex-col border-r border-white/5 bg-slate-900/50 backdrop-blur-sm">
                 <div className="flex-1 overflow-hidden">
                   <ServiceRequestListPanel
                     serviceRequests={serviceRequests}
@@ -1568,7 +1582,7 @@ const AdminPortal = () => {
                     error={error}
                     onBackToDashboard={() => {
                       setViewMode("dashboard");
-                      setActiveTab("tickets");
+                      setActiveTab("dashboard");
                     }}
                     onDelete={(request) => {
                       setServiceRequestToDelete(request);
@@ -1577,7 +1591,7 @@ const AdminPortal = () => {
                   />
                 </div>
               </div>
-              <div className="flex-1 overflow-y-auto bg-slate-50 h-[calc(100vh-4rem)]">
+              <div className="flex-1 overflow-y-auto bg-slate-950 h-[calc(100vh-4rem)]">
                 {selectedServiceRequest ? (
                   <ServiceRequestDetailsPanel
                     serviceRequest={selectedServiceRequest}

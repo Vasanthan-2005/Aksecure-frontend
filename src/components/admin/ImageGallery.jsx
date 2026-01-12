@@ -1,5 +1,6 @@
 import { Image as ImageIcon, Eye, X, ChevronLeft, ChevronRight, ZoomIn, ZoomOut, RotateCcw } from 'lucide-react';
 import { useState, useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 
 const ImageGallery = ({ images }) => {
   const [selectedImageIndex, setSelectedImageIndex] = useState(null);
@@ -154,34 +155,34 @@ const ImageGallery = ({ images }) => {
 
   return (
     <>
-      <div className="bg-white rounded-2xl border border-slate-200 shadow-lg p-6 ring-1 ring-slate-100">
-        <div className="flex items-center gap-2 mb-5">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-cyan-500 to-cyan-600 flex items-center justify-center ring-2 ring-cyan-100">
-            <ImageIcon className="w-5 h-5 text-white" />
+      <div className="glass-card p-6 rounded-2xl border border-slate-700/50 shadow-xl bg-slate-900/60 backdrop-blur-xl animate-fade-in-up" style={{ animationDelay: '0.3s' }}>
+        <div className="flex items-center gap-3 mb-5">
+          <div className="w-10 h-10 rounded-xl bg-cyan-500/10 flex items-center justify-center ring-1 ring-cyan-500/20">
+            <ImageIcon className="w-5 h-5 text-cyan-400" />
           </div>
-          <h3 className="text-xl font-bold text-slate-900">Images ({images.length})</h3>
+          <h3 className="text-xl font-bold text-white tracking-tight">Images <span className="text-slate-500 font-medium text-lg ml-1">({images.length})</span></h3>
         </div>
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
           {images.map((image, index) => {
             const imageUrl = image.startsWith('http')
               ? image
               : `${baseUrl}${image}`;
             return (
-              <div key={index} className="relative group">
+              <div key={index} className="relative group animate-scale-in" style={{ animationDelay: `${index * 0.05}s` }}>
                 <div
-                  className="relative overflow-hidden rounded-xl border-2 border-slate-200 group-hover:border-cyan-400 transition-all cursor-pointer shadow-sm group-hover:shadow-xl"
+                  className="relative overflow-hidden rounded-xl border border-white/10 group-hover:border-cyan-500/50 transition-all cursor-pointer shadow-lg shadow-black/20 group-hover:shadow-cyan-500/20 aspect-video bg-slate-800"
                   onClick={() => setSelectedImageIndex(index)}
                 >
                   <img
                     src={imageUrl}
                     alt={`Ticket image ${index + 1}`}
-                    className="w-full h-40 object-cover transition-transform group-hover:scale-110"
+                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                   />
-                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all flex items-center justify-center">
-                    <Eye className="w-6 h-6 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
+                  <div className="absolute inset-0 bg-slate-900/0 group-hover:bg-slate-900/40 transition-all flex items-center justify-center">
+                    <Eye className="w-8 h-8 text-white opacity-0 group-hover:opacity-100 transition-all duration-300 transform scale-50 group-hover:scale-100 drop-shadow-lg" />
                   </div>
                 </div>
-                <div className="mt-2 text-xs text-center text-slate-500 font-medium">
+                <div className="mt-2 text-[10px] text-center text-slate-500 font-bold uppercase tracking-wider group-hover:text-cyan-400 transition-colors">
                   Image {index + 1}
                 </div>
               </div>
@@ -191,7 +192,7 @@ const ImageGallery = ({ images }) => {
       </div>
 
       {/* Image Lightbox Modal - Full Screen with Zoom */}
-      {selectedImageIndex !== null && (
+      {selectedImageIndex !== null && createPortal(
         <div
           className="fixed inset-0 bg-black/95 z-[9999] flex items-center justify-center p-4"
           onClick={() => {
@@ -329,7 +330,8 @@ const ImageGallery = ({ images }) => {
               />
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </>
   );

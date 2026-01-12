@@ -68,8 +68,8 @@ const VisitCalendar = ({ tickets, serviceRequests, onEventSelect }) => {
     return {
       hasTickets: visits.some(v => v.type === "ticket"),
       hasServices: visits.some(v => v.type === "service-request"),
-      allCompleted: visits.length > 0 && visits.every(v => 
-        (v.type === "ticket" && v.status === "Closed") || 
+      allCompleted: visits.length > 0 && visits.every(v =>
+        (v.type === "ticket" && v.status === "Closed") ||
         (v.type === "service-request" && v.status === "Completed")
       )
     };
@@ -88,49 +88,46 @@ const VisitCalendar = ({ tickets, serviceRequests, onEventSelect }) => {
   const days = getCalendarDays();
 
   return (
-    <div className="p-1 flex flex-col h-full">
+    <div className="glass-card flex-1 flex flex-col bg-gradient-to-br from-slate-900/80 to-slate-950/80 backdrop-blur-xl border border-slate-700/50 rounded-2xl p-2.5 shadow-xl overflow-hidden h-full">
 
       {/* HEADER */}
-      <div className="flex items-center justify-between mb-0 h-5">
-        <div className="flex items-center gap-1 ">
-          <div className="mb-5 w-7 h-7 rounded-xl bg-blue-500 flex items-center justify-center ring-1 ring-blue-200">
-            <CalendarIcon className="w-3 h-3 text-white" />
+      <div className="flex items-center justify-between mb-2">
+        <div className="flex items-center gap-2">
+          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-cyan-500/20 to-blue-500/20 flex items-center justify-center border border-cyan-500/30 shadow-lg shadow-cyan-500/10">
+            <CalendarIcon className="w-4 h-4 text-cyan-400" />
           </div>
-          <h2 className="text-lg font-bold text-slate-900 ml-1 mb-5">Visit Calendar</h2>
+          <h2 className="text-base font-bold text-white tracking-tight">Visit Calendar</h2>
+        </div>
+
+        <div className="flex items-center gap-1 bg-slate-800/60 rounded-xl p-1 border border-white/10">
+          <button
+            onClick={() =>
+              setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1))
+            }
+            className="p-1.5 rounded-lg hover:bg-white/10 text-slate-400 hover:text-cyan-400 transition-all"
+          >
+            <ChevronLeft className="w-4 h-4" />
+          </button>
+          <h3 className="text-xs font-bold text-white px-3 min-w-[100px] text-center">
+            {monthNames[currentDate.getMonth()]} {currentDate.getFullYear()}
+          </h3>
+          <button
+            onClick={() =>
+              setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1))
+            }
+            className="p-1.5 rounded-lg hover:bg-white/10 text-slate-400 hover:text-cyan-400 transition-all"
+          >
+            <ChevronRight className="w-4 h-4" />
+          </button>
         </div>
       </div>
 
-      {/* MONTH NAVIGATION */}
-      <div className="flex items-center justify-between mb-0 h-6">
-        <button
-          onClick={() =>
-            setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1))
-          }
-          className="p-1 rounded-lg hover:bg-slate-100"
-        >
-          <ChevronLeft className="w-4 h-4 text-slate-600" />
-        </button>
-
-        <h3 className="text-sm font-semibold text-slate-900">
-          {monthNames[currentDate.getMonth()]} {currentDate.getFullYear()}
-        </h3>
-
-        <button
-          onClick={() =>
-            setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1))
-          }
-          className="p-1 rounded-lg hover:bg-slate-100"
-        >
-          <ChevronRight className="w-4 h-4 text-slate-600" />
-        </button>
-      </div>
-
       {/* WEEKDAY LABELS */}
-      <div className="grid grid-cols-7 gap-[2px] mb-1">
+      <div className="grid grid-cols-7 gap-1.5 mb-2">
         {dayNames.map(d => (
           <div
             key={d}
-            className="text-center text-[11px] font-semibold h-6 flex items-center justify-center"
+            className="text-center text-[10px] font-bold text-slate-500 h-6 flex items-center justify-center uppercase tracking-wider"
           >
             {d}
           </div>
@@ -138,16 +135,30 @@ const VisitCalendar = ({ tickets, serviceRequests, onEventSelect }) => {
       </div>
 
       {/* CALENDAR GRID */}
-      <div className="grid grid-cols-7 gap-[6px] flex-1 min-h-0 place-items-center">
+      <div className="grid grid-cols-7 grid-rows-6 gap-2 w-full">
         {days.map((date, i) => {
           // EMPTY CELLS
           if (!date)
-            return <div key={i} className="w-10 h-10"></div>;
+            return <div key={i} className="w-full aspect-square"></div>;
 
           const past = isPastDate(date);
           const selected = selectedDate && selectedDate.toDateString() === date.toDateString();
           const visitTypes = getVisitTypes(date);
           const visits = visitDates.get(date.toDateString()) || [];
+          const isTodayDate = isToday(date);
+          const hasVisits = visits.length > 0;
+
+          // Determine background styling based on visit types
+          let visitBgClass = "";
+          if (!past && !selected && !isTodayDate && hasVisits) {
+            if (visitTypes.hasTickets && visitTypes.hasServices) {
+              visitBgClass = "bg-gradient-to-br from-cyan-500/15 via-purple-500/10 to-fuchsia-500/15 border-purple-500/40 shadow-[0_0_15px_rgba(168,85,247,0.15)]";
+            } else if (visitTypes.hasTickets) {
+              visitBgClass = "bg-gradient-to-br from-cyan-500/15 to-blue-500/15 border-cyan-500/40 shadow-[0_0_12px_rgba(6,182,212,0.15)]";
+            } else if (visitTypes.hasServices) {
+              visitBgClass = "bg-gradient-to-br from-fuchsia-500/15 to-pink-500/15 border-fuchsia-500/40 shadow-[0_0_12px_rgba(217,70,239,0.15)]";
+            }
+          }
 
           return (
             <button
@@ -155,42 +166,48 @@ const VisitCalendar = ({ tickets, serviceRequests, onEventSelect }) => {
               onClick={() => handleDateClick(date)}
               disabled={past}
               className={`
-                w-9 h-9 rounded-md flex flex-col items-center justify-center text-[10px] transition-all
-                ${past ? "opacity-40 cursor-not-allowed bg-slate-50" : "hover:bg-slate-100 cursor-pointer"}
-                ${isToday(date) ? "bg-green-200 border border-green-500 font-bold" : ""}
-                ${selected ? "bg-blue-300 text-white border border-blue-600" : ""}
-                ${
-                  !past && !selected && !isToday(date) && visits.length > 0
-                    ? visitTypes.hasTickets && visitTypes.hasServices
-                      ? "bg-gradient-to-br from-blue-50 to-purple-50 border border-purple-300"
-                      : visitTypes.hasTickets
-                      ? "bg-blue-50 border border-blue-300"
-                      : "bg-purple-50 border border-purple-300"
-                    : "border border-slate-200"
-                }
+                w-full aspect-square rounded-lg flex flex-col items-center justify-center text-xs transition-all relative group
+                ${past ? "opacity-50 cursor-not-allowed text-slate-400 bg-slate-800/30" : "cursor-pointer"}
+                ${isTodayDate && !selected ? "bg-gradient-to-br from-cyan-500/30 to-blue-500/30 text-cyan-200 border-2 border-cyan-400/60 font-bold shadow-[0_0_20px_rgba(6,182,212,0.4)]" : ""}
+                ${selected ? "bg-gradient-to-br from-cyan-500 to-blue-600 text-white border-2 border-cyan-400 shadow-[0_0_25px_rgba(6,182,212,0.5)] scale-110 z-10 font-bold" : ""}
+                ${!past && !selected && !isTodayDate && !hasVisits ? "text-slate-400 hover:bg-slate-800/60 hover:border-slate-600 hover:text-white border border-transparent bg-slate-800/20" : ""}
+                ${!past && !selected && !isTodayDate && hasVisits ? `border ${visitBgClass} hover:scale-105` : ""}
               `}
             >
-              {date.getDate()}
+              <span className={`leading-none ${selected || isTodayDate ? 'font-bold' : 'font-medium'}`}>{date.getDate()}</span>
 
               {/* VISIT INDICATORS */}
-              {!past && visits.length > 0 && (
-                <div className="flex gap-[2px] mt-[2px]">
+              {!past && hasVisits && (
+                <div className="flex gap-[4px] mt-1">
                   {visitTypes.hasTickets && (
-                    <div className="w-1.5 h-1.5 rounded-full bg-blue-600"></div>
+                    <div className={`w-2 h-2 rounded-full ${selected ? 'bg-white shadow-lg' : 'bg-cyan-400 shadow-[0_0_8px_rgba(6,182,212,0.8)]'}`}></div>
                   )}
                   {visitTypes.hasServices && (
-                    <div className="w-1.5 h-1.5 rounded-full bg-fuchsia-500"></div>
+                    <div className={`w-2 h-2 rounded-full ${selected ? 'bg-white shadow-lg' : 'bg-fuchsia-400 shadow-[0_0_8px_rgba(217,70,239,0.8)]'}`}></div>
                   )}
-                  {visitTypes.allCompleted && (
-                    <div className="absolute -top-[2px] -right-[2px] bg-green-500 rounded-full p-[1px]">
-                      <Check className="w-2 h-2 text-white" />
-                    </div>
-                  )}
+                </div>
+              )}
+
+              {visitTypes.allCompleted && !past && (
+                <div className="absolute -top-1 -right-1 bg-gradient-to-br from-emerald-400 to-green-500 rounded-full p-[3px] shadow-lg shadow-emerald-500/50 ring-2 ring-slate-900">
+                  <Check className="w-2 h-2 text-white" />
                 </div>
               )}
             </button>
           );
         })}
+      </div>
+
+      {/* LEGEND */}
+      <div className="flex items-center justify-center gap-4 mt-2 pt-2 border-t border-white/5">
+        <div className="flex items-center gap-1.5">
+          <span className="w-2.5 h-2.5 rounded-full bg-cyan-400 shadow-[0_0_8px_rgba(6,182,212,0.8)]"></span>
+          <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Ticket</span>
+        </div>
+        <div className="flex items-center gap-1.5">
+          <span className="w-2.5 h-2.5 rounded-full bg-fuchsia-400 shadow-[0_0_8px_rgba(217,70,239,0.8)]"></span>
+          <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Service</span>
+        </div>
       </div>
     </div>
   );

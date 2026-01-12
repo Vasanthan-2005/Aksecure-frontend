@@ -1,5 +1,5 @@
 import { Filter, AlertCircle, Calendar, Eye, X, Home, Trash2 } from 'lucide-react';
-import { getStatusColor, getStatusIcon, getCategoryColor } from './utils.jsx';
+import { getStatusColor, getCategoryColor } from './utils.jsx';
 import { useState } from 'react';
 import PropTypes from 'prop-types';
 
@@ -44,68 +44,68 @@ const ServiceRequestListPanel = ({
   };
 
   return (
-    <div className="h-full flex flex-col bg-slate-50">
-      <div className="p-4 border-b border-slate-200 bg-slate-50 sticky top-0 z-10">
+    <div className="h-full flex flex-col w-96 border-r border-white/5 bg-slate-900/50 backdrop-blur-sm relative z-20 overflow-hidden">
+      <div className="p-4 border-b border-white/5 bg-slate-900/50 backdrop-blur-md sticky top-0 z-10 w-full">
         {onBackToDashboard && (
-          <div className="mb-3">
+          <div className="mb-4">
             <button
               onClick={onBackToDashboard}
-              className="flex items-center gap-2 px-3 py-1.5 text-sm font-semibold text-slate-700 hover:bg-slate-50 rounded-lg transition-colors bg-slate-100 border border-slate-200"
+              className="flex items-center gap-2 px-3 py-1.5 text-xs font-semibold text-slate-400 hover:text-white hover:bg-white/5 rounded-lg transition-colors border border-transparent hover:border-white/10"
             >
-              <Home className="w-4 h-4" />
+              <Home className="w-3.5 h-3.5" />
               Dashboard
             </button>
           </div>
         )}
-        <div className="flex items-center justify-between mb-3">
-          <h2 className="text-lg font-bold text-slate-900">All Service Requests</h2>
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-xl font-bold text-white tracking-tight">Service Requests</h2>
           <div className="flex items-center gap-2">
             {onRefresh && (
               <button
                 onClick={onRefresh}
-                className="flex items-center gap-2 px-4 py-2 bg-gradient-to-br from-blue-600 to-blue-700 text-white rounded-xl font-semibold hover:from-blue-700 hover:to-blue-800 transition-all shadow-md hover:shadow-lg text-sm"
+                className="flex items-center gap-2 p-2 bg-slate-800 text-slate-300 hover:text-white rounded-xl hover:bg-slate-700 transition-all border border-slate-700 hover:border-slate-600"
+                title="Refresh Data"
               >
                 <AlertCircle className="w-4 h-4" />
-                Refresh Data
               </button>
             )}
-            <span className="px-2.5 py-0.5 bg-slate-100 text-slate-700 rounded-full text-xs font-semibold">
+            <span className="px-2.5 py-0.5 bg-blue-500/10 text-blue-400 border border-blue-500/20 rounded-lg text-xs font-bold">
               {serviceRequests.length}
             </span>
           </div>
         </div>
 
-        <div className="grid grid-cols-3 gap-2 mb-3">
-          <div className="bg-gradient-to-br from-emerald-50 to-emerald-100/50 border border-emerald-200 rounded-lg p-2">
-            <div className="flex items-center gap-1 mb-1">
-              <AlertCircle className="w-3 h-3 text-emerald-600 flex-shrink-0" />
-              <span className="text-xs text-emerald-700 font-medium">New</span>
+        <div className="grid grid-cols-3 gap-2 mb-4">
+          <div className="bg-emerald-500/5 border border-emerald-500/10 rounded-xl p-3 hover:border-emerald-500/20 transition-all group">
+            <div className="flex items-center gap-1.5 mb-1.5">
+              <div className="w-1.5 h-1.5 rounded-full bg-emerald-500"></div>
+              <span className="text-[10px] text-emerald-400 font-bold uppercase tracking-wider">New</span>
             </div>
-            <p className="text-base font-bold text-emerald-900">{stats.new}</p>
+            <p className="text-xl font-bold text-white group-hover:text-emerald-300 transition-colors">{stats.new}</p>
           </div>
-          <div className="bg-gradient-to-br from-blue-50 to-blue-100/50 border border-blue-200 rounded-lg p-2">
-            <div className="flex items-center gap-1 mb-1">
-              <AlertCircle className="w-3 h-3 text-blue-600 flex-shrink-0" />
-              <span className="text-xs text-blue-700 font-medium">In Progress</span>
+          <div className="bg-blue-500/5 border border-blue-500/10 rounded-xl p-3 hover:border-blue-500/20 transition-all group">
+            <div className="flex items-center gap-1.5 mb-1.5">
+              <div className="w-1.5 h-1.5 rounded-full bg-blue-500"></div>
+              <span className="text-[10px] text-blue-400 font-bold uppercase tracking-wider">In Progress</span>
             </div>
-            <p className="text-base font-bold text-blue-900">{stats.inProgress}</p>
+            <p className="text-xl font-bold text-white group-hover:text-blue-300 transition-colors">{stats.inProgress}</p>
           </div>
-          <div className="bg-gradient-to-br from-green-50 to-green-100/50 border border-green-200 rounded-lg p-2">
-            <div className="flex items-center gap-1 mb-1">
-              <AlertCircle className="w-3 h-3 text-green-600 flex-shrink-0" />
-              <span className="text-xs text-green-700 font-medium">Completed</span>
+          <div className="bg-violet-500/5 border border-violet-500/10 rounded-xl p-3 hover:border-violet-500/20 transition-all group">
+            <div className="flex items-center gap-1.5 mb-1.5">
+              <div className="w-1.5 h-1.5 rounded-full bg-violet-500"></div>
+              <span className="text-[10px] text-violet-400 font-bold uppercase tracking-wider">Completed</span>
             </div>
-            <p className="text-base font-bold text-green-900">{stats.completed}</p>
+            <p className="text-xl font-bold text-white group-hover:text-violet-300 transition-colors">{stats.completed}</p>
           </div>
         </div>
 
-        <div className="mt-3">
+        <div className="mt-4">
           <div className="flex items-center gap-2">
-            <Filter className="w-4 h-4 text-slate-500 flex-shrink-0" />
+            <Filter className="w-4 h-4 text-violet-400 flex-shrink-0" />
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="flex-1 px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-slate-500 text-sm bg-white"
+              className="flex-1 px-3 py-2 bg-slate-800/50 border border-slate-700 rounded-xl focus:ring-2 focus:ring-violet-500/20 focus:border-violet-500/50 text-xs text-slate-200 focus:outline-none appearance-none cursor-pointer hover:bg-slate-800 transition-colors"
             >
               <option value="All">All Status</option>
               {serviceRequestStatusOptions.map((status) => (
@@ -117,29 +117,29 @@ const ServiceRequestListPanel = ({
           </div>
         </div>
 
-        <div className="mt-2 text-xs text-slate-500 font-medium">
-          {filteredServiceRequests.length} request{filteredServiceRequests.length !== 1 ? 's' : ''} found
+        <div className="mt-2 text-xs text-slate-500 font-medium px-1">
+          <span className="text-slate-300 font-bold">{filteredServiceRequests.length}</span> request{filteredServiceRequests.length !== 1 ? 's' : ''} found
         </div>
       </div>
 
-      <div className="flex-1 overflow-y-auto p-4 space-y-3 bg-slate-50">
+      <div className="flex-1 overflow-y-auto p-4 space-y-3 custom-scrollbar">
         {error && (
-          <div className="p-4 bg-red-50 border border-red-200 rounded-xl text-red-700 text-sm text-center">
+          <div className="p-4 bg-red-500/10 border border-red-500/20 rounded-xl text-red-400 text-sm text-center">
             {error}
           </div>
         )}
 
         {filteredServiceRequests.length === 0 ? (
           <div className="text-center py-12 px-4">
-            <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-slate-100 flex items-center justify-center">
-              <AlertCircle className="w-8 h-8 text-slate-400" />
+            <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-slate-800/50 flex items-center justify-center border border-white/5">
+              <AlertCircle className="w-8 h-8 text-slate-600" />
             </div>
-            <p className="text-slate-500 font-medium mb-1">
+            <p className="text-slate-400 font-medium mb-1">
               {searchTerm || statusFilter !== 'All'
                 ? 'No service requests match your filters'
                 : 'No service requests found'}
             </p>
-            <p className="text-xs text-slate-400 mt-1">
+            <p className="text-xs text-slate-600 mt-1">
               {searchTerm || statusFilter !== 'All'
                 ? 'Try adjusting your search or filter criteria'
                 : 'Service requests will appear here once created'}
@@ -150,48 +150,59 @@ const ServiceRequestListPanel = ({
             <button
               key={request._id}
               onClick={() => onServiceRequestClick(request)}
-              className={`w-full text-left p-3 rounded-lg border transition-all group ${selectedServiceRequest?._id === request._id
-                ? 'border-slate-500 bg-gradient-to-br from-slate-50 to-slate-100/50 shadow-md'
-                : 'border-slate-200 bg-white hover:border-slate-400 hover:shadow-sm'
+              className={`w-full text-left p-4 rounded-xl border transition-all group relative overflow-hidden ${selectedServiceRequest?._id === request._id
+                ? 'bg-blue-500/10 border-blue-500/50 shadow-[0_0_20px_rgba(59,130,246,0.1)]'
+                : 'bg-slate-800/30 border-white/5 hover:border-blue-500/30 hover:bg-slate-800/60'
                 }`}
             >
-              <div className="flex items-start justify-between gap-2 mb-2">
+              {selectedServiceRequest?._id === request._id && (
+                <div className="absolute left-0 top-0 bottom-0 w-1 bg-blue-500" />
+              )}
+              <div className="flex items-start justify-between gap-2 mb-2 pl-2">
                 <div className="flex-1 min-w-0">
-                  <h3 className="font-semibold text-slate-900 text-sm mb-1 line-clamp-1 group-hover:text-slate-700 transition-colors">
+                  <h3 className={`font-bold text-sm mb-1 line-clamp-1 transition-colors ${selectedServiceRequest?._id === request._id ? 'text-white' : 'text-slate-300 group-hover:text-white'
+                    }`}>
                     {request.title}
                     {request.userId?.companyName && (
-                      <span className="text-xs font-normal text-slate-600 ml-2">
+                      <span className="text-[10px] font-normal text-slate-500 ml-2">
                         ({request.userId.companyName})
                       </span>
                     )}
                   </h3>
-                  <p className="text-xs font-mono text-slate-600">{request.requestId}</p>
+                  <p className="text-[10px] font-mono text-slate-500">{request.requestId}</p>
                 </div>
                 <div className="flex items-center gap-1">
                   <span
-                    className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold border ${request.status === 'New' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' :
-                      request.status === 'In Progress' ? 'bg-blue-50 text-blue-700 border-blue-200' :
-                        request.status === 'Completed' ? 'bg-green-50 text-green-700 border-green-200' :
-                          'bg-slate-50 text-slate-700 border-slate-200'
+                    className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-lg text-[10px] font-bold border flex-shrink-0 ${request.status === 'New' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' :
+                      request.status === 'In Progress' ? 'bg-blue-500/10 text-blue-400 border-blue-500/20' :
+                        request.status === 'Completed' ? 'bg-green-500/10 text-green-400 border-green-500/20' :
+                          'bg-slate-500/10 text-slate-400 border-slate-500/20'
                       }`}
                   >
                     {request.status}
                   </span>
-                  <button
-                    onClick={(e) => handleDeleteClick(e, request)}
-                    className="p-1 text-red-500 hover:bg-red-50 rounded-full transition-colors"
-                    title="Delete service request"
-                  >
-                    <Trash2 className="w-3.5 h-3.5" />
-                  </button>
                 </div>
               </div>
-              <p className="text-xs text-slate-600 line-clamp-2 mb-2 leading-relaxed">
-                {request.description}
-              </p>
+
+              <div className="pl-2 mb-3 pr-8 relative">
+                <p className="text-xs text-slate-400 line-clamp-2 leading-relaxed group-hover:text-slate-300 transition-colors">
+                  {request.description}
+                </p>
+                {onDelete && (
+                  <div className="absolute top-1/2 -translate-y-1/2 right-0">
+                    <button
+                      onClick={(e) => handleDeleteClick(e, request)}
+                      className="p-1.5 text-red-400 hover:text-red-300 bg-red-500/10 hover:bg-red-500/20 rounded-lg transition-colors border border-red-500/20 hover:border-red-500/40"
+                      title="Delete service request"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                )}
+              </div>
 
               {request.images && request.images.length > 0 && (
-                <div className="mb-2 flex gap-1.5 flex-wrap">
+                <div className="mb-3 pl-2 flex gap-2 flex-wrap">
                   {request.images.slice(0, 3).map((image, imgIndex) => {
                     const baseUrl = import.meta.env.VITE_API_URL?.replace('/api', '') || 'http://localhost:5000';
                     const imageUrl = image.startsWith('http')
@@ -200,7 +211,7 @@ const ServiceRequestListPanel = ({
                     return (
                       <div
                         key={imgIndex}
-                        className="relative group cursor-pointer"
+                        className="relative group/image cursor-pointer"
                         onClick={(e) => {
                           e.stopPropagation();
                           setSelectedImage(imageUrl);
@@ -209,27 +220,27 @@ const ServiceRequestListPanel = ({
                         <img
                           src={imageUrl}
                           alt={`Service request image ${imgIndex + 1}`}
-                          className="w-12 h-12 object-cover rounded border border-slate-200 hover:border-slate-400 transition-all"
+                          className="w-10 h-10 object-cover rounded-lg border border-white/10 group-hover/image:border-white/30 transition-all"
                         />
-                        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-all rounded flex items-center justify-center">
-                          <Eye className="w-3 h-3 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
+                        <div className="absolute inset-0 bg-black/0 group-hover/image:bg-black/30 transition-all rounded-lg flex items-center justify-center">
+                          <Eye className="w-3 h-3 text-white opacity-0 group-hover/image:opacity-100 transition-opacity" />
                         </div>
                       </div>
                     );
                   })}
                   {request.images.length > 3 && (
-                    <div className="w-12 h-12 rounded border border-slate-200 bg-slate-100 flex items-center justify-center text-xs font-semibold text-slate-600">
+                    <div className="w-10 h-10 rounded-lg border border-white/10 bg-slate-800 flex items-center justify-center text-[10px] font-bold text-slate-400">
                       +{request.images.length - 3}
                     </div>
                   )}
                 </div>
               )}
 
-              <div className="flex items-center justify-between gap-2 pt-2 border-t border-slate-100">
-                <span className={`px-2 py-0.5 rounded text-xs font-medium border ${getCategoryColor(request.category)}`}>
+              <div className="flex items-center justify-between gap-2 pt-3 border-t border-white/5 pl-2">
+                <span className={`px-2 py-0.5 rounded-md text-[10px] uppercase font-bold border ${getCategoryColor(request.category)}`}>
                   {request.category}
                 </span>
-                <div className="flex items-center gap-1 text-xs text-slate-500">
+                <div className="flex items-center gap-1.5 text-[10px] text-slate-500 font-medium">
                   <Calendar className="w-3 h-3 flex-shrink-0" />
                   <span>{new Date(request.createdAt).toLocaleDateString()}</span>
                 </div>
@@ -241,7 +252,7 @@ const ServiceRequestListPanel = ({
 
       {selectedImage && (
         <div
-          className="fixed inset-0 bg-black/95 z-[9999] flex items-center justify-center p-4"
+          className="fixed inset-0 bg-black/95 z-[9999] flex items-center justify-center p-4 backdrop-blur-xl"
           onClick={() => setSelectedImage(null)}
         >
           <div className="relative w-full h-full flex items-center justify-center">
@@ -261,8 +272,6 @@ const ServiceRequestListPanel = ({
           </div>
         </div>
       )}
-
-
     </div>
   );
 };

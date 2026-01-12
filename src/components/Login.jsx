@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { Eye, EyeOff, Shield, User, Mail, Lock } from "lucide-react";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import register from "./Register";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -105,11 +104,10 @@ const Login = () => {
     } catch (err) {
       setLoading(false);
       const errorMessage = err?.response?.data?.message || "Login failed. Please try again.";
-      
+
       const errorLower = errorMessage.toLowerCase();
-      
+
       if (isAdminLogin) {
-        // For admin login, check for username or password errors
         if (errorLower.includes("password") || errorLower.includes("invalid credentials") || errorLower.includes("invalid password")) {
           setErrors(prev => ({
             ...prev,
@@ -125,7 +123,6 @@ const Login = () => {
             general: ""
           }));
         } else {
-          // For admin login, default to showing error on both fields or password
           setErrors(prev => ({
             ...prev,
             password: errorMessage,
@@ -134,7 +131,6 @@ const Login = () => {
           }));
         }
       } else {
-        // For user login, check for email or password errors
         if (errorLower.includes("password") || errorLower.includes("invalid credentials") || errorLower.includes("invalid password")) {
           setErrors(prev => ({
             ...prev,
@@ -150,7 +146,6 @@ const Login = () => {
             general: ""
           }));
         } else {
-          // For user login, default to showing error on password field
           setErrors(prev => ({
             ...prev,
             password: errorMessage,
@@ -162,270 +157,192 @@ const Login = () => {
     }
   };
 
-  const handleRegisterClick = () => {
-    navigate("/register");
-  };
-
   return (
-    <div className="min-h-screen flex bg-gradient-to-br from-slate-500 to-slate-100">
-      
-      {/* LEFT SIDE - BRANDING */}
-      <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 
-                      relative overflow-hidden">
-        
-        {/* Pattern overlay */}
-        <div className="absolute inset-0 opacity-5">
-          <div className="absolute inset-0" style={{
-            backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`
-          }}></div>
-        </div>
-
-        <div className="relative z-10 flex flex-col justify-center px-16 text-white">
-          <div className="mb-8">
-            <div className="w-14 h-14 bg-white rounded-xl flex items-center justify-center mb-6">
-              <Shield className="w-8 h-8 text-slate-900" />
-            </div>
-            <h1 className="text-4xl font-bold mb-4 tracking-tight">
-              AK SecureTech Ltd
-            </h1>
-            <p className="text-lg text-slate-300 leading-relaxed max-w-md mb">
-              Integrated surveillance and safety systems engineered to protect people, property, and critical environments.
-            </p>
-          </div>
-
-          <div className="space-y-4 mt-8">
-            <div className="flex items-start space-x-3">
-              <div className="w-6 h-6 rounded-full bg-slate-700 flex items-center justify-center flex-shrink-0 mt-0.5">
-                <div className="w-2 h-2 rounded-full bg-emerald-400"></div>
-              </div>
-              <div>
-                <p className="font-medium">Advanced Surveillance</p>
-                <p className="text-sm text-slate-400">Smart HD CCTV with instant alerts</p>
-              </div>
-            </div>
-
-            <div className="flex items-start space-x-3">
-              <div className="w-6 h-6 rounded-full bg-slate-700 flex items-center justify-center flex-shrink-0 mt-0.5">
-                <div className="w-2 h-2 rounded-full bg-blue-400"></div>
-              </div>
-              <div>
-                <p className="font-medium">Fire Safety Solutions</p>
-                <p className="text-sm text-slate-400">Certified fire safety equipment</p>
-              </div>
-            </div>
-
-            <div className="flex items-start space-x-3">
-              <div className="w-6 h-6 rounded-full bg-slate-700 flex items-center justify-center flex-shrink-0 mt-0.5">
-                <div className="w-2 h-2 rounded-full bg-violet-400"></div>
-              </div>
-              <div>
-                <p className="font-medium">Access & Security Integration</p>
-                <p className="text-sm text-slate-400">Integrated CCTV, alarms, and access control</p>
-              </div>
-            </div>
-          </div>
-
-        </div>
+    <div className="min-h-screen flex relative overflow-hidden bg-slate-950">
+      {/* Background gradients */}
+      <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none z-0">
+        <div className="absolute -top-[30%] -left-[10%] w-[70%] h-[70%] rounded-full bg-violet-600/10 blur-[120px]" />
+        <div className="absolute top-[40%] -right-[10%] w-[60%] h-[60%] rounded-full bg-blue-600/10 blur-[120px]" />
+        <div className="absolute bottom-[0%] left-[20%] w-[50%] h-[50%] rounded-full bg-emerald-600/5 blur-[100px]" />
       </div>
 
-      {/* RIGHT SIDE - LOGIN FORM */}
-      <div className="flex-1 flex items-center justify-center p-8">
-        <div className="w-full max-w-md">
-          
-          {/* Toggle Button */}
-          <div className="flex justify-end mb-6">
-            <button
-              onClick={() => setIsAdminLogin(!isAdminLogin)}
-              className="inline-flex items-center space-x-2 px-4 py-2 text-sm font-medium text-slate-700 
-                         hover:text-slate-900 bg-white hover:bg-slate-50 rounded-lg border border-slate-200 
-                         transition-all duration-200 shadow-sm hover:shadow"
-            >
-              {isAdminLogin ? <User className="w-4 h-4" /> : <Shield className="w-4 h-4" />}
-              <span>{isAdminLogin ? "User Login" : "Admin Login"}</span>
-            </button>
+      <div className="w-full flex items-center justify-center relative z-10 p-4 sm:p-8">
+        <div className="w-full max-w-4xl grid lg:grid-cols-2 gap-8 items-center">
+
+          {/* Brand Section */}
+          <div className="hidden lg:block space-y-8 pr-8">
+            <div className="flex items-center space-x-3">
+              <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-violet-600 to-blue-600 flex items-center justify-center shadow-lg shadow-violet-500/20">
+                <Shield className="w-7 h-7 text-white" />
+              </div>
+              <h1 className="text-2xl font-bold text-white tracking-tight">Aksecure</h1>
+            </div>
+
+            <div className="space-y-6">
+              <h2 className="text-4xl font-bold text-white leading-tight">
+                Secure your world with <span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-400 to-blue-400">intelligent protection</span>
+              </h2>
+              <p className="text-slate-400 text-lg leading-relaxed">
+                Advanced surveillance, fire safety integration, and access control systems designed for the modern enterprise.
+              </p>
+            </div>
+
+            <div className="flex flex-col gap-4">
+              <div className="glass p-4 rounded-xl flex items-center gap-4">
+                <div className="w-10 h-10 rounded-full bg-blue-500/20 flex items-center justify-center text-blue-400">
+                  <Shield className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="text-slate-200 font-medium">Enterprise Grade</h3>
+                  <p className="text-slate-500 text-sm">Top-tier security protocols</p>
+                </div>
+              </div>
+              <div className="glass p-4 rounded-xl flex items-center gap-4">
+                <div className="w-10 h-10 rounded-full bg-emerald-500/20 flex items-center justify-center text-emerald-400">
+                  <Eye className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="text-slate-200 font-medium">24/7 Monitoring</h3>
+                  <p className="text-slate-500 text-sm">Real-time surveillance & alerts</p>
+                </div>
+              </div>
+            </div>
           </div>
 
           {/* Login Card */}
-          <div className="bg-white rounded-2xl shadow-xl border border-slate-200 p-8">
+          <div className="glass-card p-6 sm:p-10 w-full max-w-md mx-auto relative overflow-hidden">
 
-            {/* Header */}
-            <div className="text-center mb-8">
-              <div className={`inline-flex items-center justify-center w-12 h-12 rounded-xl mb-4 ${
-                isAdminLogin ? 'bg-violet-100' : 'bg-blue-100'
-              }`}>
-                {isAdminLogin ? 
-                  <Shield className="w-6 h-6 text-violet-600" /> : 
-                  <User className="w-6 h-6 text-blue-600" />
-                }
-              </div>
-              <h2 className="text-2xl font-bold text-slate-900">
+            {/* Toggle Auth Type */}
+            <div className="absolute top-6 right-6 z-20">
+              <button
+                onClick={() => setIsAdminLogin(!isAdminLogin)}
+                className="px-3 py-1.5 rounded-full text-xs font-medium bg-slate-800/50 hover:bg-slate-700/50 border border-white/5 text-slate-300 transition-all flex items-center gap-2"
+              >
+                {isAdminLogin ? "User Login" : "Admin Portal"}
+                {isAdminLogin ? <User className="w-3 h-3" /> : <Shield className="w-3 h-3" />}
+              </button>
+            </div>
+
+            <div className="mb-8 mt-2">
+              <h2 className="text-2xl font-bold text-white mb-2">
                 {isAdminLogin ? "Admin Access" : "Welcome Back"}
               </h2>
-              <p className="text-slate-600 mt-1 text-sm">
-                {isAdminLogin ? "System administration portal" : "Sign in to your account"}
+              <p className="text-slate-400 text-sm">
+                Enter your credentials to access your account.
               </p>
             </div>
 
             {/* Success Alert */}
             {loginSuccess && (
-              <div className="mb-6 p-4 bg-emerald-50 border border-emerald-200 rounded-lg flex items-start space-x-3">
-                <div className="w-5 h-5 rounded-full bg-emerald-100 flex items-center justify-center flex-shrink-0 mt-0.5">
-                  <span className="text-emerald-600 text-xs font-bold">✓</span>
+              <div className="mb-6 p-4 bg-emerald-500/10 border border-emerald-500/20 rounded-xl flex items-center gap-3">
+                <div className="w-6 h-6 rounded-full bg-emerald-500/20 flex items-center justify-center flex-shrink-0">
+                  <span className="text-emerald-400 text-xs font-bold">✓</span>
                 </div>
-                <p className="text-sm text-emerald-800 flex-1">Successfully logged in!</p>
+                <p className="text-sm text-emerald-300 font-medium">Login successful</p>
               </div>
             )}
 
-            {/* Form */}
             <form onSubmit={handleSubmit} className="space-y-5">
-              
-              {/* Admin Fields */}
+
+              {/* Conditional Inputs */}
               {isAdminLogin ? (
                 <div>
-                  <label htmlFor="username" className="block text-sm font-medium text-slate-700 mb-2">
-                    Username
-                  </label>
-                  <div className="relative">
-                    <User className={`absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 ${
-                      errors.username ? 'text-red-400' : 'text-slate-400'
-                    }`} />
+                  <label className="block text-xs font-medium text-slate-400 mb-1.5 uppercase tracking-wider">Username</label>
+                  <div className="relative group">
+                    <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500 group-focus-within:text-violet-400 transition-colors" />
                     <input
-                      id="username"
                       type="text"
                       name="username"
                       value={formData.username}
                       onChange={handleChange}
-                      className={`w-full pl-11 pr-4 py-3 border rounded-lg 
-                                 outline-none transition-all text-slate-900 placeholder:text-slate-400 ${
-                        errors.username
-                          ? 'border-red-300 bg-red-50 focus:ring-2 focus:ring-red-500 focus:border-red-500'
-                          : 'border-slate-300 focus:ring-2 focus:ring-violet-500 focus:border-transparent'
-                      }`}
-                      placeholder="Enter username"
+                      className={`w-full pl-10 pr-4 py-3 rounded-xl glass-input outline-none ${errors.username ? 'border-red-500/50 focus:border-red-500' : ''}`}
+                      placeholder="Admin username"
                     />
                   </div>
-                  {errors.username && (
-                    <p className="mt-1.5 text-sm text-red-600 flex items-center gap-1.5">
-                      <span className="text-red-500">•</span>
-                      {errors.username}
-                    </p>
-                  )}
+                  {errors.username && <p className="mt-1 text-xs text-red-400">{errors.username}</p>}
                 </div>
               ) : (
                 <div>
-                  <label htmlFor="email" className="block text-sm font-medium text-slate-700 mb-2">
-                    Email Address
-                  </label>
-                  <div className="relative">
-                    <Mail className={`absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 ${
-                      errors.email ? 'text-red-400' : 'text-slate-400'
-                    }`} />
+                  <label className="block text-xs font-medium text-slate-400 mb-1.5 uppercase tracking-wider">Email</label>
+                  <div className="relative group">
+                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500 group-focus-within:text-blue-400 transition-colors" />
                     <input
-                      id="email"
                       type="email"
                       name="email"
                       value={formData.email}
                       onChange={handleChange}
-                      className={`w-full pl-11 pr-4 py-3 border rounded-lg 
-                                 outline-none transition-all text-slate-900 placeholder:text-slate-400 ${
-                        errors.email
-                          ? 'border-red-300 bg-red-50 focus:ring-2 focus:ring-red-500 focus:border-red-500'
-                          : 'border-slate-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent'
-                      }`}
-                      placeholder="you@company.com"
+                      className={`w-full pl-10 pr-4 py-3 rounded-xl glass-input outline-none ${errors.email ? 'border-red-500/50 focus:border-red-500' : ''}`}
+                      placeholder="name@company.com"
                     />
                   </div>
-                  {errors.email && (
-                    <p className="mt-1.5 text-sm text-red-600 flex items-center gap-1.5">
-                      <span className="text-red-500">•</span>
-                      {errors.email}
-                    </p>
-                  )}
+                  {errors.email && <p className="mt-1 text-xs text-red-400">{errors.email}</p>}
                 </div>
               )}
 
-              {/* Password */}
               <div>
-                <label htmlFor="password" className="block text-sm font-medium text-slate-700 mb-2">
-                  Password
-                </label>
-                <div className="relative">
-                  <Lock className={`absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 ${
-                    errors.password ? 'text-red-400' : 'text-slate-400'
-                  }`} />
+                <label className="block text-xs font-medium text-slate-400 mb-1.5 uppercase tracking-wider">Password</label>
+                <div className="relative group">
+                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500 group-focus-within:text-blue-400 transition-colors" />
                   <input
-                    id="password"
                     type={showPassword ? "text" : "password"}
                     name="password"
                     value={formData.password}
                     onChange={handleChange}
-                    className={`w-full pl-11 pr-11 py-3 border rounded-lg 
-                               outline-none transition-all text-slate-900 placeholder:text-slate-400 ${
-                      errors.password
-                        ? 'border-red-300 bg-red-50 focus:ring-2 focus:ring-red-500 focus:border-red-500'
-                        : 'border-slate-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent'
-                    }`}
-                    placeholder="Enter password"
+                    className={`w-full pl-10 pr-10 py-3 rounded-xl glass-input outline-none ${errors.password ? 'border-red-500/50 focus:border-red-500' : ''}`}
+                    placeholder="••••••••"
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className={`absolute right-3 top-1/2 -translate-y-1/2 transition-colors ${
-                      errors.password ? 'text-red-400 hover:text-red-600' : 'text-slate-400 hover:text-slate-600'
-                    }`}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300 transition-colors"
                   >
                     {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                   </button>
                 </div>
-                {errors.password && (
-                  <p className="mt-1.5 text-sm text-red-600 flex items-center gap-1.5">
-                    <span className="text-red-500">•</span>
-                    {errors.password}
-                  </p>
-                )}
+                {errors.password && <p className="mt-1 text-xs text-red-400">{errors.password}</p>}
               </div>
 
-              {/* Submit */}
+              {/* Forgot Password Link */}
+              <div className="flex justify-end">
+                <Link to="/forgot-password" className="text-sm text-slate-400 hover:text-blue-400 transition-colors">
+                  Forgot password?
+                </Link>
+              </div>
+
               <button
                 type="submit"
                 disabled={loading}
-                className={`w-full py-3 rounded-lg font-medium text-white transition-all duration-200
-                           shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed ${
-                  isAdminLogin 
-                    ? 'bg-gradient-to-r from-violet-600 to-violet-700 hover:from-violet-700 hover:to-violet-800' 
-                    : 'bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800'
-                }`}
+                className={`w-full py-3.5 rounded-xl font-semibold text-white shadow-lg transition-all transform hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed
+                  ${isAdminLogin
+                    ? 'bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 shadow-violet-500/25'
+                    : 'bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-500 hover:to-cyan-500 shadow-blue-500/25'
+                  }`}
               >
-                {loading ? "Signing in..." : "Sign In"}
+                {loading ? (
+                  <span className="flex items-center justify-center gap-2">
+                    <span className="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin" />
+                    Authenticating...
+                  </span>
+                ) : (
+                  "Sign In"
+                )}
               </button>
+
             </form>
 
             {/* Footer */}
             {!isAdminLogin && (
-              <div className="mt-6 pt-6 border-t border-slate-200 text-center space-y-2">
-                <p className="text-sm text-slate-600">
-                  Don't have an account?{" "}
-                  <button 
-                    onClick={handleRegisterClick}
-                    className="font-medium text-blue-600 hover:text-blue-700 transition-colors"
-                  >
-                    Create account
-                  </button>
-                </p>
-                <div className="text-sm">
-                  <Link to="/forgot-password" className="font-medium text-blue-600 hover:text-blue-500 transition-colors">
-                    Forgot your password?
+              <div className="mt-8 pt-6 border-t border-white/5 text-center">
+                <p className="text-slate-400 text-sm">
+                  New to Aksecure?{" "}
+                  <Link to="/register" className="text-blue-400 hover:text-blue-300 font-medium hover:underline transition-all">
+                    Create an account
                   </Link>
-                </div>
+                </p>
               </div>
             )}
 
           </div>
-
-          {/* Security Notice */}
-          <p className="text-center text-xs text-slate-500 mt-6">
-            Protected by enterprise-grade encryption
-          </p>
         </div>
       </div>
     </div>

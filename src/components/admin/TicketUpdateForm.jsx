@@ -1,4 +1,4 @@
-import { Save, Clock, Loader2 } from 'lucide-react';
+import { Save, Clock, Loader2, ChevronsUp } from 'lucide-react';
 import { statusOptions } from './utils.jsx';
 
 const TicketUpdateForm = ({
@@ -12,22 +12,27 @@ const TicketUpdateForm = ({
   onUpdate
 }) => {
   return (
-    <div className="bg-white rounded-2xl border border-slate-200 shadow-lg p-6 ring-1 ring-slate-100">
-      <div className="flex items-center gap-2 mb-5">
-        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-slate-600 to-slate-700 flex items-center justify-center ring-2 ring-slate-100">
-          <Save className="w-5 h-5 text-white" />
-        </div>
-        <h3 className="text-xl font-bold text-slate-900">Update Ticket</h3>
+    <div className="glass-card bg-slate-900/60 backdrop-blur-xl rounded-2xl border border-slate-700/50 shadow-xl p-6 relative overflow-hidden group">
+      <div className="absolute top-0 right-0 p-4 opacity-5 pointer-events-none group-hover:opacity-10 transition-opacity">
+        <ChevronsUp className="w-24 h-24 text-blue-500" />
       </div>
-      <div className="space-y-4">
+
+      <div className="flex items-center gap-3 mb-5 relative z-10">
+        <div className="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center ring-1 ring-blue-500/20 border border-blue-500/10">
+          <Save className="w-5 h-5 text-blue-400" />
+        </div>
+        <h3 className="text-xl font-bold text-white tracking-tight">Update Ticket</h3>
+      </div>
+
+      <div className="space-y-5 relative z-10">
         {errors.update && (
-          <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
-            <p className="text-sm text-red-800">{errors.update}</p>
+          <div className="p-3 bg-red-500/10 border border-red-500/20 rounded-xl">
+            <p className="text-sm text-red-400 font-medium">{errors.update}</p>
           </div>
         )}
 
         <div>
-          <label className="block text-sm font-medium text-slate-700 mb-2">
+          <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">
             Status
           </label>
           <select
@@ -36,11 +41,10 @@ const TicketUpdateForm = ({
               setUpdateStatus(e.target.value);
               setErrors(prev => ({ ...prev, status: '', update: '' }));
             }}
-            className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:border-transparent transition-colors font-medium ${
-              errors.status || errors.update
-                ? 'border-red-300 focus:ring-red-500 bg-red-50'
-                : 'border-slate-300 focus:ring-slate-500 bg-white'
-            }`}
+            className={`w-full px-4 py-3 bg-slate-800/50 border rounded-xl focus:ring-2 focus:border-transparent transition-all font-medium text-slate-200 outline-none cursor-pointer hover:bg-slate-800/80 ${errors.status || errors.update
+                ? 'border-red-500/50 focus:ring-red-500/50'
+                : 'border-slate-700 focus:ring-blue-500/50 hover:border-slate-600'
+              }`}
           >
             {statusOptions.map((status) => (
               <option key={status} value={status}>
@@ -49,14 +53,16 @@ const TicketUpdateForm = ({
             ))}
           </select>
           {errors.status && (
-            <p className="mt-1 text-sm text-red-600">{errors.status}</p>
+            <p className="mt-1 text-xs text-red-400 font-medium">{errors.status}</p>
           )}
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-slate-700 mb-2">
-            <Clock className="inline w-4 h-4 mr-1" />
-            Assign Visit Time
+          <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">
+            <div className="flex items-center gap-1.5">
+              <Clock className="w-3.5 h-3.5 text-blue-400 mb-0.5" />
+              Assign Visit Time
+            </div>
           </label>
           <input
             type="datetime-local"
@@ -65,21 +71,20 @@ const TicketUpdateForm = ({
               setVisitDateTime(e.target.value);
               setErrors(prev => ({ ...prev, visitDateTime: '', update: '' }));
             }}
-            className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:border-transparent transition-colors font-medium ${
-              errors.visitDateTime || errors.update
-                ? 'border-red-300 focus:ring-red-500 bg-red-50'
-                : 'border-slate-300 focus:ring-slate-500 bg-white'
-            }`}
+            className={`w-full px-4 py-3 bg-slate-800/50 border rounded-xl focus:ring-2 focus:border-transparent transition-all font-medium text-slate-200 scheme-dark ${errors.visitDateTime || errors.update
+                ? 'border-red-500/50 focus:ring-red-500/50'
+                : 'border-slate-700 focus:ring-blue-500/50 hover:border-slate-600'
+              }`}
           />
           {errors.visitDateTime && (
-            <p className="mt-1 text-sm text-red-600">{errors.visitDateTime}</p>
+            <p className="mt-1 text-xs text-red-400 font-medium">{errors.visitDateTime}</p>
           )}
         </div>
 
         <button
           onClick={onUpdate}
           disabled={updating}
-          className="w-full inline-flex items-center justify-center gap-2 px-5 py-3 bg-gradient-to-r from-slate-600 to-slate-700 text-white rounded-xl hover:from-slate-700 hover:to-slate-800 transition-all disabled:opacity-50 disabled:cursor-not-allowed font-semibold shadow-md hover:shadow-lg disabled:shadow-sm"
+          className="w-full inline-flex items-center justify-center gap-2 px-5 py-3.5 bg-blue-600 hover:bg-blue-500 text-white rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed font-bold text-sm shadow-lg shadow-blue-500/25 hover:shadow-blue-500/40 hover:-translate-y-0.5 active:translate-y-0"
         >
           {updating ? (
             <>

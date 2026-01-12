@@ -30,32 +30,32 @@ const TicketListPanel = ({
   const stats = getTicketStats(tickets);
 
   return (
-    <div className="h-full flex flex-col bg-slate-50">
-      <div className="p-4 border-b border-slate-200 bg-slate-50 sticky top-0 z-10">
+    <div className="h-full flex flex-col w-96 border-r border-white/5 bg-slate-900/50 backdrop-blur-sm relative z-20 overflow-hidden">
+      <div className="p-4 border-b border-white/5 bg-slate-900/50 backdrop-blur-md sticky top-0 z-10 w-full">
         {onBackToDashboard && (
-          <div className="mb-3">
+          <div className="mb-4">
             <button
               onClick={onBackToDashboard}
-              className="flex items-center gap-2 px-3 py-1.5 text-sm font-semibold text-slate-700 hover:bg-slate-50 rounded-lg transition-colors bg-slate-100 border border-slate-200"
+              className="flex items-center gap-2 px-3 py-1.5 text-xs font-semibold text-slate-400 hover:text-white hover:bg-white/5 rounded-lg transition-colors border border-transparent hover:border-white/10"
             >
-              <Home className="w-4 h-4" />
+              <Home className="w-3.5 h-3.5" />
               Dashboard
             </button>
           </div>
         )}
-        <div className="flex items-center justify-between mb-3">
-          <h2 className="text-lg font-bold text-slate-900">All Tickets</h2>
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-xl font-bold text-white tracking-tight">All Tickets</h2>
           <div className="flex items-center gap-2">
             {onRefresh && (
               <button
                 onClick={onRefresh}
-                className="flex items-center gap-2 px-4 py-2 bg-gradient-to-br from-blue-600 to-blue-700 text-white rounded-xl font-semibold hover:from-blue-700 hover:to-blue-800 transition-all shadow-md hover:shadow-lg text-sm"
+                className="flex items-center gap-2 p-2 bg-slate-800 text-slate-300 hover:text-white rounded-xl hover:bg-slate-700 transition-all border border-slate-700 hover:border-slate-600"
+                title="Refresh Data"
               >
                 <AlertCircle className="w-4 h-4" />
-                Refresh Data
               </button>
             )}
-            <span className="px-2.5 py-0.5 bg-slate-100 text-slate-700 rounded-full text-xs font-semibold">
+            <span className="px-2.5 py-0.5 bg-blue-500/10 text-blue-400 border border-blue-500/20 rounded-lg text-xs font-bold">
               {tickets.length}
             </span>
           </div>
@@ -63,13 +63,13 @@ const TicketListPanel = ({
 
         <TicketStats stats={stats} />
 
-        <div className="mt-3">
+        <div className="mt-4">
           <div className="flex items-center gap-2">
-            <Filter className="w-4 h-4 text-slate-500 flex-shrink-0" />
+            <Filter className="w-4 h-4 text-violet-400 flex-shrink-0" />
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="flex-1 px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-slate-500 text-sm bg-white"
+              className="flex-1 px-3 py-2 bg-slate-800/50 border border-slate-700 rounded-xl focus:ring-2 focus:ring-violet-500/20 focus:border-violet-500/50 text-xs text-slate-200 focus:outline-none appearance-none cursor-pointer hover:bg-slate-800 transition-colors"
             >
               <option value="All">All Status</option>
               {statusOptions.map((status) => (
@@ -81,29 +81,29 @@ const TicketListPanel = ({
           </div>
         </div>
 
-        <div className="mt-2 text-xs text-slate-500 font-medium">
-          {filteredTickets.length} ticket{filteredTickets.length !== 1 ? 's' : ''} found
+        <div className="mt-2 text-xs text-slate-500 font-medium px-1">
+          <span className="text-slate-300 font-bold">{filteredTickets.length}</span> ticket{filteredTickets.length !== 1 ? 's' : ''} found
         </div>
       </div>
 
-      <div className="flex-1 overflow-y-auto p-4 space-y-3 bg-slate-50">
+      <div className="flex-1 overflow-y-auto p-4 space-y-3 custom-scrollbar">
         {error && (
-          <div className="p-4 bg-red-50 border border-red-200 rounded-xl text-red-700 text-sm text-center">
+          <div className="p-4 bg-red-500/10 border border-red-500/20 rounded-xl text-red-400 text-sm text-center">
             {error}
           </div>
         )}
 
         {filteredTickets.length === 0 ? (
           <div className="text-center py-12 px-4">
-            <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-slate-100 flex items-center justify-center">
-              <AlertCircle className="w-8 h-8 text-slate-400" />
+            <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-slate-800/50 flex items-center justify-center border border-white/5">
+              <AlertCircle className="w-8 h-8 text-slate-600" />
             </div>
-            <p className="text-slate-500 font-medium mb-1">
+            <p className="text-slate-400 font-medium mb-1">
               {searchTerm || statusFilter !== 'All'
                 ? 'No tickets match your filters'
                 : 'No tickets found'}
             </p>
-            <p className="text-xs text-slate-400 mt-1">
+            <p className="text-xs text-slate-600 mt-1">
               {searchTerm || statusFilter !== 'All'
                 ? 'Try adjusting your search or filter criteria'
                 : 'Tickets will appear here once created'}
@@ -114,45 +114,40 @@ const TicketListPanel = ({
             <button
               key={ticket._id}
               onClick={() => onTicketClick(ticket)}
-              className={`w-full text-left p-3 rounded-lg border transition-all group ${selectedTicket?._id === ticket._id
-                  ? 'border-slate-500 bg-gradient-to-br from-slate-50 to-slate-100/50 shadow-md'
-                  : 'border-slate-200 bg-white hover:border-slate-400 hover:shadow-sm'
+              className={`w-full text-left p-4 rounded-xl border transition-all group relative overflow-hidden ${selectedTicket?._id === ticket._id
+                ? 'bg-blue-500/10 border-blue-500/50 shadow-[0_0_20px_rgba(59,130,246,0.1)]'
+                : 'bg-slate-800/30 border-white/5 hover:border-blue-500/30 hover:bg-slate-800/60'
                 }`}
             >
-              <div className="flex items-start justify-between gap-2 mb-2">
+              {selectedTicket?._id === ticket._id && (
+                <div className="absolute left-0 top-0 bottom-0 w-1 bg-blue-500" />
+              )}
+              <div className="flex items-start justify-between gap-2 mb-2 pl-2">
                 <div className="flex-1 min-w-0">
-                  <h3 className="font-semibold text-slate-900 text-sm mb-1 line-clamp-1 group-hover:text-slate-700 transition-colors">
+                  <h3 className={`font-bold text-sm mb-1 line-clamp-1 transition-colors ${selectedTicket?._id === ticket._id ? 'text-white' : 'text-slate-300 group-hover:text-white'
+                    }`}>
                     {ticket.title}
                   </h3>
-                  <p className="text-xs font-mono text-slate-600">{ticket.ticketId}</p>
+                  <p className="text-[10px] font-mono text-slate-500">{ticket.ticketId}</p>
                 </div>
                 <span
-                  className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold border flex-shrink-0 ${getStatusColor(
+                  className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-lg text-[10px] font-bold border flex-shrink-0 ${getStatusColor(
                     ticket.status
                   )}`}
                 >
                   {getStatusIcon(ticket.status)}
                   {ticket.status === 'Open' ? 'New' : ticket.status}
                 </span>
-                {onDelete && (
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onDelete(ticket);
-                    }}
-                    className="p-1 text-red-500 hover:bg-red-50 rounded-full transition-colors flex-shrink-0"
-                    title="Delete ticket"
-                  >
-                    <Trash2 className="w-3.5 h-3.5" />
-                  </button>
-                )}
               </div>
-              <p className="text-xs text-slate-600 line-clamp-2 mb-2 leading-relaxed">
-                {ticket.description}
-              </p>
+
+              <div className="pl-2 mb-3">
+                <p className="text-xs text-slate-400 line-clamp-2 leading-relaxed group-hover:text-slate-300 transition-colors">
+                  {ticket.description}
+                </p>
+              </div>
 
               {ticket.images && ticket.images.length > 0 && (
-                <div className="mb-2 flex gap-1.5 flex-wrap">
+                <div className="mb-3 pl-2 flex gap-2 flex-wrap">
                   {ticket.images.slice(0, 3).map((image, imgIndex) => {
                     const baseUrl = import.meta.env.VITE_API_URL?.replace('/api', '') || 'http://localhost:5000';
                     const imageUrl = image.startsWith('http')
@@ -161,7 +156,7 @@ const TicketListPanel = ({
                     return (
                       <div
                         key={imgIndex}
-                        className="relative group cursor-pointer"
+                        className="relative group/image cursor-pointer"
                         onClick={(e) => {
                           e.stopPropagation();
                           setSelectedImage(imageUrl);
@@ -170,29 +165,41 @@ const TicketListPanel = ({
                         <img
                           src={imageUrl}
                           alt={`Ticket image ${imgIndex + 1}`}
-                          className="w-12 h-12 object-cover rounded border border-slate-200 hover:border-slate-400 transition-all"
+                          className="w-10 h-10 object-cover rounded-lg border border-white/10 group-hover/image:border-white/30 transition-all"
                         />
-                        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-all rounded flex items-center justify-center">
-                          <Eye className="w-3 h-3 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
+                        <div className="absolute inset-0 bg-black/0 group-hover/image:bg-black/30 transition-all rounded-lg flex items-center justify-center">
+                          <Eye className="w-3 h-3 text-white opacity-0 group-hover/image:opacity-100 transition-opacity" />
                         </div>
                       </div>
                     );
                   })}
                   {ticket.images.length > 3 && (
-                    <div className="w-12 h-12 rounded border border-slate-200 bg-slate-100 flex items-center justify-center text-xs font-semibold text-slate-600">
+                    <div className="w-10 h-10 rounded-lg border border-white/10 bg-slate-800 flex items-center justify-center text-[10px] font-bold text-slate-400">
                       +{ticket.images.length - 3}
                     </div>
                   )}
                 </div>
               )}
 
-              <div className="flex items-center justify-between gap-2 pt-2 border-t border-slate-100">
-                <span className={`px-2 py-0.5 rounded text-xs font-medium border ${getCategoryColor(ticket.category)}`}>
+              <div className="flex items-center justify-between gap-2 pt-3 border-t border-white/5 pl-2">
+                <span className={`px-2 py-0.5 rounded-md text-[10px] uppercase font-bold border ${getCategoryColor(ticket.category)}`}>
                   {ticket.category}
                 </span>
-                <div className="flex items-center gap-1 text-xs text-slate-500">
+                <div className="flex items-center gap-1.5 text-[10px] text-slate-500 font-medium">
                   <Calendar className="w-3 h-3 flex-shrink-0" />
                   <span>{new Date(ticket.createdAt).toLocaleDateString()}</span>
+                  {onDelete && (
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onDelete(ticket);
+                      }}
+                      className="ml-2 p-1.5 text-red-400 hover:text-red-300 bg-red-500/10 hover:bg-red-500/20 rounded-lg transition-colors border border-red-500/20 hover:border-red-500/40"
+                      title="Delete ticket"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
+                  )}
                 </div>
               </div>
             </button>
@@ -202,7 +209,7 @@ const TicketListPanel = ({
 
       {selectedImage && (
         <div
-          className="fixed inset-0 bg-black/95 z-[9999] flex items-center justify-center p-4"
+          className="fixed inset-0 bg-black/95 z-[9999] flex items-center justify-center p-4 backdrop-blur-xl"
           onClick={() => setSelectedImage(null)}
         >
           <div className="relative w-full h-full flex items-center justify-center">
