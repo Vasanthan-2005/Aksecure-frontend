@@ -8,12 +8,23 @@ const normalizeStatus = (status) => {
 export const getStatusColor = (status) => {
   const normalizedStatus = normalizeStatus(status);
   const colors = {
-    'New': 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20 ring-1 ring-emerald-500/20',
+    'New': 'bg-amber-500/10 text-amber-400 border-amber-500/20 ring-1 ring-amber-500/20',
     'In Progress': 'bg-blue-500/10 text-blue-400 border-blue-500/20 ring-1 ring-blue-500/20',
-    'Closed': 'bg-slate-500/10 text-slate-400 border-slate-500/20 ring-1 ring-slate-500/20',
-    'Completed': 'bg-blue-500/10 text-blue-400 border-blue-500/20 ring-1 ring-blue-500/20'
+    'Closed': 'bg-green-500/10 text-green-400 border-green-500/20 ring-1 ring-green-500/20',
+    'Completed': 'bg-green-500/10 text-green-400 border-green-500/20 ring-1 ring-green-500/20'
   };
   return colors[normalizedStatus] || 'bg-slate-500/10 text-slate-400 border-slate-500/20 ring-1 ring-slate-500/20';
+};
+
+export const getStatusBorderColor = (status) => {
+  const normalizedStatus = normalizeStatus(status);
+  const colors = {
+    'New': 'border-amber-500/30 bg-amber-500/5',
+    'In Progress': 'border-blue-500/30 bg-blue-500/5',
+    'Closed': 'border-green-500/30 bg-green-500/5',
+    'Completed': 'border-green-500/30 bg-green-500/5'
+  };
+  return colors[normalizedStatus] || 'border-slate-500/30 bg-slate-500/5';
 };
 
 export const getStatusIcon = (status) => {

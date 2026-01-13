@@ -1,6 +1,7 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import LoadingState from "./common/LoadingState";
 import { Eye, EyeOff, Shield, User, Mail, Lock, Building2, Phone, MapPin, CheckCircle2, ArrowRight } from "lucide-react";
 
 const Register = () => {
@@ -173,6 +174,7 @@ const Register = () => {
 
   return (
     <div className="min-h-screen flex relative overflow-hidden bg-slate-950">
+      {loading && <LoadingState message="Creating Security Profile" fullPage={true} />}
 
       {/* Background gradients */}
       <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none z-0">

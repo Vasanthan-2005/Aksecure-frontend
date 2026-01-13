@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import api from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import { MessageSquare, Clock, Check, Calendar } from 'lucide-react';
+import LoadingState from './common/LoadingState';
 
 const AdminReplies = ({ refreshKey = 0 }) => {
   const { user } = useAuth();
@@ -25,7 +26,7 @@ const AdminReplies = ({ refreshKey = 0 }) => {
       const tickets = Array.isArray(ticketsResponse.data) ? ticketsResponse.data : (ticketsResponse.data?.tickets || []);
       const serviceRequestsData = serviceRequestsResponse.data;
       const serviceRequests = Array.isArray(serviceRequestsData) ? serviceRequestsData : (serviceRequestsData?.requests || []);
-      
+
       const unseenReplies = [];
       const userId = user?._id || user?.id;
 
@@ -40,7 +41,7 @@ const AdminReplies = ({ refreshKey = 0 }) => {
                   const seenId = seenUserId._id || seenUserId;
                   return seenId.toString() === userId.toString();
                 });
-                
+
                 if (!isSeen) {
                   unseenReplies.push({
                     ...item,
@@ -81,7 +82,7 @@ const AdminReplies = ({ refreshKey = 0 }) => {
   const handleMarkAsSeen = async (reply, replyIndex) => {
     const key = `${reply.sourceType}-${reply.sourceId}-${reply.timelineIndex}`;
     setMarkingAsSeen(prev => ({ ...prev, [key]: true }));
-    
+
     try {
       if (reply.sourceType === 'service-request') {
         await api.put(`/service-requests/${reply.sourceId}/replies/${reply.timelineIndex}/seen`);
@@ -98,26 +99,24 @@ const AdminReplies = ({ refreshKey = 0 }) => {
   };
 
   if (loading) {
-    return (
-      <div className="text-center py-8 text-slate-600">
-        Loading admin replies...
-      </div>
-    );
+    return <LoadingState message="Retrieving Updates" />;
   }
 
   if (error) {
     return (
-      <div className="text-center py-8 text-red-600">{error}</div>
+      <div className="text-center py-8 text-red-400">{error}</div>
     );
   }
 
   if (adminReplies.length === 0) {
     return (
-      <div className="text-center py-8 text-slate-600">
-        <MessageSquare className="w-12 h-12 mx-auto mb-3 text-slate-400" />
-        <p className="text-slate-700 font-medium">No admin replies yet</p>
-        <p className="text-sm text-slate-500 mt-1">
-          You'll see replies from our admin team here once they respond to your tickets or service requests.
+      <div className="text-center py-12">
+        <div className="w-16 h-16 rounded-2xl bg-slate-900/50 border border-white/5 flex items-center justify-center mx-auto mb-4">
+          <MessageSquare className="w-8 h-8 text-slate-500" />
+        </div>
+        <p className="text-white font-bold text-lg">All caught up!</p>
+        <p className="text-sm text-slate-500 mt-1 max-w-xs mx-auto">
+          No new messages from our support team. We'll notify you here once there's an update.
         </p>
       </div>
     );
@@ -140,66 +139,70 @@ const AdminReplies = ({ refreshKey = 0 }) => {
           return null;
         };
         const slotLabel = getSlotLabel(scheduledAt, reply.preferredTimeSlot);
-        
+
         return (
           <div
             key={index}
-            className="bg-white rounded-xl border-2 border-blue-200 shadow-md p-6 hover:shadow-lg transition-shadow"
+            className="group relative overflow-hidden rounded-2xl border border-white/5 bg-slate-900/40 p-6 hover:bg-slate-800/60 transition-all duration-300 hover:shadow-2xl hover:border-blue-500/30"
           >
-            <div className="flex items-start gap-4">
+            <div className="absolute top-0 right-0 p-8 opacity-[0.03] pointer-events-none group-hover:opacity-[0.05] transition-opacity">
+              <MessageSquare className="w-24 h-24 text-white" />
+            </div>
+            <div className="flex items-start gap-4 relative z-10">
               <div className="flex-shrink-0">
-                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center ring-2 ring-blue-100">
+                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-600 to-violet-600 flex items-center justify-center shadow-lg shadow-blue-500/20">
                   <MessageSquare className="w-6 h-6 text-white" />
                 </div>
               </div>
               <div className="flex-1 min-w-0">
-                <div className="flex items-start justify-between gap-3 mb-2">
+                <div className="flex items-start justify-between gap-3 mb-4">
                   <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-1">
-                      <span className="font-semibold text-blue-900">
-                        {reply.addedBy}
+                    <div className="flex items-center gap-2 mb-2">
+                      <span className="font-bold text-white group-hover:text-blue-400 transition-colors">
+                        {reply.addedBy || 'Support Specialist'}
                       </span>
-                      <span className="px-2 py-0.5 bg-blue-100 text-blue-800 rounded-full text-xs font-medium">
-                        Admin
+                      <span className="px-2 py-0.5 bg-blue-500/10 text-blue-400 border border-blue-500/20 rounded-full text-[10px] font-bold uppercase tracking-wider">
+                        Official Team
                       </span>
                     </div>
-                    <div className="text-sm text-slate-600 mb-3">
-                      <p className="font-medium text-slate-900">
-                        Replied to: {reply.title}
+                    <div className="text-sm">
+                      <p className="font-semibold text-slate-300 mb-1">
+                        Re: {reply.title}
                       </p>
-                      <p className="text-xs text-slate-500 mt-1">
-                        {reply.sourceType === 'ticket' ? 'Ticket' : 'Service Request'} ID: {reply.publicId} • {reply.category}
-                      </p>
+                      <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-slate-500 font-mono">
+                        <span className="uppercase">{reply.sourceType === 'ticket' ? 'Ticket' : 'Srv Req'} #{reply.publicId}</span>
+                        <span>•</span>
+                        <span>{reply.category}</span>
+                      </div>
                       {scheduledAt && (
-                        <p className="text-xs text-blue-600 mt-1 font-semibold inline-flex items-center gap-1">
-                          <Calendar className="w-3 h-3" />
-                          Scheduled: {new Date(scheduledAt).toLocaleString('en-US', {
-                            year: 'numeric',
+                        <div className="mt-3 inline-flex items-center gap-2 px-3 py-1.5 bg-amber-500/10 border border-amber-500/20 rounded-xl text-xs font-bold text-amber-500">
+                          <Calendar className="w-3.5 h-3.5" />
+                          <span>Scheduled: {new Date(scheduledAt).toLocaleString('en-US', {
                             month: 'short',
                             day: 'numeric',
-                            hour12: true
-                          })}{slotLabel ? ` • ${slotLabel}` : ''}
-                        </p>
+                            year: 'numeric'
+                          })}{slotLabel ? ` @ ${slotLabel}` : ''}</span>
+                        </div>
                       )}
                     </div>
                   </div>
-                  <div className="flex items-center gap-1.5 text-xs text-slate-500 whitespace-nowrap">
-                    <Clock className="w-3.5 h-3.5" />
+                  <div className="flex items-center gap-1.5 text-[10px] text-slate-500 font-medium whitespace-nowrap bg-slate-950/40 px-2 py-1 rounded-lg border border-white/5">
+                    <Clock className="w-3 h-3" />
                     <span>{new Date(reply.addedAt).toLocaleString()}</span>
                   </div>
                 </div>
-                <div className="bg-blue-50 rounded-lg p-4 border border-blue-200 mb-3">
-                  <p className="text-slate-800 whitespace-pre-wrap leading-relaxed">
+                <div className="bg-slate-950/40 rounded-2xl p-5 border border-white/5 mb-4 group-hover:border-blue-500/10 transition-colors">
+                  <p className="text-slate-400 text-sm whitespace-pre-wrap leading-relaxed">
                     {reply.note}
                   </p>
                 </div>
                 <button
                   onClick={() => handleMarkAsSeen(reply, index)}
                   disabled={isMarking}
-                  className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm font-medium"
+                  className="inline-flex items-center gap-2 px-5 py-2.5 bg-white/5 hover:bg-white/10 text-slate-300 hover:text-white rounded-xl border border-white/10 transition-all disabled:opacity-50 disabled:cursor-not-allowed text-xs font-bold uppercase tracking-wider"
                 >
                   <Check className="w-4 h-4" />
-                  {isMarking ? 'Marking...' : 'Mark as Seen'}
+                  {isMarking ? 'Acknowledging...' : 'Acknowledge Update'}
                 </button>
               </div>
             </div>

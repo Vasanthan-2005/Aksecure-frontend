@@ -1,16 +1,13 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import api from '../services/api';
 import { useAuth } from '../context/AuthContext';
-import { X, Eye, Loader2, ChevronLeft, ChevronRight, Trash2 } from 'lucide-react';
+import { X, Eye, Loader2, ChevronLeft, ChevronRight, Trash2, Calendar, Clock, MessageSquare, Tag } from 'lucide-react';
+import { getStatusColor, getStatusBorderColor, getCategoryColor, getStatusIcon } from './admin/utils';
 import { useInView } from 'react-intersection-observer';
 import { toast } from 'react-toastify';
+import LoadingState from './common/LoadingState';
 
-const statusStyles = {
-  'New': 'bg-emerald-50 text-emerald-700',
-  'In Progress': 'bg-blue-50 text-blue-700',
-  'Completed': 'bg-green-50 text-green-700',
-  'Closed': 'bg-slate-100 text-slate-700'
-};
+// use imported getStatusColor instead
 
 const ServiceRequestListUser = ({ onRefresh }) => {
   const { user } = useAuth();
@@ -86,19 +83,14 @@ const ServiceRequestListUser = ({ onRefresh }) => {
     if (!document.hidden) {
       const interval = setInterval(() => {
         fetchRequests(false);
-      }, 30000);
+      }, 60000); // Optimized for performance (60s)
 
       return () => clearInterval(interval);
     }
   }, [fetchRequests]);
 
   if (loading && !isRefreshing) {
-    return (
-      <div className="flex justify-center items-center py-12">
-        <Loader2 className="w-8 h-8 text-purple-600 animate-spin" />
-        <span className="ml-2 text-gray-600">Loading service requests...</span>
-      </div>
-    );
+    return <LoadingState message="Loading service requests" />;
   }
 
   if (error) {
@@ -178,142 +170,195 @@ const ServiceRequestListUser = ({ onRefresh }) => {
           <div
             key={request._id}
             ref={isLastRequest && hasMore ? lastRequestRef : null}
-            className="bg-white rounded-lg shadow-md p-6 ring-2 ring-purple-400"
+            className={`group relative overflow-hidden rounded-2xl border transition-all duration-300 hover:shadow-2xl hover:-translate-y-1 ${getStatusBorderColor(request.status)}`}
           >
-            <div className="flex justify-between items-start mb-4">
-              <div className="flex-1">
-                <div className="flex items-center gap-2 mb-1">
-                  <h3 className="text-xl font-semibold text-gray-800">{request.title}</h3>
-                  {adminRepliesInfo.hasReplies && (
-                    <span className="inline-flex items-center gap-1 px-2 py-1 bg-purple-100 text-purple-800 rounded-full text-xs font-medium">
-                      Admin Replied
-                      {adminRepliesInfo.count > 1 && ` (${adminRepliesInfo.count})`}
+            {/* Status accent line */}
+            <div className={`absolute top-0 left-0 bottom-0 w-1 ${request.status === 'New' || request.status === 'Open' ? 'bg-amber-500' : request.status === 'In Progress' ? 'bg-blue-500' : 'bg-green-500'}`}></div>
+
+            <div className="p-6">
+              <div className="flex flex-col md:flex-row justify-between items-start gap-4 mb-6">
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-3 mb-2 flex-wrap">
+                    <h3 className="text-xl font-bold text-white group-hover:text-blue-400 transition-colors leading-tight">
+                      {request.title}
+                    </h3>
+                    <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-bold border uppercase tracking-wider ${getStatusColor(request.status)}`}>
+                      {getStatusIcon(request.status)}
+                      {request.status}
                     </span>
-                  )}
+                    {adminRepliesInfo.hasReplies && (
+                      <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-violet-500/10 text-violet-400 border border-violet-500/20 rounded-full text-[10px] font-bold uppercase tracking-wider">
+                        <MessageSquare className="w-3 h-3" />
+                        {adminRepliesInfo.count} {adminRepliesInfo.count === 1 ? 'Reply' : 'Replies'}
+                      </span>
+                    )}
+                  </div>
+                  <div className="flex items-center gap-4 text-xs text-slate-500 font-mono text-uppercase">
+                    <span>{request.requestId}</span>
+                    <span className="flex items-center gap-1">
+                      <Calendar className="w-3 h-3" />
+                      {new Date(request.createdAt).toLocaleDateString()}
+                    </span>
+                  </div>
                 </div>
-                <p className="text-sm text-gray-600">Service ID: {request.requestId}</p>
-              </div>
-              <div className="flex items-center gap-2">
-                <span className={`px-3 py-1 rounded-full text-sm font-medium ${statusStyles[request.status] || 'bg-slate-100 text-slate-700'}`}>
-                  {request.status}
-                </span>
+
                 <button
                   type="button"
                   onClick={(e) => {
                     e.stopPropagation();
-                    console.log('Delete button clicked for request:', request._id);
                     setRequestToDelete(request);
                     setShowDeleteModal(true);
                   }}
-                  className="relative z-10 p-2 text-red-500 hover:bg-red-50 rounded-full transition-colors cursor-pointer"
+                  className="p-2 text-slate-500 hover:text-red-400 hover:bg-red-400/10 rounded-xl transition-all border border-transparent hover:border-red-400/20"
                   title="Delete request"
                 >
-                  <Trash2 className="w-4 h-4" />
+                  <Trash2 className="w-5 h-5" />
                 </button>
               </div>
-            </div>
 
-            <p className="text-gray-700 mb-4">{request.description}</p>
+              <p className="text-slate-400 text-sm leading-relaxed mb-6 whitespace-pre-wrap">
+                {request.description}
+              </p>
 
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm text-gray-600 mb-4">
-              <div>
-                <span className="font-medium">Category:</span> {request.category}
-              </div>
-              <div>
-                <span className="font-medium">Created:</span> {new Date(request.createdAt).toLocaleDateString()}
-              </div>
-              {request.preferredVisitAt && (
-                <div>
-                  <span className="font-medium">Preferred Visit:</span> {new Date(request.preferredVisitAt).toLocaleString()}
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 p-4 rounded-xl bg-slate-900/50 border border-white/5 mb-6">
+                <div className="space-y-1">
+                  <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Category</p>
+                  <p className={`text-xs font-semibold ${getCategoryColor(request.category)}`}>
+                    {request.category || 'General'}
+                  </p>
                 </div>
-              )}
-              {request.assignedVisitAt && (
-                <div>
-                  <span className="font-medium">Scheduled Visit:</span> {new Date(request.assignedVisitAt).toLocaleString()}
+                <div className="space-y-1">
+                  <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Created At</p>
+                  <p className="text-xs font-semibold text-slate-300">
+                    {new Date(request.createdAt).toLocaleDateString()}
+                  </p>
                 </div>
-              )}
-            </div>
-
-            {request.images && request.images.length > 0 && (
-              <div className="mb-4">
-                <p className="text-sm font-medium text-gray-700 mb-2">Images:</p>
-                <div className="flex gap-2 flex-wrap">
-                  {request.images.map((image, index) => {
-                    const imageUrl = image.startsWith('http') ? image : `${baseUrl}${image}`;
-                    return (
-                      <div key={index} className="relative group cursor-pointer" onClick={() => setSelectedImage(imageUrl)}>
-                        <img
-                          src={imageUrl}
-                          alt={`Service request image ${index + 1}`}
-                          className="w-24 h-24 object-cover rounded-lg border border-gray-300 hover:border-purple-400 transition-all"
-                        />
-                        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all rounded-lg flex items-center justify-center">
-                          <Eye className="w-5 h-5 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
+                {request.preferredVisitAt && (
+                  <div className="space-y-1">
+                    <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Preferred Visit</p>
+                    <p className="text-xs font-semibold text-amber-400/80">
+                      {new Date(request.preferredVisitAt).toLocaleDateString()}
+                    </p>
+                  </div>
+                )}
+                {request.assignedVisitAt && (
+                  <div className="space-y-1">
+                    <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Scheduled Visit</p>
+                    <p className="text-xs font-semibold text-blue-400">
+                      {new Date(request.assignedVisitAt).toLocaleDateString()}
+                    </p>
+                  </div>
+                )}
               </div>
-            )}
 
-            {request.timeline && request.timeline.length > 0 && (() => {
-              const adminReplies = request.timeline.filter(item => isAdminReply(item));
-              if (adminReplies.length === 0) return null;
-
-              return (
-                <div className="mt-4 pt-4 border-t border-gray-200">
-                  <p className="text-sm font-medium text-gray-700 mb-2">Admin Replies:</p>
-                  <div className="space-y-2">
-                    {adminReplies.map((item, index) => {
-                      const images = item.images || [];
+              {request.images && request.images.length > 0 && (
+                <div className="mb-6">
+                  <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-3">Service Attachments</p>
+                  <div className="flex gap-3 flex-wrap">
+                    {request.images.map((image, index) => {
+                      const imageUrl = image.startsWith('http') ? image : `${baseUrl}${image}`;
                       return (
                         <div
                           key={index}
-                          className="text-sm p-3 rounded-lg bg-purple-50 border border-purple-200"
+                          className="relative group/img cursor-pointer"
+                          onClick={() => {
+                            const allImageUrls = request.images.map(img =>
+                              img.startsWith('http') ? img : `${baseUrl}${img}`
+                            );
+                            setSelectedImage({
+                              url: imageUrl,
+                              index: index,
+                              allImages: allImageUrls
+                            });
+                          }}
                         >
-                          <div className="flex items-center gap-2 mb-1">
-                            <span className="font-medium text-purple-900">
-                              {item.addedBy}
-                            </span>
-                            <span className="text-xs px-2 py-0.5 bg-purple-200 text-purple-800 rounded-full font-medium">
-                              Admin
-                            </span>
+                          <img
+                            src={imageUrl}
+                            alt={`Service request image ${index + 1}`}
+                            className="w-24 h-24 object-cover rounded-xl border border-white/10 group-hover/img:border-blue-500/50 transition-all"
+                          />
+                          <div className="absolute inset-0 bg-blue-600/20 opacity-0 group-hover/img:opacity-100 transition-opacity rounded-xl flex items-center justify-center">
+                            <Eye className="w-5 h-5 text-white" />
                           </div>
-                          <p className="text-purple-800 mb-2">
-                            {item.note}
-                          </p>
-                          {images.length > 0 && (
-                            <div className="mt-2 grid grid-cols-3 gap-2">
-                              {images.map((image, imgIndex) => {
-                                const imageUrl = image.startsWith('http')
-                                  ? image
-                                  : `${baseUrl}${image}`;
-                                return (
-                                  <img
-                                    key={imgIndex}
-                                    src={imageUrl}
-                                    alt={`Admin attachment ${imgIndex + 1}`}
-                                    className="w-full h-20 object-cover rounded-lg border-2 border-purple-200 cursor-pointer hover:border-purple-400 transition-all"
-                                    onClick={() => {
-                                      const allImageUrls = images.map(img => img.startsWith('http') ? img : `${baseUrl}${img}`);
-                                      setSelectedImage({ url: imageUrl, index: imgIndex, allImages: allImageUrls });
-                                    }}
-                                  />
-                                );
-                              })}
-                            </div>
-                          )}
-                          <span className="text-xs mt-2 block text-purple-600">
-                            {new Date(item.addedAt).toLocaleString()}
-                          </span>
                         </div>
                       );
                     })}
                   </div>
                 </div>
-              );
-            })()}
+              )}
+
+              {request.timeline && request.timeline.length > 0 && (() => {
+                const adminReplies = request.timeline.filter(item => isAdminReply(item));
+                if (adminReplies.length === 0) return null;
+
+                return (
+                  <div className="mt-6 pt-6 border-t border-white/5 space-y-4">
+                    <div className="flex items-center gap-2 mb-2">
+                      <div className="w-1.5 h-4 bg-violet-500 rounded-full shadow-[0_0_10px_rgba(139,92,246,0.5)]"></div>
+                      <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Admin Support Activity</p>
+                    </div>
+                    <div className="space-y-4">
+                      {adminReplies.map((item, index) => {
+                        const images = item.images || [];
+                        return (
+                          <div key={index} className="bg-white/[0.02] border border-white/5 rounded-2xl p-5 relative overflow-hidden group/reply">
+                            <div className="absolute top-0 right-0 p-4 opacity-[0.03] pointer-events-none group-hover/reply:opacity-[0.05] transition-opacity">
+                              <MessageSquare className="w-12 h-12 text-white" />
+                            </div>
+                            <div className="flex items-start gap-4">
+                              <div className="flex-shrink-0">
+                                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-violet-600 to-indigo-600 flex items-center justify-center shadow-lg shadow-violet-500/10">
+                                  <span className="text-white font-bold text-xs">A</span>
+                                </div>
+                              </div>
+                              <div className="flex-1">
+                                <div className="flex items-center justify-between mb-2">
+                                  <p className="text-sm font-bold text-white group-hover/reply:text-violet-400 transition-colors">
+                                    {item.addedBy || 'Support Team'}
+                                  </p>
+                                  <div className="flex items-center gap-1 text-[10px] text-slate-500 font-medium">
+                                    <Clock className="w-3 h-3" />
+                                    {new Date(item.addedAt).toLocaleString()}
+                                  </div>
+                                </div>
+                                <p className="text-sm text-slate-400 leading-relaxed mb-4">{item.note}</p>
+
+                                {images.length > 0 && (
+                                  <div className="mt-3 grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-5 gap-3">
+                                    {images.map((image, imgIndex) => {
+                                      const imageUrl = image.startsWith('http') ? image : `${baseUrl}${image}`;
+                                      return (
+                                        <div
+                                          key={imgIndex}
+                                          className="relative group/replyimg cursor-pointer"
+                                          onClick={() => {
+                                            const allImageUrls = images.map(img => img.startsWith('http') ? img : `${baseUrl}${img}`);
+                                            setSelectedImage({ url: imageUrl, index: imgIndex, allImages: allImageUrls });
+                                          }}
+                                        >
+                                          <img
+                                            src={imageUrl}
+                                            alt={`Admin attachment ${imgIndex + 1}`}
+                                            className="w-full h-20 object-cover rounded-xl border border-white/10 group-hover/replyimg:border-violet-500/50 transition-all"
+                                          />
+                                          <div className="absolute inset-0 bg-violet-600/20 opacity-0 group-hover/replyimg:opacity-100 transition-opacity rounded-xl flex items-center justify-center">
+                                            <Eye className="w-4 h-4 text-white" />
+                                          </div>
+                                        </div>
+                                      );
+                                    })}
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                );
+              })()}
+            </div>
           </div>
         );
       })}
@@ -325,18 +370,62 @@ const ServiceRequestListUser = ({ onRefresh }) => {
         >
           <div className="relative w-full h-full flex items-center justify-center">
             <button
-              onClick={() => setSelectedImage(null)}
+              onClick={(e) => { e.stopPropagation(); setSelectedImage(null); }}
               className="absolute top-4 right-4 z-10 w-12 h-12 flex items-center justify-center bg-white/10 hover:bg-white/20 text-white rounded-full transition-all backdrop-blur-sm"
               aria-label="Close"
             >
               <X className="w-6 h-6" />
             </button>
+
+            {/* Previous Image Button */}
+            {selectedImage.allImages && selectedImage.allImages.length > 1 && selectedImage.index > 0 && (
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setSelectedImage({
+                    ...selectedImage,
+                    index: selectedImage.index - 1,
+                    url: selectedImage.allImages[selectedImage.index - 1]
+                  });
+                }}
+                className="absolute left-4 z-10 w-12 h-12 flex items-center justify-center bg-white/10 hover:bg-white/20 text-white rounded-full transition-all backdrop-blur-sm"
+                aria-label="Previous image"
+              >
+                <ChevronLeft className="w-6 h-6" />
+              </button>
+            )}
+
             <img
-              src={selectedImage}
+              src={selectedImage.url || selectedImage}
               alt="Full size"
               className="max-w-full max-h-full object-contain rounded-lg shadow-2xl"
               onClick={(e) => e.stopPropagation()}
             />
+
+            {/* Next Image Button */}
+            {selectedImage.allImages && selectedImage.allImages.length > 1 && selectedImage.index < selectedImage.allImages.length - 1 && (
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setSelectedImage({
+                    ...selectedImage,
+                    index: selectedImage.index + 1,
+                    url: selectedImage.allImages[selectedImage.index + 1]
+                  });
+                }}
+                className="absolute right-4 z-10 w-12 h-12 flex items-center justify-center bg-white/10 hover:bg-white/20 text-white rounded-full transition-all backdrop-blur-sm"
+                aria-label="Next image"
+              >
+                <ChevronRight className="w-6 h-6" />
+              </button>
+            )}
+
+            {/* Image Counter */}
+            {selectedImage.allImages && selectedImage.allImages.length > 1 && (
+              <div className="absolute top-4 left-1/2 transform -translate-x-1/2 z-10 px-4 py-2 bg-white/10 backdrop-blur-sm rounded-full text-white text-sm font-medium">
+                {selectedImage.index + 1} / {selectedImage.allImages.length}
+              </div>
+            )}
           </div>
         </div>
       )}
@@ -355,52 +444,54 @@ const ServiceRequestListUser = ({ onRefresh }) => {
 
       {/* Delete Confirmation Modal */}
       {showDeleteModal && requestToDelete && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-          <div className="bg-white rounded-2xl shadow-2xl max-w-lg w-full border border-slate-200 p-6 space-y-4">
-            <div className="flex items-start justify-between">
-              <div>
-                <h3 className="text-xl font-bold text-slate-900">Delete Service Request</h3>
-                <p className="text-sm text-slate-600 mt-1">
-                  Are you sure you want to delete service request <span className="font-semibold">{requestToDelete.requestId}</span>?
-                </p>
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-950/80 backdrop-blur-md p-4">
+          <div className="bg-slate-900 rounded-3xl shadow-2xl max-w-lg w-full border border-white/10 p-8 relative overflow-hidden animate-fade-in-up">
+            <div className="absolute top-0 right-0 p-12 opacity-[0.02] pointer-events-none">
+              <Trash2 className="w-32 h-32 text-white" />
+            </div>
+
+            <div className="relative z-10">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-2xl bg-red-500/10 border border-red-500/20 flex items-center justify-center shadow-lg shadow-red-500/5">
+                  <Trash2 className="w-6 h-6 text-red-400" />
+                </div>
+                <div>
+                  <h3 className="text-xl font-bold text-white tracking-tight">Purge Request</h3>
+                  <p className="text-sm text-slate-500 mt-1">
+                    Delete request <span className="font-bold text-slate-300">#{requestToDelete.requestId}</span>
+                  </p>
+                </div>
               </div>
-              <button
-                onClick={() => {
-                  setShowDeleteModal(false);
-                  setRequestToDelete(null);
-                }}
-                className="text-slate-500 hover:text-slate-700"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-            <div className="bg-amber-50 border border-amber-200 rounded-xl p-3 text-sm text-amber-800">
-              This action cannot be undone. All data associated with this request will be permanently removed.
-            </div>
-            <div className="flex justify-end gap-3">
-              <button
-                onClick={() => {
-                  setShowDeleteModal(false);
-                  setRequestToDelete(null);
-                }}
-                className="px-4 py-2 rounded-lg border border-slate-200 text-slate-700 hover:bg-slate-50 transition-colors"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleDeleteRequest}
-                disabled={isDeleting}
-                className="px-4 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700 transition-colors inline-flex items-center gap-2 disabled:opacity-50"
-              >
-                {isDeleting ? (
-                  <>
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                    Deleting...
-                  </>
-                ) : (
-                  'Delete Request'
-                )}
-              </button>
+
+              <div className="bg-red-500/5 border border-red-500/10 rounded-2xl p-4 text-sm text-red-200/70 mb-8 leading-relaxed">
+                This will permanently remove the service request and all associated history. This operation is irreversible.
+              </div>
+
+              <div className="flex gap-3">
+                <button
+                  onClick={() => {
+                    setShowDeleteModal(false);
+                    setRequestToDelete(null);
+                  }}
+                  className="flex-1 px-6 py-3 rounded-2xl border border-white/5 text-slate-400 font-bold hover:bg-white/5 transition-all"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleDeleteRequest}
+                  disabled={isDeleting}
+                  className="flex-1 px-6 py-3 rounded-2xl bg-gradient-to-r from-red-600 to-rose-600 text-white font-bold hover:shadow-lg hover:shadow-red-600/20 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+                >
+                  {isDeleting ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      Wiping Data...
+                    </>
+                  ) : (
+                    'Purge Request'
+                  )}
+                </button>
+              </div>
             </div>
           </div>
         </div>

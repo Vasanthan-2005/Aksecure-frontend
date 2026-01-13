@@ -1,21 +1,28 @@
-import { Shield, LogOut, LayoutDashboard, Ticket, Users, FileText } from 'lucide-react';
+import { Shield, LogOut, LayoutDashboard, Ticket, Users } from 'lucide-react';
 
-const AdminNavigation = ({ user, logout, activeTab, setActiveTab }) => {
+const AdminNavigation = ({ user, logout, activeTab, setActiveTab, onDashboardClick, onTicketsClick, onUsersClick }) => {
   return (
     <nav className="glass sticky top-0 z-50 border-b border-white/5 bg-slate-900/50 backdrop-blur-xl">
       <div className="max-w-[1920px] mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-20">
 
           {/* Logo Section */}
-          <div className="flex items-center gap-3 group">
+          <button
+            onClick={() => {
+              setActiveTab("dashboard");
+              if (onDashboardClick) onDashboardClick();
+            }}
+            className="flex items-center gap-3 group hover:opacity-80 transition-opacity cursor-pointer"
+          >
             <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-blue-600 to-violet-600 flex items-center justify-center shadow-lg shadow-blue-500/20 group-hover:shadow-blue-500/40 transition-all duration-300">
               <Shield className="w-5 h-5 text-white" />
             </div>
-            <div>
-              <p className="text-base font-bold text-white tracking-tight group-hover:text-blue-400 transition-colors">Admin Portal</p>
-              <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Management System</p>
+            <div className="hidden lg:block text-left">
+              <p className="text-lg font-black text-white tracking-tighter group-hover:text-blue-400 transition-colors">Admin Portal</p>
+              <p className="text-[10px] text-slate-500 font-black uppercase tracking-[0.2em]">Management System</p>
             </div>
-          </div>
+          </button>
+
 
           {/* User Profile & Logout */}
           <div className="flex items-center gap-4">
@@ -26,17 +33,17 @@ const AdminNavigation = ({ user, logout, activeTab, setActiveTab }) => {
                 </div>
               </div>
               <div className="flex flex-col items-start pr-2">
-                <span className="text-sm font-bold text-slate-200 tracking-tight">{user?.name}</span>
-                <span className="text-[10px] text-blue-400 font-bold uppercase tracking-wider">Administrator</span>
+                <span className="text-sm font-black text-slate-100 tracking-tight">{user?.name}</span>
+                <span className="text-[9px] text-blue-500 font-black uppercase tracking-widest px-1.5 py-0.5 bg-blue-500/10 rounded-md">Super Admin</span>
               </div>
             </div>
 
             <button
               onClick={logout}
-              className="inline-flex items-center gap-2 p-2 sm:px-4 sm:py-2 rounded-xl text-xs font-bold text-red-400 hover:text-white hover:bg-red-500 shadow-lg shadow-red-500/10 hover:shadow-red-500/30 border border-red-500/20 hover:border-red-500 transition-all duration-300 group"
+              className="inline-flex items-center gap-2.5 px-5 py-2.5 rounded-2xl text-[11px] font-black uppercase tracking-widest text-red-400 hover:text-white bg-red-500/5 hover:bg-red-500 shadow-lg shadow-red-500/5 hover:shadow-red-500/20 border border-red-500/20 hover:border-red-500 transition-all duration-500 group"
               title="Logout"
             >
-              <LogOut className="w-4 h-4 group-hover:-translate-x-0.5 transition-transform" />
+              <LogOut className="w-4 h-4 group-hover:-translate-x-1 transition-transform duration-500" />
               <span className="hidden sm:inline">Logout</span>
             </button>
           </div>
@@ -47,4 +54,3 @@ const AdminNavigation = ({ user, logout, activeTab, setActiveTab }) => {
 };
 
 export default AdminNavigation;
-

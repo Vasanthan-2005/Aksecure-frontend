@@ -10,12 +10,17 @@ import UserProfile from './components/UserProfile';
 import TicketsPage from './components/TicketsPage';
 import ServiceRequestsPage from './components/ServiceRequestsPage';
 import AdminPortal from './components/AdminPortal';
+import LoadingState from './components/common/LoadingState';
 
 const PrivateRoute = ({ children, adminOnly = false, userOnly = false }) => {
   const { user, loading } = useAuth();
 
   if (loading) {
-    return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
+    return (
+      <div className="min-h-screen bg-slate-950 flex items-center justify-center">
+        <LoadingState message="Authenticating" />
+      </div>
+    );
   }
 
   if (!user) {

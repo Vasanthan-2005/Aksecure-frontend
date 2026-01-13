@@ -67,24 +67,25 @@ const ServiceRequestDetailsPanel = ({
           <div className="glass-card p-6 rounded-2xl border border-slate-700/50 shadow-xl bg-slate-900/60 backdrop-blur-xl animate-fade-in-up" style={{ animationDelay: '0.1s' }}>
             <div className="flex items-start justify-between mb-6">
               <div className="flex-1">
-                <div className="flex items-center gap-4 mb-3">
+                <div className="flex items-center gap-4 mb-4">
                   <h2 className="text-3xl font-bold text-white tracking-tight">
                     {serviceRequest.title}
                   </h2>
                   <span
-                    className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-bold border shadow-lg shadow-black/20 ${serviceRequest.status === 'New' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' :
+                    className={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-[11px] font-black uppercase tracking-widest border shadow-xl shadow-black/40 ${serviceRequest.status === 'New' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' :
                       serviceRequest.status === 'In Progress' ? 'bg-blue-500/10 text-blue-400 border-blue-500/20' :
                         serviceRequest.status === 'Completed' ? 'bg-green-500/10 text-green-400 border-green-500/20' :
                           'bg-slate-500/10 text-slate-400 border-slate-500/20'
                       }`}
                   >
+                    <div className={`w-2 h-2 rounded-full animate-pulse ${serviceRequest.status === 'New' ? 'bg-emerald-400' : serviceRequest.status === 'In Progress' ? 'bg-blue-400' : 'bg-green-400'}`} />
                     {serviceRequest.status}
                   </span>
                 </div>
-                <p className="text-sm text-slate-400 mb-3 font-medium">
-                  Request ID: <span className="font-mono text-slate-200 bg-slate-800 px-2 py-0.5 rounded border border-white/5">{serviceRequest.requestId}</span>
+                <p className="text-sm text-slate-500 mb-4 font-black uppercase tracking-widest">
+                  REFERENCE ID: <span className="font-mono text-slate-200 bg-slate-900 px-3 py-1 rounded-lg border border-white/5 ml-2 text-base">{serviceRequest.requestId}</span>
                 </p>
-                <span className={`inline-block px-3 py-1 rounded-lg text-xs font-bold border uppercase tracking-wider ${getCategoryColor(serviceRequest.category)}`}>
+                <span className={`inline-block px-4 py-1.5 rounded-xl text-[10px] font-black border uppercase tracking-[0.2em] shadow-lg ${getCategoryColor(serviceRequest.category)}`}>
                   {serviceRequest.category}
                 </span>
               </div>
@@ -104,7 +105,7 @@ const ServiceRequestDetailsPanel = ({
                     )}
                     <div className="flex items-end gap-2">
                       <div className="flex-1">
-                        <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">
+                        <label className="block text-xs font-bold text-slate-400 uppercase tracking-tight mb-2">
                           Status
                         </label>
                         <select
@@ -118,7 +119,7 @@ const ServiceRequestDetailsPanel = ({
                             : 'border-slate-600 focus:ring-blue-500/50 text-slate-200 hover:border-slate-500'
                             }`}
                         >
-                          {serviceRequestStatusOptions.map((status) => (
+                          {serviceRequestStatusOptions.filter(option => option !== 'New').map((status) => (
                             <option key={status} value={status}>
                               {status}
                             </option>
@@ -128,16 +129,14 @@ const ServiceRequestDetailsPanel = ({
                       <button
                         onClick={onUpdateServiceRequest}
                         disabled={updating}
-                        className="inline-flex items-center justify-center gap-2 px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed text-sm font-bold shadow-lg shadow-emerald-500/20 whitespace-nowrap"
+                        className="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed text-[11px] font-black uppercase tracking-widest shadow-lg shadow-emerald-500/20 whitespace-nowrap border border-emerald-500/50"
                       >
                         {updating ? (
-                          <>
-                            <Loader2 className="w-4 h-4 animate-spin" />
-                          </>
+                          <Loader2 className="w-4 h-4 animate-spin" />
                         ) : (
                           <>
                             <Save className="w-4 h-4" />
-                            Save
+                            UPDATE
                           </>
                         )}
                       </button>
@@ -148,20 +147,20 @@ const ServiceRequestDetailsPanel = ({
             </div>
 
             <div className="bg-slate-800/30 rounded-xl p-6 mb-6 border border-white/5">
-              <h4 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Description</h4>
-              <p className="text-slate-200 leading-relaxed whitespace-pre-wrap break-words text-sm">{serviceRequest.description}</p>
+              <h4 className="text-sm font-bold text-slate-500 uppercase tracking-tight mb-3">Description</h4>
+              <p className="text-slate-200 leading-relaxed whitespace-pre-wrap break-words text-base font-medium font-sans">{serviceRequest.description}</p>
             </div>
 
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               <div className="bg-slate-800/40 rounded-xl p-4 border border-white/5 hover:border-white/10 transition-all">
                 <div className="flex items-center gap-2 mb-2">
                   <Calendar className="w-4 h-4 text-slate-400" />
-                  <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Created</span>
+                  <span className="text-xs text-slate-500 font-bold uppercase tracking-tight">Created</span>
                 </div>
-                <p className="font-bold text-white text-sm">
+                <p className="font-bold text-white text-base">
                   {new Date(serviceRequest.createdAt).toLocaleDateString()}
                 </p>
-                <p className="text-xs text-slate-500 mt-0.5 font-mono">
+                <p className="text-sm text-slate-500 mt-0.5 font-mono">
                   {new Date(serviceRequest.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                 </p>
               </div>
@@ -169,12 +168,12 @@ const ServiceRequestDetailsPanel = ({
                 <div className="bg-blue-500/5 rounded-xl p-4 border border-blue-500/10 hover:border-blue-500/20 transition-all">
                   <div className="flex items-center gap-2 mb-2">
                     <Clock className="w-4 h-4 text-blue-400" />
-                    <span className="text-[10px] text-blue-400/80 font-bold uppercase tracking-wider">Preferred</span>
+                    <span className="text-xs text-blue-400/80 font-bold uppercase tracking-tight">Preferred</span>
                   </div>
-                  <p className="font-bold text-blue-100 text-sm">
+                  <p className="font-bold text-blue-100 text-base">
                     {new Date(serviceRequest.preferredVisitAt).toLocaleDateString()}
                   </p>
-                  <p className="text-xs text-blue-300/70 mt-0.5 font-mono">
+                  <p className="text-sm text-blue-300/70 mt-0.5 font-mono">
                     {new Date(serviceRequest.preferredVisitAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                   </p>
                 </div>
@@ -183,13 +182,27 @@ const ServiceRequestDetailsPanel = ({
                 <div className="bg-emerald-500/5 rounded-xl p-4 border border-emerald-500/10 hover:border-emerald-500/20 transition-all">
                   <div className="flex items-center gap-2 mb-2">
                     <Clock className="w-4 h-4 text-emerald-400" />
-                    <span className="text-[10px] text-emerald-400/80 font-bold uppercase tracking-wider">Assigned</span>
+                    <span className="text-xs text-emerald-400/80 font-bold uppercase tracking-tight">Assigned</span>
                   </div>
-                  <p className="font-bold text-emerald-100 text-sm">
+                  <p className="font-bold text-emerald-100 text-base">
                     {new Date(serviceRequest.assignedVisitAt).toLocaleDateString()}
                   </p>
-                  <p className="text-xs text-emerald-300/70 mt-0.5 font-mono">
+                  <p className="text-sm text-emerald-300/70 mt-0.5 font-mono">
                     {new Date(serviceRequest.assignedVisitAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                  </p>
+                </div>
+              )}
+              {serviceRequest.completedAt && (
+                <div className="bg-slate-700/20 rounded-xl p-4 border border-slate-600/30 hover:border-slate-500/40 transition-all">
+                  <div className="flex items-center gap-2 mb-2">
+                    <CheckCircle2 className="w-4 h-4 text-slate-400" />
+                    <span className="text-xs text-slate-400/80 font-bold uppercase tracking-tight">Completed</span>
+                  </div>
+                  <p className="font-bold text-slate-200 text-base">
+                    {new Date(serviceRequest.completedAt).toLocaleDateString()}
+                  </p>
+                  <p className="text-sm text-slate-400/70 mt-0.5 font-mono">
+                    {new Date(serviceRequest.completedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                   </p>
                 </div>
               )}

@@ -41,7 +41,7 @@ const UserListPanel = ({
               <Users className="w-5 h-5 text-violet-400" />
             </div>
             <div>
-              <h2 className="text-xl font-bold text-white tracking-tight">All Users</h2>
+              <h2 className="text-2xl font-bold text-white tracking-tight">All Users</h2>
               <p className="text-xs text-slate-400 mt-0.5 font-medium">Manage registered users</p>
             </div>
           </div>
@@ -116,11 +116,11 @@ const UserListPanel = ({
                   <User className="w-5 h-5 text-white" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <h3 className={`font-bold text-sm mb-0.5 truncate transition-colors ${selectedUser?._id === userItem._id ? 'text-white' : 'text-slate-300 group-hover:text-white'
+                  <h3 className={`font-bold text-base mb-0.5 truncate transition-colors ${selectedUser?._id === userItem._id ? 'text-white' : 'text-slate-300 group-hover:text-white'
                     }`}>
                     {userItem.name}
                   </h3>
-                  <p className="text-xs text-slate-500 truncate group-hover:text-slate-400 transition-colors">{userItem.email}</p>
+                  <p className="text-sm text-slate-500 truncate group-hover:text-slate-400 transition-colors">{userItem.email}</p>
                 </div>
               </div>
 
@@ -129,13 +129,13 @@ const UserListPanel = ({
                 <div className="grid grid-cols-2 gap-4 flex-1">
                   <div className="min-w-0">
                     <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider block mb-1">Company</span>
-                    <p className="text-xs font-semibold text-slate-300 truncate group-hover:text-white transition-colors" title={userItem.companyName || 'N/A'}>
+                    <p className="text-sm font-semibold text-slate-300 truncate group-hover:text-white transition-colors" title={userItem.companyName || 'N/A'}>
                       {userItem.companyName || 'N/A'}
                     </p>
                   </div>
                   <div className="min-w-0">
                     <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider block mb-1">Tickets</span>
-                    <p className={`text-sm font-bold ${selectedUser?._id === userItem._id ? 'text-violet-400' : 'text-slate-400 group-hover:text-violet-400'
+                    <p className={`text-base font-bold ${selectedUser?._id === userItem._id ? 'text-violet-400' : 'text-slate-400 group-hover:text-violet-400'
                       }`}>{userItem.ticketCount || 0}</p>
                   </div>
                 </div>

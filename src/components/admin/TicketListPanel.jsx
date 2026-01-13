@@ -1,5 +1,5 @@
 import { Filter, AlertCircle, Calendar, Eye, X, Image as ImageIcon, Home, Trash2 } from 'lucide-react';
-import { getStatusColor, getStatusIcon, getCategoryColor, getTicketStats, statusOptions } from './utils.jsx';
+import { getStatusColor, getStatusIcon, getCategoryColor, getTicketStats, getStatusBorderColor, statusOptions } from './utils.jsx';
 import TicketStats from './TicketStats';
 import { useState } from 'react';
 
@@ -44,7 +44,7 @@ const TicketListPanel = ({
           </div>
         )}
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-bold text-white tracking-tight">All Tickets</h2>
+          <h2 className="text-2xl font-bold text-white tracking-tight">All Tickets</h2>
           <div className="flex items-center gap-2">
             {onRefresh && (
               <button
@@ -61,7 +61,13 @@ const TicketListPanel = ({
           </div>
         </div>
 
-        <TicketStats stats={stats} />
+        <div className="mt-4 mb-2">
+          <div className="flex items-center gap-2 mb-3 px-1">
+            <div className="w-1 h-3 rounded-full bg-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.5)]"></div>
+            <h3 className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Overview</h3>
+          </div>
+          <TicketStats stats={stats} showPercentage={false} />
+        </div>
 
         <div className="mt-4">
           <div className="flex items-center gap-2">
@@ -114,9 +120,9 @@ const TicketListPanel = ({
             <button
               key={ticket._id}
               onClick={() => onTicketClick(ticket)}
-              className={`w-full text-left p-4 rounded-xl border transition-all group relative overflow-hidden ${selectedTicket?._id === ticket._id
-                ? 'bg-blue-500/10 border-blue-500/50 shadow-[0_0_20px_rgba(59,130,246,0.1)]'
-                : 'bg-slate-800/30 border-white/5 hover:border-blue-500/30 hover:bg-slate-800/60'
+              className={`w-full text-left p-4 rounded-xl border transition-all group relative overflow-hidden ${getStatusBorderColor(ticket.status)} ${selectedTicket?._id === ticket._id
+                ? 'ring-2 ring-blue-500 ring-offset-2 ring-offset-slate-900 border-blue-500 shadow-[0_0_20px_rgba(59,130,246,0.2)]'
+                : 'hover:border-white/20 hover:bg-white/5'
                 }`}
             >
               {selectedTicket?._id === ticket._id && (
@@ -124,7 +130,7 @@ const TicketListPanel = ({
               )}
               <div className="flex items-start justify-between gap-2 mb-2 pl-2">
                 <div className="flex-1 min-w-0">
-                  <h3 className={`font-bold text-sm mb-1 line-clamp-1 transition-colors ${selectedTicket?._id === ticket._id ? 'text-white' : 'text-slate-300 group-hover:text-white'
+                  <h3 className={`font-bold text-base mb-1 line-clamp-1 transition-colors ${selectedTicket?._id === ticket._id ? 'text-white' : 'text-slate-300 group-hover:text-white'
                     }`}>
                     {ticket.title}
                   </h3>
@@ -141,7 +147,7 @@ const TicketListPanel = ({
               </div>
 
               <div className="pl-2 mb-3">
-                <p className="text-xs text-slate-400 line-clamp-2 leading-relaxed group-hover:text-slate-300 transition-colors">
+                <p className="text-sm text-slate-400 line-clamp-2 leading-relaxed group-hover:text-slate-300 transition-colors">
                   {ticket.description}
                 </p>
               </div>

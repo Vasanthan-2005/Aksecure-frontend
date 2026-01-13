@@ -1,6 +1,8 @@
 import { useEffect, useState, useRef } from 'react';
 import api from '../services/api';
-import { Upload, X, Image as ImageIcon } from 'lucide-react';
+import { Upload, X, Image as ImageIcon, ArrowLeft, Calendar, Clock, Wrench } from 'lucide-react';
+import LoadingState from './common/LoadingState';
+import SuccessState from './common/SuccessState';
 
 const categories = ['CCTV', 'Fire Alarm', 'Security Alarm', 'Electrical', 'Plumbing', 'Air Conditioning'];
 const timeSlotOptions = [
@@ -21,6 +23,7 @@ const ServiceRequestForm = ({ category, onSuccess, onCancel }) => {
   const [imagePreviews, setImagePreviews] = useState([]);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
   const fileInputRef = useRef(null);
 
   useEffect(() => {
@@ -57,10 +60,10 @@ const ServiceRequestForm = ({ category, onSuccess, onCancel }) => {
       setImagePreviews([]);
       return;
     }
-    
+
     const previews = [];
     let loadedCount = 0;
-    
+
     files.forEach((file, index) => {
       const reader = new FileReader();
       reader.onloadend = () => {
@@ -144,7 +147,7 @@ const ServiceRequestForm = ({ category, onSuccess, onCancel }) => {
       if (fileInputRef.current) {
         fileInputRef.current.value = '';
       }
-      onSuccess?.();
+      setShowSuccess(true);
     } catch (err) {
       const message = err?.response?.data?.message || 'Failed to create service request. Please try again.';
       setError(message);
@@ -155,208 +158,227 @@ const ServiceRequestForm = ({ category, onSuccess, onCancel }) => {
 
   const getMinDate = () => {
     const now = new Date();
-    now.setMinutes(now.getMinutes() - now.getTimezoneOffset()); 
+    now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
     return now.toISOString().slice(0, 10);
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-500 to-slate-100 py-8 px-4">
-      <div className="max-w-3xl mx-auto">
+    <div className="min-h-screen py-8 px-4 relative overflow-hidden">
+      {showSuccess && (
+        <SuccessState
+          title="Request Logged!"
+          message="Your service request has been successfully recorded. A technician will review your requirements and reach out shortly."
+          onComplete={onSuccess}
+        />
+      )}
+      {loading && <LoadingState message="Sending Request..." fullPage={true} />}
+      {/* Background gradients */}
+      <div className="fixed top-0 left-0 w-full h-full overflow-hidden pointer-events-none z-0">
+        <div className="absolute top-[15%] left-[10%] w-[40%] h-[40%] rounded-full bg-violet-600/5 blur-[120px]" />
+        <div className="absolute bottom-[20%] right-[20%] w-[30%] h-[30%] rounded-full bg-blue-600/5 blur-[120px]" />
+      </div>
+
+      <div className="max-w-3xl mx-auto relative z-10">
         <button
           type="button"
           onClick={onCancel}
-          className="mb-4 text-white hover:text-blue-100 font-medium"
+          className="group mb-8 inline-flex items-center gap-2 text-slate-400 hover:text-white transition-colors"
         >
-          ← Back to dashboard
+          <div className="w-8 h-8 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center group-hover:border-white/20 transition-all">
+            <ArrowLeft className="w-4 h-4" />
+          </div>
+          <span className="text-sm font-bold uppercase tracking-widest">Dashboard</span>
         </button>
 
-        <div className="bg-white rounded-2xl shadow-xl p-8 border border-slate-200">
-          <h2 className="text-3xl font-bold text-gray-800 mb-2">Request a New Service</h2>
-          <p className="text-gray-600 mb-6">
-            Enter your details below for a new installation or service. We’ll review it and get back to you soon.
-          </p>
-
-          {error && (
-            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-4">
-              {error}
-            </div>
-          )}
-
-          <form onSubmit={handleSubmit} className="space-y-5">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Service Category <span className="text-red-500">*</span>
-              </label>
-              <p className="text-xs text-gray-500 mb-2">Selected based on your dashboard choice</p>
-              <select
-                name="category"
-                value={formData.category}
-                onChange={handleChange}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100"
-                required
-                disabled={Boolean(category)}
-              >
-                <option value="">-- Please select a category --</option>
-                {categories.map((item) => (
-                  <option key={item} value={item}>
-                    {item}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Detailed Description <span className="text-red-500">*</span>
-              </label>
-              <textarea
-                name="description"
-                value={formData.description}
-                onChange={handleChange}
-                rows="5"
-                placeholder="Describe what service you need in detail. Include any specific requirements, location details, or special instructions."
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                required
-              />
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  <span className="flex items-center gap-2">
-                    <svg className="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                    </svg>
-                    Preferred Visit Date <span className="text-red-500">*</span>
-                  </span>
-                </label>
-                <input
-                  type="date"
-                  name="preferredDate"
-                  value={formData.preferredDate}
-                  onChange={handleChange}
-                  min={getMinDate()}
-                  className="w-full px-4 py-3 border-2 border-blue-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white font-medium text-gray-800 shadow-sm hover:border-blue-400 transition-all"
-                  required
-                />
+        <div className="glass-card rounded-[32px] border border-white/5 p-1 relative overflow-hidden group">
+          <div className="bg-slate-950/20 rounded-[28px] p-8 lg:p-10">
+            <div className="flex items-center gap-4 mb-8">
+              <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-violet-600 to-violet-700 flex items-center justify-center shadow-lg shadow-violet-500/20">
+                <Wrench className="w-7 h-7 text-white" />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  <span className="flex items-center gap-2">
-                    <svg className="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3" />
-                    </svg>
-                    Preferred Time Slot <span className="text-red-500">*</span>
-                  </span>
-                </label>
-                <select
-                  name="preferredTimeSlot"
-                  value={formData.preferredTimeSlot}
-                  onChange={handleChange}
-                  className="w-full px-4 py-3 border-2 border-blue-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white font-medium text-gray-800 shadow-sm hover:border-blue-400 transition-all"
-                  required
-                >
-                  <option value="">Select a preferred slot</option>
-                  {timeSlotOptions.map((slot) => (
-                    <option key={slot.value} value={slot.value}>
-                      {slot.label}
-                    </option>
-                  ))}
-                </select>
+                <h2 className="text-3xl font-bold text-white tracking-tight">New Service</h2>
+                <p className="text-slate-400 text-sm mt-1">Request a new installation or specialized service.</p>
               </div>
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                <span className="flex items-center gap-2">
-                  <ImageIcon className="w-4 h-4 text-blue-600" />
-                  Installation Area Images <span className="text-gray-400 text-xs font-normal">(Optional)</span>
-                </span>
-              </label>
-              <p className="text-xs text-gray-500 mb-2">Upload photos that show the installation area or existing setup to help us understand your request.</p>
-              
-              <div className="relative">
-                <input
-                  type="file"
-                  name="images"
-                  accept="image/*"
-                  multiple
-                  onChange={handleFileChange}
-                  ref={fileInputRef}
-                  className="hidden"
-                  id="image-upload"
-                />
-                <label
-                  htmlFor="image-upload"
-                  className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-blue-300 rounded-xl bg-gradient-to-br from-blue-50 to-indigo-50 hover:from-blue-100 hover:to-indigo-100 cursor-pointer transition-all group"
-                >
-                  <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                    <Upload className="w-8 h-8 text-blue-600 mb-2 group-hover:scale-110 transition-transform" />
-                    <p className="mb-2 text-sm font-semibold text-gray-700">
-                      <span className="text-blue-600">Click to upload</span> or drag and drop
-                    </p>
-                    <p className="text-xs text-gray-500">
-                      Up to {MAX_IMAGES} images (JPG, PNG)
-                    </p>
-                  </div>
-                </label>
+            {error && (
+              <div className="bg-red-500/10 border border-red-500/20 text-red-400 px-6 py-4 rounded-2xl mb-8 flex items-center gap-3 animate-shake">
+                <div className="w-1.5 h-1.5 rounded-full bg-red-400"></div>
+                <p className="text-sm font-medium">{error}</p>
               </div>
+            )}
 
-              {imagePreviews.length > 0 && (
-                <div className="mt-4">
-                  <p className="text-xs font-medium text-gray-700 mb-2">
-                    Selected Images ({imagePreviews.length}/{MAX_IMAGES}):
-                  </p>
-                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
-                    {imagePreviews.map((preview, index) => (
-                      <div key={index} className="relative group">
-                        <div className="aspect-square rounded-lg overflow-hidden border-2 border-gray-200 bg-gray-100">
-                          <img
-                            src={preview.preview}
-                            alt={`Preview ${index + 1}`}
-                            className="w-full h-full object-cover"
-                          />
-                        </div>
-                        <button
-                          type="button"
-                          onClick={() => removeImage(index)}
-                          className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow-lg hover:bg-red-600"
-                          aria-label="Remove image"
-                        >
-                          <X className="w-4 h-4" />
-                        </button>
-                        <p className="mt-1 text-xs text-gray-600 truncate px-1" title={preview.file.name}>
-                          {preview.file.name}
-                        </p>
-                      </div>
-                    ))}
+            <form onSubmit={handleSubmit} className="space-y-8">
+              <div className="space-y-6">
+                <div>
+                  <label className="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-3 ml-1">Service Category</label>
+                  <p className="text-[10px] text-slate-600 font-medium mb-3 ml-1">AUTOMATICALLY SELECTED BASED ON YOUR CHOICE</p>
+                  <div className="relative group">
+                    <select
+                      name="category"
+                      value={formData.category}
+                      onChange={handleChange}
+                      className="w-full px-5 py-4 bg-slate-900/50 border border-white/10 rounded-2xl text-white focus:outline-none focus:ring-2 focus:ring-violet-500/20 focus:border-violet-500/50 transition-all appearance-none cursor-not-allowed disabled:opacity-50 font-bold"
+                      required
+                      disabled={Boolean(category)}
+                    >
+                      <option value="" className="bg-slate-900">Choose Category</option>
+                      {categories.map((item) => (
+                        <option key={item} value={item} className="bg-slate-900">
+                          {item}
+                        </option>
+                      ))}
+                    </select>
+                    <div className="absolute right-5 top-1/2 -translate-y-1/2 pointer-events-none text-slate-600">
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" /></svg>
+                    </div>
                   </div>
                 </div>
-              )}
-            </div>
 
-            <div className="pt-4 border-t border-gray-200">
-              <p className="text-xs text-gray-500 mb-4">
-                <span className="text-red-500">*</span> Required fields must be filled before submitting.
-              </p>
-              <div className="flex flex-col sm:flex-row gap-3">
-                <button
-                  type="submit"
-                  disabled={loading}
-                  className="flex-1 bg-blue-600 text-white py-3 px-6 rounded-lg hover:bg-blue-700 disabled:opacity-50 transition font-semibold shadow-md hover:shadow-lg"
-                >
-                  {loading ? 'Submitting Request...' : 'Submit Service Request'}
-                </button>
-                <button
-                  type="button"
-                  onClick={onCancel}
-                  className="flex-1 border border-gray-300 text-gray-700 py-3 px-6 rounded-lg hover:bg-gray-50 transition font-medium"
-                >
-                  Cancel
-                </button>
+                <div>
+                  <label className="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-3 ml-1">Detailed Description</label>
+                  <textarea
+                    name="description"
+                    value={formData.description}
+                    onChange={handleChange}
+                    rows="6"
+                    placeholder="Describe what service you need in detail. Include specific requirements, location details, or special instructions..."
+                    className="w-full px-5 py-4 bg-slate-900/50 border border-white/10 rounded-2xl text-white placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-violet-500/20 focus:border-violet-500/50 transition-all font-medium resize-none shadow-inner"
+                    required
+                  />
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <label className="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-3 ml-1 flex items-center gap-2">
+                      <Calendar className="w-3.5 h-3.5" />
+                      Visit Date <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      type="date"
+                      name="preferredDate"
+                      value={formData.preferredDate}
+                      onChange={handleChange}
+                      min={getMinDate()}
+                      className="w-full px-5 py-4 bg-slate-900/50 border border-white/10 rounded-2xl text-white focus:outline-none focus:ring-2 focus:ring-violet-500/20 focus:border-violet-500/50 transition-all font-medium [color-scheme:dark]"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-3 ml-1 flex items-center gap-2">
+                      <Clock className="w-3.5 h-3.5" />
+                      Time Slot <span className="text-red-500">*</span>
+                    </label>
+                    <div className="relative group">
+                      <select
+                        name="preferredTimeSlot"
+                        value={formData.preferredTimeSlot}
+                        onChange={handleChange}
+                        className="w-full px-5 py-4 bg-slate-900/50 border border-white/10 rounded-2xl text-white focus:outline-none focus:ring-2 focus:ring-violet-500/20 focus:border-violet-500/50 transition-all appearance-none cursor-pointer font-medium"
+                        required
+                      >
+                        <option value="" className="bg-slate-900">Select Slot</option>
+                        {timeSlotOptions.map((slot) => (
+                          <option key={slot.value} value={slot.value} className="bg-slate-900">
+                            {slot.label}
+                          </option>
+                        ))}
+                      </select>
+                      <div className="absolute right-5 top-1/2 -translate-y-1/2 pointer-events-none text-slate-500 group-hover:text-violet-400 transition-colors">
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" /></svg>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-3 ml-1 flex items-center gap-2">
+                    <Upload className="w-3.5 h-3.5" />
+                    Area Images
+                    <span className="text-[10px] text-slate-600 font-normal normal-case ml-auto">Optional • Max {MAX_IMAGES}</span>
+                  </label>
+                  <p className="text-[10px] text-slate-500 mb-3 ml-1 uppercase tracking-tight">Photos of the installation setup help us provide a better quote.</p>
+
+                  <div className="relative">
+                    <input
+                      type="file"
+                      name="images"
+                      accept="image/*"
+                      multiple
+                      onChange={handleFileChange}
+                      ref={fileInputRef}
+                      className="hidden"
+                      id="image-upload"
+                    />
+                    <label
+                      htmlFor="image-upload"
+                      className="flex flex-col items-center justify-center w-full h-40 border-2 border-dashed border-white/10 rounded-3xl bg-slate-950/20 hover:bg-slate-900/50 hover:border-violet-500/30 cursor-pointer transition-all group"
+                    >
+                      <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                        <div className="w-12 h-12 rounded-xl bg-violet-500/10 border border-violet-500/20 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
+                          <Upload className="w-6 h-6 text-violet-400" />
+                        </div>
+                        <p className="text-sm font-bold text-slate-300 mb-1">
+                          <span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-400 to-blue-400">Click to upload</span> or drag and drop
+                        </p>
+                        <p className="text-[10px] text-slate-500 font-medium uppercase tracking-widest">
+                          JPG, PNG formats supported
+                        </p>
+                      </div>
+                    </label>
+                  </div>
+
+                  {imagePreviews.length > 0 && (
+                    <div className="mt-6 flex flex-wrap gap-4">
+                      {imagePreviews.map((preview, index) => (
+                        <div key={index} className="relative group/img">
+                          <div className="w-20 h-20 rounded-xl overflow-hidden border border-white/10 bg-slate-900 shadow-xl group-hover/img:border-violet-500/50 transition-all">
+                            <img
+                              src={preview.preview}
+                              alt={`Preview ${index + 1}`}
+                              className="w-full h-full object-cover"
+                            />
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => removeImage(index)}
+                            className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center opacity-0 group-hover/img:opacity-100 transition-all shadow-lg hover:scale-110"
+                          >
+                            <X className="w-3 h-3" />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
               </div>
-            </div>
-          </form>
+
+              <div className="pt-8 border-t border-white/5">
+                <p className="text-[10px] text-slate-600 mb-6 flex items-center gap-2 uppercase tracking-widest font-bold">
+                  <span className="w-1.5 h-1.5 rounded-full bg-violet-500 animate-pulse"></span>
+                  Professional installation guaranteed
+                </p>
+                <div className="flex flex-col sm:flex-row gap-4">
+                  <button
+                    type="submit"
+                    disabled={loading}
+                    className="flex-[2] relative overflow-hidden group h-14 bg-gradient-to-r from-violet-600 to-blue-600 text-white rounded-2xl font-bold uppercase tracking-wider text-sm transition-all hover:shadow-[0_0_25px_rgba(139,92,246,0.4)] disabled:opacity-50 active:scale-95 flex items-center justify-center"
+                  >
+                    <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform"></div>
+                    <span className="relative z-10">{loading ? 'Requesting...' : 'Confirm Service Request'}</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={onCancel}
+                    className="flex-1 h-14 border border-white/10 bg-slate-900/50 text-slate-400 hover:text-white hover:border-white/20 rounded-2xl font-bold uppercase tracking-wider text-xs transition-all active:scale-95"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            </form>
+          </div>
         </div>
       </div>
     </div>

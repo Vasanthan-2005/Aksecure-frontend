@@ -42,7 +42,7 @@ const VisitCalendar = ({ tickets, serviceRequests, onEventSelect }) => {
   }, [tickets, serviceRequests]);
 
   // CALENDAR BUILD
-  const getCalendarDays = () => {
+  const days = useMemo(() => {
     const year = currentDate.getFullYear();
     const month = currentDate.getMonth();
 
@@ -57,7 +57,7 @@ const VisitCalendar = ({ tickets, serviceRequests, onEventSelect }) => {
     for (let d = 1; d <= daysInMonth; d++) arr.push(new Date(year, month, d));
 
     return arr;
-  };
+  }, [currentDate]);
 
   const isToday = date => date && date.toDateString() === today.toDateString();
   const isPastDate = date => date && date < today;
@@ -85,10 +85,9 @@ const VisitCalendar = ({ tickets, serviceRequests, onEventSelect }) => {
     }
   };
 
-  const days = getCalendarDays();
-
   return (
-    <div className="glass-card flex-1 flex flex-col bg-gradient-to-br from-slate-900/80 to-slate-950/80 backdrop-blur-xl border border-slate-700/50 rounded-2xl p-2.5 shadow-xl overflow-hidden h-full">
+    <div className="glass-card flex-1 flex flex-col bg-gradient-to-br from-slate-900/60 to-slate-950/60 backdrop-blur-md border border-white/5 rounded-2xl p-3 shadow-xl overflow-hidden h-full relative group">
+      <div className="absolute inset-0 bg-grid-white-pattern opacity-10 pointer-events-none" />
 
       {/* HEADER */}
       <div className="flex items-center justify-between mb-2">
@@ -123,11 +122,11 @@ const VisitCalendar = ({ tickets, serviceRequests, onEventSelect }) => {
       </div>
 
       {/* WEEKDAY LABELS */}
-      <div className="grid grid-cols-7 gap-1.5 mb-2">
+      <div className="grid grid-cols-7 gap-1 mb-2">
         {dayNames.map(d => (
           <div
             key={d}
-            className="text-center text-[10px] font-bold text-slate-500 h-6 flex items-center justify-center uppercase tracking-wider"
+            className="text-center text-[9px] font-bold text-slate-500 h-5 flex items-center justify-center uppercase tracking-wider"
           >
             {d}
           </div>
@@ -135,7 +134,7 @@ const VisitCalendar = ({ tickets, serviceRequests, onEventSelect }) => {
       </div>
 
       {/* CALENDAR GRID */}
-      <div className="grid grid-cols-7 grid-rows-6 gap-2 w-full">
+      <div className="grid grid-cols-7 grid-rows-6 gap-x-2 gap-y-2.5 w-full flex-1 min-h-0 px-1 items-center">
         {days.map((date, i) => {
           // EMPTY CELLS
           if (!date)
@@ -166,11 +165,11 @@ const VisitCalendar = ({ tickets, serviceRequests, onEventSelect }) => {
               onClick={() => handleDateClick(date)}
               disabled={past}
               className={`
-                w-full aspect-square rounded-lg flex flex-col items-center justify-center text-xs transition-all relative group
-                ${past ? "opacity-50 cursor-not-allowed text-slate-400 bg-slate-800/30" : "cursor-pointer"}
-                ${isTodayDate && !selected ? "bg-gradient-to-br from-cyan-500/30 to-blue-500/30 text-cyan-200 border-2 border-cyan-400/60 font-bold shadow-[0_0_20px_rgba(6,182,212,0.4)]" : ""}
-                ${selected ? "bg-gradient-to-br from-cyan-500 to-blue-600 text-white border-2 border-cyan-400 shadow-[0_0_25px_rgba(6,182,212,0.5)] scale-110 z-10 font-bold" : ""}
-                ${!past && !selected && !isTodayDate && !hasVisits ? "text-slate-400 hover:bg-slate-800/60 hover:border-slate-600 hover:text-white border border-transparent bg-slate-800/20" : ""}
+                w-[90%] aspect-square rounded-md mx-auto my-auto flex flex-col items-center justify-center text-[11px] transition-all relative group
+                ${past ? "opacity-40 cursor-not-allowed text-slate-500 bg-slate-800/10" : "cursor-pointer"}
+                ${isTodayDate && !selected ? "bg-gradient-to-br from-cyan-500/30 to-blue-500/30 text-cyan-200 border border-cyan-400/60 font-bold shadow-[0_0_15px_rgba(6,182,212,0.3)]" : ""}
+                ${selected ? "bg-gradient-to-br from-cyan-500 to-blue-600 text-white border border-cyan-400 shadow-[0_0_20px_rgba(6,182,212,0.4)] scale-105 z-10 font-bold" : ""}
+                ${!past && !selected && !isTodayDate && !hasVisits ? "text-slate-400 hover:bg-slate-800/60 hover:border-slate-600 hover:text-white border border-transparent bg-slate-800/5" : ""}
                 ${!past && !selected && !isTodayDate && hasVisits ? `border ${visitBgClass} hover:scale-105` : ""}
               `}
             >
@@ -201,12 +200,12 @@ const VisitCalendar = ({ tickets, serviceRequests, onEventSelect }) => {
       {/* LEGEND */}
       <div className="flex items-center justify-center gap-4 mt-2 pt-2 border-t border-white/5">
         <div className="flex items-center gap-1.5">
-          <span className="w-2.5 h-2.5 rounded-full bg-cyan-400 shadow-[0_0_8px_rgba(6,182,212,0.8)]"></span>
-          <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Ticket</span>
+          <span className="w-2 h-2 rounded-full bg-cyan-400 shadow-[0_0_8px_rgba(6,182,212,0.8)]"></span>
+          <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Ticket</span>
         </div>
         <div className="flex items-center gap-1.5">
-          <span className="w-2.5 h-2.5 rounded-full bg-fuchsia-400 shadow-[0_0_8px_rgba(217,70,239,0.8)]"></span>
-          <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Service</span>
+          <span className="w-2 h-2 rounded-full bg-fuchsia-400 shadow-[0_0_8px_rgba(217,70,239,0.8)]"></span>
+          <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Service</span>
         </div>
       </div>
     </div>

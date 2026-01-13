@@ -1,5 +1,6 @@
 import { Filter, AlertCircle, Calendar, Eye, X, Home, Trash2 } from 'lucide-react';
-import { getStatusColor, getCategoryColor } from './utils.jsx';
+import { getStatusColor, getCategoryColor, getStatusBorderColor } from './utils.jsx';
+import ServiceRequestStats from './ServiceRequestStats';
 import { useState } from 'react';
 import PropTypes from 'prop-types';
 
@@ -58,7 +59,7 @@ const ServiceRequestListPanel = ({
           </div>
         )}
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-bold text-white tracking-tight">Service Requests</h2>
+          <h2 className="text-2xl font-bold text-white tracking-tight">Service Requests</h2>
           <div className="flex items-center gap-2">
             {onRefresh && (
               <button
@@ -75,28 +76,12 @@ const ServiceRequestListPanel = ({
           </div>
         </div>
 
-        <div className="grid grid-cols-3 gap-2 mb-4">
-          <div className="bg-emerald-500/5 border border-emerald-500/10 rounded-xl p-3 hover:border-emerald-500/20 transition-all group">
-            <div className="flex items-center gap-1.5 mb-1.5">
-              <div className="w-1.5 h-1.5 rounded-full bg-emerald-500"></div>
-              <span className="text-[10px] text-emerald-400 font-bold uppercase tracking-wider">New</span>
-            </div>
-            <p className="text-xl font-bold text-white group-hover:text-emerald-300 transition-colors">{stats.new}</p>
+        <div className="mt-4 mb-2">
+          <div className="flex items-center gap-2 mb-3 px-1">
+            <div className="w-1 h-3 rounded-full bg-violet-500 shadow-[0_0_8px_rgba(139,92,246,0.5)]"></div>
+            <h3 className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Overview</h3>
           </div>
-          <div className="bg-blue-500/5 border border-blue-500/10 rounded-xl p-3 hover:border-blue-500/20 transition-all group">
-            <div className="flex items-center gap-1.5 mb-1.5">
-              <div className="w-1.5 h-1.5 rounded-full bg-blue-500"></div>
-              <span className="text-[10px] text-blue-400 font-bold uppercase tracking-wider">In Progress</span>
-            </div>
-            <p className="text-xl font-bold text-white group-hover:text-blue-300 transition-colors">{stats.inProgress}</p>
-          </div>
-          <div className="bg-violet-500/5 border border-violet-500/10 rounded-xl p-3 hover:border-violet-500/20 transition-all group">
-            <div className="flex items-center gap-1.5 mb-1.5">
-              <div className="w-1.5 h-1.5 rounded-full bg-violet-500"></div>
-              <span className="text-[10px] text-violet-400 font-bold uppercase tracking-wider">Completed</span>
-            </div>
-            <p className="text-xl font-bold text-white group-hover:text-violet-300 transition-colors">{stats.completed}</p>
-          </div>
+          <ServiceRequestStats stats={stats} showPercentage={false} />
         </div>
 
         <div className="mt-4">
@@ -150,9 +135,9 @@ const ServiceRequestListPanel = ({
             <button
               key={request._id}
               onClick={() => onServiceRequestClick(request)}
-              className={`w-full text-left p-4 rounded-xl border transition-all group relative overflow-hidden ${selectedServiceRequest?._id === request._id
-                ? 'bg-blue-500/10 border-blue-500/50 shadow-[0_0_20px_rgba(59,130,246,0.1)]'
-                : 'bg-slate-800/30 border-white/5 hover:border-blue-500/30 hover:bg-slate-800/60'
+              className={`w-full text-left p-4 rounded-xl border transition-all group relative overflow-hidden ${getStatusBorderColor(request.status)} ${selectedServiceRequest?._id === request._id
+                ? 'ring-2 ring-blue-500 ring-offset-2 ring-offset-slate-900 border-blue-500 shadow-[0_0_20px_rgba(59,130,246,0.2)]'
+                : 'hover:border-white/20 hover:bg-white/5'
                 }`}
             >
               {selectedServiceRequest?._id === request._id && (
@@ -160,7 +145,7 @@ const ServiceRequestListPanel = ({
               )}
               <div className="flex items-start justify-between gap-2 mb-2 pl-2">
                 <div className="flex-1 min-w-0">
-                  <h3 className={`font-bold text-sm mb-1 line-clamp-1 transition-colors ${selectedServiceRequest?._id === request._id ? 'text-white' : 'text-slate-300 group-hover:text-white'
+                  <h3 className={`font-bold text-base mb-1 line-clamp-1 transition-colors ${selectedServiceRequest?._id === request._id ? 'text-white' : 'text-slate-300 group-hover:text-white'
                     }`}>
                     {request.title}
                     {request.userId?.companyName && (
@@ -185,7 +170,7 @@ const ServiceRequestListPanel = ({
               </div>
 
               <div className="pl-2 mb-3 pr-8 relative">
-                <p className="text-xs text-slate-400 line-clamp-2 leading-relaxed group-hover:text-slate-300 transition-colors">
+                <p className="text-sm text-slate-400 line-clamp-2 leading-relaxed group-hover:text-slate-300 transition-colors">
                   {request.description}
                 </p>
                 {onDelete && (

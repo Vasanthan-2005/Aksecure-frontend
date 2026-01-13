@@ -58,7 +58,7 @@ const UserDetailsPanel = ({ user, onDelete, deleting, onClose }) => {
               <User className="w-5 h-5 text-violet-400" />
             </div>
             <div>
-              <h3 className="text-xl font-bold text-white">User Information</h3>
+              <h3 className="text-xl font-bold text-white tracking-tight">User Information</h3>
               <p className="text-xs text-slate-400 mt-0.5">Account and contact details</p>
             </div>
           </div>
@@ -68,7 +68,7 @@ const UserDetailsPanel = ({ user, onDelete, deleting, onClose }) => {
             <div className="group bg-slate-800/40 rounded-xl p-5 border border-white/5 hover:border-violet-500/30 hover:bg-slate-800/60 transition-all">
               <div className="flex items-center gap-2 mb-3">
                 <Mail className="w-4 h-4 text-violet-400" />
-                <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider group-hover:text-violet-300/80 transition-colors">Email</span>
+                <span className="text-xs text-slate-500 font-bold uppercase tracking-tight group-hover:text-violet-300/80 transition-colors">Email</span>
               </div>
               <p className="text-base font-medium text-slate-200 break-all group-hover:text-white transition-colors">
                 {user.email || 'N/A'}
@@ -79,7 +79,7 @@ const UserDetailsPanel = ({ user, onDelete, deleting, onClose }) => {
             <div className="group bg-slate-800/40 rounded-xl p-5 border border-white/5 hover:border-violet-500/30 hover:bg-slate-800/60 transition-all">
               <div className="flex items-center gap-2 mb-3">
                 <Phone className="w-4 h-4 text-violet-400" />
-                <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider group-hover:text-violet-300/80 transition-colors">Phone</span>
+                <span className="text-xs text-slate-500 font-bold uppercase tracking-tight group-hover:text-violet-300/80 transition-colors">Phone</span>
               </div>
               <p className="text-base font-medium text-slate-200 group-hover:text-white transition-colors">
                 {user.phone || 'N/A'}
@@ -90,7 +90,7 @@ const UserDetailsPanel = ({ user, onDelete, deleting, onClose }) => {
             <div className="group bg-slate-800/40 rounded-xl p-5 border border-white/5 hover:border-violet-500/30 hover:bg-slate-800/60 transition-all">
               <div className="flex items-center gap-2 mb-3">
                 <Building className="w-4 h-4 text-violet-400" />
-                <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider group-hover:text-violet-300/80 transition-colors">Company</span>
+                <span className="text-xs text-slate-500 font-bold uppercase tracking-tight group-hover:text-violet-300/80 transition-colors">Company</span>
               </div>
               <p className="text-base font-medium text-slate-200 group-hover:text-white transition-colors">
                 {user.companyName || 'N/A'}
@@ -101,7 +101,7 @@ const UserDetailsPanel = ({ user, onDelete, deleting, onClose }) => {
             <div className="group bg-slate-800/40 rounded-xl p-5 border border-white/5 hover:border-violet-500/30 hover:bg-slate-800/60 transition-all">
               <div className="flex items-center gap-2 mb-3">
                 <User className="w-4 h-4 text-violet-400" />
-                <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider group-hover:text-violet-300/80 transition-colors">Role</span>
+                <span className="text-xs text-slate-500 font-bold uppercase tracking-tight group-hover:text-violet-300/80 transition-colors">Role</span>
               </div>
               <p className="text-base font-medium text-slate-200 capitalize group-hover:text-white transition-colors">
                 {user.role || 'user'}
@@ -113,7 +113,7 @@ const UserDetailsPanel = ({ user, onDelete, deleting, onClose }) => {
               <div className="md:col-span-2 group bg-slate-800/40 rounded-xl p-5 border border-white/5 hover:border-violet-500/30 hover:bg-slate-800/60 transition-all">
                 <div className="flex items-center gap-2 mb-3">
                   <MapPin className="w-4 h-4 text-violet-400" />
-                  <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider group-hover:text-violet-300/80 transition-colors">Address</span>
+                  <span className="text-xs text-slate-500 font-bold uppercase tracking-tight group-hover:text-violet-300/80 transition-colors">Address</span>
                 </div>
                 <p className="text-base font-medium text-slate-200 leading-relaxed group-hover:text-white transition-colors">{user.address}</p>
               </div>
@@ -124,15 +124,15 @@ const UserDetailsPanel = ({ user, onDelete, deleting, onClose }) => {
               <div className="md:col-span-2 group bg-amber-500/5 rounded-xl p-5 border border-amber-500/10 hover:border-amber-500/30 hover:bg-amber-500/10 transition-all">
                 <div className="flex items-center gap-2 mb-3">
                   <MapPin className="w-4 h-4 text-amber-500" />
-                  <span className="text-[10px] text-amber-500/80 font-bold uppercase tracking-wider">Location Coordinates</span>
+                  <span className="text-xs text-amber-500/80 font-bold uppercase tracking-tight">Location Coordinates</span>
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <span className="text-[10px] text-slate-500 font-bold block mb-1">Latitude</span>
+                    <span className="text-xs text-slate-500 font-bold block mb-1">Latitude</span>
                     <p className="text-base font-bold text-amber-400">{user.location.lat}</p>
                   </div>
                   <div>
-                    <span className="text-[10px] text-slate-500 font-bold block mb-1">Longitude</span>
+                    <span className="text-xs text-slate-500 font-bold block mb-1">Longitude</span>
                     <p className="text-base font-bold text-amber-400">{user.location.lng}</p>
                   </div>
                 </div>
@@ -144,7 +144,7 @@ const UserDetailsPanel = ({ user, onDelete, deleting, onClose }) => {
               <div className="group bg-slate-800/40 rounded-xl p-5 border border-white/5 hover:border-emerald-500/30 hover:bg-slate-800/60 transition-all">
                 <div className="flex items-center gap-2 mb-3">
                   <Calendar className="w-4 h-4 text-emerald-400" />
-                  <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider group-hover:text-emerald-300/80 transition-colors">Registered</span>
+                  <span className="text-xs text-slate-500 font-bold uppercase tracking-tight group-hover:text-emerald-300/80 transition-colors">Registered</span>
                 </div>
                 <p className="text-base font-medium text-slate-200 group-hover:text-white transition-colors">
                   {new Date(user.createdAt).toLocaleDateString('en-US', {
@@ -153,7 +153,7 @@ const UserDetailsPanel = ({ user, onDelete, deleting, onClose }) => {
                     day: 'numeric'
                   })}
                 </p>
-                <p className="text-xs text-slate-500 mt-1 font-mono">
+                <p className="text-sm text-slate-500 mt-1 font-mono">
                   {new Date(user.createdAt).toLocaleTimeString('en-US', {
                     hour: '2-digit',
                     minute: '2-digit'
@@ -167,7 +167,7 @@ const UserDetailsPanel = ({ user, onDelete, deleting, onClose }) => {
               <div className="group bg-slate-800/40 rounded-xl p-5 border border-white/5 hover:border-blue-500/30 hover:bg-slate-800/60 transition-all">
                 <div className="flex items-center gap-2 mb-3">
                   <Clock className="w-4 h-4 text-blue-400" />
-                  <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider group-hover:text-blue-300/80 transition-colors">Last Updated</span>
+                  <span className="text-xs text-slate-500 font-bold uppercase tracking-tight group-hover:text-blue-300/80 transition-colors">Last Updated</span>
                 </div>
                 <p className="text-base font-medium text-slate-200 group-hover:text-white transition-colors">
                   {new Date(user.updatedAt).toLocaleDateString('en-US', {
@@ -176,7 +176,7 @@ const UserDetailsPanel = ({ user, onDelete, deleting, onClose }) => {
                     day: 'numeric'
                   })}
                 </p>
-                <p className="text-xs text-slate-500 mt-1 font-mono">
+                <p className="text-sm text-slate-500 mt-1 font-mono">
                   {new Date(user.updatedAt).toLocaleTimeString('en-US', {
                     hour: '2-digit',
                     minute: '2-digit'

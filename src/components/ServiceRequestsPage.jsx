@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { Shield, ArrowLeft } from 'lucide-react';
 import ServiceRequestListUser from './ServiceRequestListUser';
+import UserNavigation from './UserNavigation';
 
 const ServiceRequestsPage = () => {
   const { user } = useAuth();
@@ -16,39 +17,37 @@ const ServiceRequestsPage = () => {
   }, [user, navigate]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-500 to-slate-100">
-      {/* Navigation */}
-      <nav className="bg-white/90 backdrop-blur-sm border-b border-slate-200 shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center gap-3">
+    <div className="min-h-screen bg-slate-950 relative overflow-hidden">
+      {/* Background gradients */}
+      <div className="fixed top-0 left-0 w-full h-full overflow-hidden pointer-events-none z-0">
+        <div className="absolute top-[10%] left-[20%] w-[30%] h-[30%] rounded-full bg-blue-600/5 blur-[100px]" />
+        <div className="absolute bottom-[20%] right-[10%] w-[40%] h-[40%] rounded-full bg-violet-600/5 blur-[100px]" />
+      </div>
+
+      <UserNavigation />
+
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 relative z-10">
+        <section className="pb-10">
+          <div className="flex items-center justify-between mb-8">
+            <div className="flex items-center gap-4">
               <button
                 onClick={() => navigate('/')}
-                className="p-2 rounded-lg hover:bg-slate-100 transition-colors"
+                className="group p-3 rounded-2xl bg-slate-900/50 border border-white/5 text-slate-400 hover:text-white hover:bg-slate-800/80 transition-all active:scale-95"
               >
-                <ArrowLeft className="w-5 h-5 text-slate-700" />
+                <ArrowLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform" />
               </button>
-              <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-blue-600 to-blue-700 flex items-center justify-center shadow-lg">
-                <Shield className="w-5 h-5 text-white" />
-              </div>
-              <div>
-                <p className="text-sm font-semibold text-slate-900">AK SecureTech Ltd</p>
-                <p className="text-xs text-slate-500">My Service Requests</p>
+              <div className="flex items-center gap-3">
+                <div className="w-2 h-8 bg-violet-500 rounded-full shadow-[0_0_15px_rgba(139,92,246,0.5)]"></div>
+                <h2 className="text-3xl font-bold text-white tracking-tight">
+                  My Service Requests
+                </h2>
               </div>
             </div>
           </div>
-        </div>
-      </nav>
-
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <section className="pb-10">
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-bold text-slate-900">
-              My Service Requests
-            </h2>
-          </div>
-          <div className="bg-white rounded-2xl border border-slate-200 shadow-xl p-6">
-            <ServiceRequestListUser key={refreshKey} onRefresh={() => setRefreshKey(prev => prev + 1)} />
+          <div className="glass-card rounded-3xl border border-white/5 p-1 relative overflow-hidden">
+            <div className="bg-slate-950/20 rounded-[22px] p-6 lg:p-8">
+              <ServiceRequestListUser key={refreshKey} onRefresh={() => setRefreshKey(prev => prev + 1)} />
+            </div>
           </div>
         </section>
       </main>
