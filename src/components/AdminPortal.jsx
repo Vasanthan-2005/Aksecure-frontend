@@ -17,11 +17,13 @@ import {
   FileText,
   Clock,
   LayoutDashboard,
+  Settings as SettingsIcon,
 } from "lucide-react";
 import LoadingState from "./common/LoadingState";
 import SuccessState from "./common/SuccessState";
 
 import AdminNavigation from "./admin/AdminNavigation";
+import SettingsPanel from "./admin/SettingsPanel";
 import TicketListPanel from "./admin/TicketListPanel";
 import TicketDetailsPanel from "./admin/TicketDetailsPanel";
 import ServiceRequestListPanel from "./admin/ServiceRequestListPanel";
@@ -127,6 +129,10 @@ const AdminPortal = () => {
     } else if (activeTab === "dashboard") {
       fetchTickets();
       fetchServiceRequests();
+    } else if (activeTab === "settings") {
+      setSelectedTicket(null);
+      setSelectedServiceRequest(null);
+      setSelectedUser(null);
     }
   }, [activeTab]);
 
@@ -865,6 +871,9 @@ const AdminPortal = () => {
           setActiveTab("users");
           fetchUsers();
         }}
+        onSettingsClick={() => {
+          setActiveTab("settings");
+        }}
       />
 
       {/* Main Content Area - Scrollable */}
@@ -873,7 +882,8 @@ const AdminPortal = () => {
         {/* Tab Selector - Hidden when viewing all tickets, all service requests, or users */}
         {viewMode !== "all" &&
           viewMode !== "all-service-requests" &&
-          activeTab !== "users" && (
+          activeTab !== "users" &&
+          activeTab !== "settings" && (
             <div className="px-6 pt-4 pb-0 relative z-10 flex justify-center">
               <div className="inline-flex bg-slate-900/60 p-1.5 rounded-2xl border border-white/10 backdrop-blur-2xl shadow-2xl items-center">
                 <button
@@ -941,9 +951,35 @@ const AdminPortal = () => {
                     </span>
                   )}
                 </button>
+
+                <div className="w-px h-4 bg-white/10 mx-1" />
+
+                <button
+                  onClick={() => {
+                    setActiveTab("settings");
+                  }}
+                  className={`px-6 py-2 text-xs font-bold tracking-tight rounded-xl transition-all duration-300 relative flex items-center gap-2.5 ${activeTab === "settings"
+                    ? "bg-blue-600 text-white shadow-[0_0_20px_rgba(37,99,235,0.4)] scale-105"
+                    : "text-slate-400 hover:text-white hover:bg-white/5"
+                    }`}
+                >
+                  <SettingsIcon className={`w-4 h-4 transition-transform duration-300 ${activeTab === "settings" ? "scale-110" : "group-hover:scale-110"}`} />
+                  <span>Settings</span>
+                </button>
               </div>
             </div>
           )}
+
+        {activeTab === "settings" && (
+          <div className="flex-1 overflow-y-auto p-6">
+            <div className="glass-card rounded-2xl border border-slate-700/50 shadow-xl p-8 bg-slate-900/60 backdrop-blur-xl min-h-[500px]">
+              <SettingsPanel onClose={() => {
+                setActiveTab("dashboard");
+                setViewMode("dashboard");
+              }} />
+            </div>
+          </div>
+        )}
 
         {(activeTab === "tickets" || activeTab === "dashboard") && (
           <div className="flex-1 overflow-y-auto p-6">
@@ -1845,7 +1881,7 @@ const AdminPortal = () => {
           </div>
         )}
       </div>
-    </div>
+    </div >
   );
 };
 

@@ -6,7 +6,7 @@ import ServiceRequestForm from './ServiceRequestForm';
 import ServiceSelectionDialog from './ServiceSelectionDialog';
 import AdminReplies from './AdminReplies';
 import UserNavigation from './UserNavigation';
-import { Shield, Sparkles, ArrowRight, Video, Flame, Bell, Zap, Droplets, Wind, Activity, Clock, Headphones, FileText, Settings, HelpCircle } from 'lucide-react';
+import { Shield, Sparkles, ArrowRight, Video, Flame, Bell, Zap, Droplets, Wind, Activity, Clock } from 'lucide-react';
 
 const categories = [
   { name: 'CCTV', icon: Video, color: 'blue' },
@@ -256,27 +256,6 @@ const UserDashboard = () => {
               <div className="bg-slate-950/40 rounded-[28px] p-2 lg:p-4">
                 <AdminReplies key={refreshKey} refreshKey={refreshKey} />
               </div>
-            </div>
-          </section>
-          {/* Quick Help & Resources */}
-          <section className="animate-fade-in-up" style={{ animationDelay: '0.3s' }}>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-              {[
-                { icon: Headphones, label: 'Support', desc: 'Instant help' },
-                { icon: FileText, label: 'Guide', desc: 'User manual' },
-                { icon: Settings, label: 'Settings', desc: 'Preferences' },
-                { icon: HelpCircle, label: 'FAQs', desc: 'Common issues' }
-              ].map((item, i) => (
-                <div key={i} className="bg-slate-900/40 border border-white/5 p-3 rounded-2xl flex items-center gap-3 hover:bg-slate-900/60 transition-colors cursor-pointer group">
-                  <div className="p-2 rounded-xl bg-slate-950/40 border border-white/5 group-hover:border-blue-500/20 group-hover:text-blue-400 transition-colors text-slate-400">
-                    <item.icon className="w-4 h-4" />
-                  </div>
-                  <div>
-                    <p className="text-xs font-bold text-white tracking-tight">{item.label}</p>
-                    <p className="text-[9px] text-slate-500 font-medium">{item.desc}</p>
-                  </div>
-                </div>
-              ))}
             </div>
           </section>
         </main>

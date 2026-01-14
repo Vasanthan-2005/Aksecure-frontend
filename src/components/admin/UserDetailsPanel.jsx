@@ -1,4 +1,5 @@
-import { User, Building, Phone, MapPin, Ticket as TicketIcon, Trash2, Loader2, Users, Mail, Calendar, Clock, X } from 'lucide-react';
+import { User, Building, Phone, MapPin, Ticket as TicketIcon, Trash2, Loader2, Users, Mail, Calendar, Clock, X, Navigation, ExternalLink } from 'lucide-react';
+import MapView from '../common/MapView';
 
 const UserDetailsPanel = ({ user, onDelete, deleting, onClose }) => {
   if (!user) {
@@ -119,21 +120,47 @@ const UserDetailsPanel = ({ user, onDelete, deleting, onClose }) => {
               </div>
             )}
 
-            {/* Location Coordinates */}
+            {/* Location Coordinates & Map */}
             {user.location && (
-              <div className="md:col-span-2 group bg-amber-500/5 rounded-xl p-5 border border-amber-500/10 hover:border-amber-500/30 hover:bg-amber-500/10 transition-all">
-                <div className="flex items-center gap-2 mb-3">
-                  <MapPin className="w-4 h-4 text-amber-500" />
-                  <span className="text-xs text-amber-500/80 font-bold uppercase tracking-tight">Location Coordinates</span>
-                </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <span className="text-xs text-slate-500 font-bold block mb-1">Latitude</span>
-                    <p className="text-base font-bold text-amber-400">{user.location.lat}</p>
+              <div className="md:col-span-2 space-y-4">
+                <div className="group bg-amber-500/5 rounded-xl p-5 border border-amber-500/10 hover:border-amber-500/30 hover:bg-amber-500/10 transition-all">
+                  <div className="flex items-center gap-2 mb-3">
+                    <MapPin className="w-4 h-4 text-amber-500" />
+                    <span className="text-xs text-amber-500/80 font-bold uppercase tracking-tight">Location Coordinates</span>
                   </div>
-                  <div>
-                    <span className="text-xs text-slate-500 font-bold block mb-1">Longitude</span>
-                    <p className="text-base font-bold text-amber-400">{user.location.lng}</p>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <span className="text-xs text-slate-500 font-bold block mb-1">Latitude</span>
+                      <p className="text-base font-bold text-amber-400">{user.location.lat}</p>
+                    </div>
+                    <div>
+                      <span className="text-xs text-slate-500 font-bold block mb-1">Longitude</span>
+                      <p className="text-base font-bold text-amber-400">{user.location.lng}</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="group bg-slate-800/40 rounded-2xl p-6 border border-white/5 hover:border-violet-500/30 transition-all">
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center gap-2">
+                      <div className="w-8 h-8 rounded-lg bg-violet-500/10 border border-violet-500/20 flex items-center justify-center">
+                        <Navigation className="w-4 h-4 text-violet-400" />
+                      </div>
+                      <span className="text-sm font-bold text-white tracking-tight">View on Map</span>
+                    </div>
+                  </div>
+                  <MapView location={user.location} />
+
+                  <div className="mt-4">
+                    <a
+                      href={`https://www.google.com/maps/dir/?api=1&destination=${user.location.lat},${user.location.lng}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center justify-center gap-2 w-full py-3 px-4 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/20 hover:border-emerald-500/40 text-emerald-400 rounded-xl font-bold text-sm transition-all group/nav"
+                    >
+                      <ExternalLink className="w-4 h-4 group-hover/nav:translate-x-0.5 group-hover/nav:-translate-y-0.5 transition-transform" />
+                      Open Navigation for Directions
+                    </a>
                   </div>
                 </div>
               </div>

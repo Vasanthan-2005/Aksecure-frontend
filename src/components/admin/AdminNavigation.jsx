@@ -23,7 +23,6 @@ const AdminNavigation = ({ user, logout, activeTab, setActiveTab, onDashboardCli
             </div>
           </button>
 
-
           {/* User Profile & Logout */}
           <div className="flex items-center gap-4">
             <div className="hidden sm:flex items-center gap-3 px-4 py-2 rounded-xl border border-white/5 bg-slate-800/50 hover:bg-slate-800 transition-colors backdrop-blur-md">

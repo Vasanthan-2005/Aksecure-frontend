@@ -1,4 +1,4 @@
-import { Search, Users, User, Loader2, Home, AlertCircle, Trash2 } from 'lucide-react';
+import { Search, Users, User, Loader2, Home, AlertCircle, Trash2, MapPin } from 'lucide-react';
 
 const UserListPanel = ({
   users,
@@ -116,9 +116,12 @@ const UserListPanel = ({
                   <User className="w-5 h-5 text-white" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <h3 className={`font-bold text-base mb-0.5 truncate transition-colors ${selectedUser?._id === userItem._id ? 'text-white' : 'text-slate-300 group-hover:text-white'
+                  <h3 className={`font-bold text-base mb-0.5 truncate transition-colors flex items-center gap-2 ${selectedUser?._id === userItem._id ? 'text-white' : 'text-slate-300 group-hover:text-white'
                     }`}>
                     {userItem.name}
+                    {userItem.location && userItem.location.lat && userItem.location.lng && (
+                      <MapPin className="w-3.5 h-3.5 text-amber-500 shrink-0" title="Location marked" />
+                    )}
                   </h3>
                   <p className="text-sm text-slate-500 truncate group-hover:text-slate-400 transition-colors">{userItem.email}</p>
                 </div>

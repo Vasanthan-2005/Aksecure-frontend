@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import LoadingState from "./common/LoadingState";
-import { Eye, EyeOff, Shield, User, Mail, Lock, Building2, Phone, MapPin, CheckCircle2, ArrowRight } from "lucide-react";
+import { Eye, EyeOff, Shield, User, Mail, Lock, Building2, Phone, MapPin, CheckCircle2, ArrowRight, XCircle, Navigation } from "lucide-react";
+import LocationPicker from "./common/LocationPicker";
 
 const Register = () => {
   const [formData, setFormData] = useState({
@@ -12,7 +13,9 @@ const Register = () => {
     email: "",
     password: "",
     confirmPassword: "",
-    address: ""
+    address: "",
+    lat: null,
+    lng: null
   });
 
   const [error, setError] = useState("");
@@ -21,9 +24,101 @@ const Register = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [passwordStrength, setPasswordStrength] = useState(0);
+  const [isGeocoding, setIsGeocoding] = useState(false);
+  const [searchResults, setSearchResults] = useState([]);
+  const [matchedAddress, setMatchedAddress] = useState("");
 
   const { register } = useAuth();
   const navigate = useNavigate();
+
+  // Debounced Address Search - Like Google Maps
+  useEffect(() => {
+    const delayDebounceFn = setTimeout(() => {
+      if (formData.address && formData.address.length >= 3 && !matchedAddress) {
+        handleAddressSearch();
+      } else if (!formData.address) {
+        setSearchResults([]);
+        setFieldErrors(prev => ({ ...prev, address: "" }));
+      }
+    }, 400);
+
+    return () => clearTimeout(delayDebounceFn);
+  }, [formData.address, matchedAddress]);
+
+  // Manual Address Geocoding Logic
+  const handleAddressSearch = async () => {
+    setIsGeocoding(true);
+    setFieldErrors(prev => ({ ...prev, address: "", location: "" }));
+
+    try {
+      const response = await fetch(
+        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(formData.address)}&limit=5&addressdetails=1`,
+        {
+          headers: {
+            'Accept-Language': 'en-US,en;q=0.9',
+            'User-Agent': 'Aksecure-App-Search'
+          }
+        }
+      );
+      const data = await response.json();
+
+      if (data && data.length > 0) {
+        setSearchResults(data);
+
+        // Intelligent Filtering: Look for "high precision" types
+        const highPrecisionResult = data.find(r =>
+          ['house', 'house_number', 'road', 'building', 'residential', 'service', 'office', 'commercial', 'industrial'].includes(r.type) ||
+          ['building', 'highway', 'place', 'amenity', 'shop'].includes(r.class)
+        );
+
+        if (highPrecisionResult) {
+          // Auto-mark only if high precision is found
+          const { lat, lon, display_name } = highPrecisionResult;
+          setFormData(prev => ({
+            ...prev,
+            lat: parseFloat(lat),
+            lng: parseFloat(lon)
+          }));
+          setMatchedAddress(display_name);
+          setFieldErrors(prev => {
+            const newErrors = { ...prev };
+            delete newErrors.address;
+            delete newErrors.location;
+            return newErrors;
+          });
+        }
+        // NOTE: We don't set error here if broad, just show the suggestions dropdown
+      } else {
+        setFormData(prev => ({ ...prev, lat: null, lng: null }));
+        setFieldErrors(prev => ({
+          ...prev,
+          address: "Exact location not found. Please enter full address manually."
+        }));
+      }
+    } catch (err) {
+      console.error("Geocoding error:", err);
+    } finally {
+      setIsGeocoding(false);
+    }
+  };
+
+  const handleSelectResult = (result) => {
+    const { lat, lon, display_name } = result;
+    setFormData(prev => ({
+      ...prev,
+      lat: parseFloat(lat),
+      lng: parseFloat(lon),
+      address: display_name // Update address field with full name
+    }));
+    setMatchedAddress(display_name);
+    setSearchResults([]); // Hide results after selection
+    setFieldErrors(prev => {
+      const newErrors = { ...prev };
+      delete newErrors.address;
+      delete newErrors.location;
+      return newErrors;
+    });
+  };
 
   const calculatePasswordStrength = (password) => {
     let strength = 0;
@@ -50,8 +145,34 @@ const Register = () => {
       });
     }
 
+    // Clear location data if address is being modified
+    if (name === "address") {
+      setMatchedAddress("");
+      setSearchResults([]);
+      setFormData(prev => ({
+        ...prev,
+        lat: null,
+        lng: null
+      }));
+    }
+
     if (name === "password") {
       setPasswordStrength(calculatePasswordStrength(value));
+    }
+  };
+
+  const handleLocationSelect = (location) => {
+    setFormData(prev => ({
+      ...prev,
+      lat: location.lat,
+      lng: location.lng
+    }));
+    if (fieldErrors.location) {
+      setFieldErrors(prev => {
+        const newErrors = { ...prev };
+        delete newErrors.location;
+        return newErrors;
+      });
     }
   };
 
@@ -90,6 +211,9 @@ const Register = () => {
     if (!formData.address.trim()) {
       errors.address = "Company address is required";
     }
+    if (formData.lat === null || formData.lng === null) {
+      errors.location = "Please select your company location on the map";
+    }
 
     setFieldErrors(errors);
     return { isValid: Object.keys(errors).length === 0, errors };
@@ -109,6 +233,9 @@ const Register = () => {
           if (errorField) {
             errorField.scrollIntoView({ behavior: 'smooth', block: 'center' });
             errorField.focus();
+          } else if (firstErrorKey === 'location') {
+            const mapEl = document.getElementById('location-picker-section');
+            if (mapEl) mapEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
           }
         }
       }, 100);
@@ -230,7 +357,7 @@ const Register = () => {
 
       {/* RIGHT SIDE - REGISTRATION FORM */}
       <div className="flex-1 flex items-center justify-center p-4 sm:p-6 lg:p-8 relative z-10">
-        <div className="w-full max-w-2xl">
+        <div className="w-full max-w-2xl px-8 mt-20">
 
           <div className="glass-card p-6 sm:p-8 md:p-10 w-full animate-fade-in-up">
 
@@ -295,7 +422,7 @@ const Register = () => {
                   </div>
                 </div>
 
-                <div className="group">
+                <div className="group relative">
                   <label className="block text-xs font-medium text-slate-400 mb-1.5">Company Address</label>
                   <div className="relative">
                     <MapPin className="absolute left-3 top-3 w-4 h-4 text-slate-500 group-focus-within:text-violet-400 transition-colors" />
@@ -304,11 +431,87 @@ const Register = () => {
                       rows="2"
                       value={formData.address}
                       onChange={handleChange}
-                      className={`w-full pl-10 pr-4 py-2.5 rounded-xl glass-input outline-none text-sm resize-none ${fieldErrors.address ? 'border-red-500/50 focus:border-red-500' : ''}`}
-                      placeholder="123 Business St, Tech Park, City"
+                      onBlur={() => setTimeout(() => setSearchResults([]), 200)} // Delay to allow clicks
+                      className={`w-full pl-10 pr-10 py-2.5 rounded-xl glass-input outline-none text-sm resize-none ${fieldErrors.address ? 'border-red-500/50 focus:border-red-500' : ''}`}
+                      placeholder="Enter company address (e.g. 123 Business St, City)"
                     />
+
+                    {/* Clear/Loading Indicators */}
+                    <div className="absolute right-3 top-3 flex items-center gap-2">
+                      {isGeocoding && (
+                        <div className="w-4 h-4 border-2 border-violet-400/20 border-t-violet-400 rounded-full animate-spin" />
+                      )}
+                      {formData.address && (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setFormData(prev => ({ ...prev, address: "", lat: null, lng: null }));
+                            setSearchResults([]);
+                            setMatchedAddress("");
+                          }}
+                          className="text-slate-500 hover:text-white transition-colors"
+                        >
+                          <XCircle className="w-4 h-4" />
+                        </button>
+                      )}
+                    </div>
                   </div>
+
+                  {/* Google Maps Style Floating Dropdown */}
+                  {searchResults.length > 0 && (
+                    <div className="absolute left-0 right-0 top-full mt-2 z-[100] animate-fade-in shadow-2xl">
+                      <div className="bg-slate-900/95 backdrop-blur-xl rounded-2xl border border-white/10 shadow-2xl shadow-black/50 overflow-hidden divide-y divide-white/5">
+                        <div className="px-3 py-2 bg-white/5 flex items-center justify-between">
+                          <p className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Suggestions</p>
+                          <span className="text-[9px] text-slate-600">OpenStreetMap</span>
+                        </div>
+                        <div className="max-h-60 overflow-y-auto custom-scrollbar">
+                          {searchResults.map((result, index) => (
+                            <button
+                              key={index}
+                              type="button"
+                              onClick={() => handleSelectResult(result)}
+                              className="w-full text-left p-3 hover:bg-violet-600/10 transition-all group flex gap-3 items-start border-l-2 border-l-transparent hover:border-l-violet-500"
+                            >
+                              <div className="p-1.5 rounded-lg bg-slate-800 group-hover:bg-violet-500/20 transition-colors">
+                                <Navigation className="w-3.5 h-3.5 text-slate-400 group-hover:text-violet-400" />
+                              </div>
+                              <div className="min-w-0">
+                                <p className="text-xs text-slate-200 group-hover:text-white font-medium transition-colors truncate">
+                                  {result.display_name.split(',')[0]}
+                                </p>
+                                <p className="text-[10px] text-slate-500 group-hover:text-slate-400 transition-colors truncate">
+                                  {result.display_name.split(',').slice(1).join(',')}
+                                </p>
+                              </div>
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {matchedAddress && searchResults.length === 0 && (
+                    <div className="mt-2 p-3 bg-emerald-500/5 border border-emerald-500/10 rounded-xl animate-fade-in flex gap-3 items-start relative z-10">
+                      <div className="p-1.5 rounded-lg bg-emerald-500/10 text-emerald-400 shrink-0">
+                        <CheckCircle2 className="w-3.5 h-3.5" />
+                      </div>
+                      <div>
+                        <p className="text-[10px] text-emerald-400 font-semibold uppercase tracking-wider mb-0.5">Location Verified</p>
+                        <p className="text-xs text-slate-300 leading-tight">{matchedAddress}</p>
+                      </div>
+                    </div>
+                  )}
                   {fieldErrors.address && <p className="mt-1 text-xs text-red-400">{fieldErrors.address}</p>}
+                </div>
+
+                {/* Location Picker Section */}
+                <div id="location-picker-section" className="pt-2">
+                  <LocationPicker
+                    onLocationSelect={handleLocationSelect}
+                    initialLocation={formData.lat ? { lat: formData.lat, lng: formData.lng } : null}
+                  />
+                  {fieldErrors.location && <p className="mt-2 text-xs text-red-400">{fieldErrors.location}</p>}
                 </div>
               </div>
 
@@ -409,8 +612,9 @@ const Register = () => {
               </div>
 
               {/* Submit Button */}
-              <div className="pt-4">
+              <div className="pt-4 pb-12">
                 <button
+                  type="submit"
                   onClick={handleSubmit}
                   disabled={loading}
                   className="w-full py-3.5 rounded-xl font-semibold text-white shadow-lg shadow-blue-500/25 transition-all transform hover:scale-[1.01] active:scale-[0.99] disabled:opacity-50 disabled:cursor-not-allowed
@@ -447,7 +651,7 @@ const Register = () => {
 
           </div>
 
-          <p className="text-center text-xs text-slate-600 mt-6">
+          <p className="text-center text-xs text-slate-600 mt-6 pb-8">
             By registering, you agree to our Terms of Service & Privacy Policy
           </p>
 
