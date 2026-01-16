@@ -104,64 +104,99 @@ const UserDetailsPanel = ({ user, onDelete, deleting, onClose }) => {
                 <User className="w-4 h-4 text-violet-400" />
                 <span className="text-xs text-slate-500 font-bold uppercase tracking-tight group-hover:text-violet-300/80">Role</span>
               </div>
-              <p className="text-base font-medium text-slate-200 capitalize group-hover:text-white">
-                {user.role || 'user'}
-              </p>
+              <div className="mt-1">
+                <span className={`px-3 py-1 rounded-lg text-xs font-bold uppercase tracking-wider ${user.role === 'admin'
+                  ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30 shadow-[0_0_15px_rgba(245,158,11,0.1)]'
+                  : 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 shadow-[0_0_15px_rgba(16,185,129,0.1)]'
+                  }`}>
+                  {user.role || 'user'}
+                </span>
+              </div>
             </div>
 
-            {/* Address */}
-            {user.address && (
-              <div className="md:col-span-2 group bg-slate-800/40 rounded-xl p-5 border border-white/5 hover:border-violet-500/30 hover:bg-slate-800/60">
-                <div className="flex items-center gap-2 mb-3">
-                  <MapPin className="w-4 h-4 text-violet-400" />
-                  <span className="text-xs text-slate-500 font-bold uppercase tracking-tight group-hover:text-violet-300/80">Address</span>
-                </div>
-                <p className="text-base font-medium text-slate-200 leading-relaxed group-hover:text-white">{user.address}</p>
-              </div>
-            )}
-
-            {/* Location Coordinates & Map */}
-            {user.location && (
-              <div className="md:col-span-2 space-y-4">
-                <div className="group bg-amber-500/5 rounded-xl p-5 border border-amber-500/10 hover:border-amber-500/30 hover:bg-amber-500/10">
-                  <div className="flex items-center gap-2 mb-3">
-                    <MapPin className="w-4 h-4 text-amber-500" />
-                    <span className="text-xs text-amber-500/80 font-bold uppercase tracking-tight">Location Coordinates</span>
+            {/* Branch Locations Section */}
+            {(user.outlets?.length > 0 || user.address) && (
+              <div className="md:col-span-2 space-y-6">
+                <div className="flex items-center gap-3 pb-4 border-b border-white/5">
+                  <div className="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center">
+                    <Building className="w-5 h-5 text-emerald-400" />
                   </div>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <span className="text-xs text-slate-500 font-bold block mb-1">Latitude</span>
-                      <p className="text-base font-bold text-amber-400">{user.location.lat}</p>
-                    </div>
-                    <div>
-                      <span className="text-xs text-slate-500 font-bold block mb-1">Longitude</span>
-                      <p className="text-base font-bold text-amber-400">{user.location.lng}</p>
-                    </div>
+                  <div>
+                    <h3 className="text-xl font-bold text-white tracking-tight">Branch Locations</h3>
+                    <p className="text-xs text-slate-400 mt-0.5">Registered outlets and physical addresses</p>
                   </div>
                 </div>
 
-                <div className="group bg-slate-800/40 rounded-2xl p-6 border border-white/5 hover:border-violet-500/30">
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="flex items-center gap-2">
-                      <div className="w-8 h-8 rounded-lg bg-violet-500/10 border border-violet-500/20 flex items-center justify-center">
-                        <Navigation className="w-4 h-4 text-violet-400" />
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {user.outlets?.length > 0 ? (
+                    user.outlets.map((outlet, index) => (
+                      <div key={index} className="group bg-slate-800/40 rounded-2xl p-5 border border-white/5 hover:border-emerald-500/30 hover:bg-slate-800/60 transition-all shadow-lg">
+                        <div className="flex items-start justify-between mb-3">
+                          <div className="flex items-center gap-2">
+                            <div className="w-8 h-8 rounded-lg bg-emerald-500/10 flex items-center justify-center border border-emerald-500/20 group-hover:bg-emerald-500/20">
+                              <Building className="w-4 h-4 text-emerald-400" />
+                            </div>
+                            <span className="font-bold text-white tracking-tight">{outlet.outletName}</span>
+                          </div>
+                          {(outlet.location?.lat && outlet.location?.lng) && (
+                            <a
+                              href={`https://www.google.com/maps/dir/?api=1&destination=${outlet.location.lat},${outlet.location.lng}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="p-2 rounded-lg bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 hover:bg-emerald-500/20 hover:text-white transition-all shadow-lg shadow-emerald-500/5 group/nav"
+                              title="Open in Maps"
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              <Navigation className="w-4 h-4 group-hover/nav:translate-x-0.5 group-hover/nav:-translate-y-0.5 transition-transform" />
+                            </a>
+                          )}
+                        </div>
+                        <div className="space-y-3">
+                          <div className="flex items-start gap-2">
+                            <MapPin className="w-4 h-4 text-slate-500 mt-1 flex-shrink-0" />
+                            <p className="text-sm text-slate-400 leading-relaxed group-hover:text-slate-200 transition-colors">
+                              {outlet.address}
+                            </p>
+                          </div>
+                          {outlet.location && (
+                            <div className="flex items-center gap-3 pt-3 border-t border-white/5 opacity-50 group-hover:opacity-100 transition-opacity">
+                              <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">
+                                LAT: <span className="text-emerald-500/70">{outlet.location.lat?.toFixed(6)}</span>
+                              </span>
+                              <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">
+                                LNG: <span className="text-emerald-500/70">{outlet.location.lng?.toFixed(6)}</span>
+                              </span>
+                            </div>
+                          )}
+                        </div>
                       </div>
-                      <span className="text-sm font-bold text-white tracking-tight">View on Map</span>
+                    ))
+                  ) : (
+                    /* Legacy User Address Fallback */
+                    <div className="col-span-2 group bg-slate-800/40 rounded-2xl p-5 border border-white/5 hover:border-violet-500/30 hover:bg-slate-800/60 transition-all shadow-lg">
+                      <div className="flex items-center gap-2 mb-3">
+                        <MapPin className="w-4 h-4 text-violet-400" />
+                        <span className="text-xs text-slate-500 font-bold uppercase tracking-tight">Primary Address (Legacy)</span>
+                      </div>
+                      <p className="text-base font-medium text-slate-200 leading-relaxed mb-4 group-hover:text-white">{user.address}</p>
+                      {user.location && (
+                        <div className="space-y-4">
+                          <div className="mt-2 rounded-xl overflow-hidden border border-white/5 group-hover:border-violet-500/20">
+                            <MapView location={user.location} />
+                          </div>
+                          <a
+                            href={`https://www.google.com/maps/dir/?api=1&destination=${user.location.lat},${user.location.lng}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex items-center justify-center gap-2 w-full py-3 px-4 bg-violet-500/10 hover:bg-violet-500/20 border border-violet-500/20 hover:border-violet-500/40 text-violet-400 rounded-xl font-bold text-sm group/nav"
+                          >
+                            <ExternalLink className="w-4 h-4 group-hover/nav:translate-x-0.5 group-hover/nav:-translate-y-0.5" />
+                            Open Navigation for Directions
+                          </a>
+                        </div>
+                      )}
                     </div>
-                  </div>
-                  <MapView location={user.location} />
-
-                  <div className="mt-4">
-                    <a
-                      href={`https://www.google.com/maps/dir/?api=1&destination=${user.location.lat},${user.location.lng}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center justify-center gap-2 w-full py-3 px-4 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/20 hover:border-emerald-500/40 text-emerald-400 rounded-xl font-bold text-sm group/nav"
-                    >
-                      <ExternalLink className="w-4 h-4 group-hover/nav:translate-x-0.5 group-hover/nav:-translate-y-0.5" />
-                      Open Navigation for Directions
-                    </a>
-                  </div>
+                  )}
                 </div>
               </div>
             )}

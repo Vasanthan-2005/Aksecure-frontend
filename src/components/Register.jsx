@@ -2,8 +2,8 @@ import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import LoadingState from "./common/LoadingState";
-import { Eye, EyeOff, Shield, User, Mail, Lock, Building2, Phone, MapPin, CheckCircle2, ArrowRight, XCircle, Navigation } from "lucide-react";
-import LocationPicker from "./common/LocationPicker";
+import { Eye, EyeOff, Shield, User, Mail, Lock, Building2, Phone, MapPin, CheckCircle2, ArrowRight, XCircle, Edit2, Trash2 } from "lucide-react";
+import OutletModal from "./common/OutletModal";
 
 const Register = () => {
   const [formData, setFormData] = useState({
@@ -12,10 +12,7 @@ const Register = () => {
     phone: "",
     email: "",
     password: "",
-    confirmPassword: "",
-    address: "",
-    lat: null,
-    lng: null
+    confirmPassword: ""
   });
 
   const [error, setError] = useState("");
@@ -24,101 +21,13 @@ const Register = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [passwordStrength, setPasswordStrength] = useState(0);
-  const [isGeocoding, setIsGeocoding] = useState(false);
-  const [searchResults, setSearchResults] = useState([]);
-  const [matchedAddress, setMatchedAddress] = useState("");
+  const [outlets, setOutlets] = useState([]);
+  const [showOutletModal, setShowOutletModal] = useState(false);
+  const [initialEditIndex, setInitialEditIndex] = useState(null);
+  const [showOutletSuccess, setShowOutletSuccess] = useState(false);
 
   const { register } = useAuth();
   const navigate = useNavigate();
-
-  // Debounced Address Search - Like Google Maps
-  useEffect(() => {
-    const delayDebounceFn = setTimeout(() => {
-      if (formData.address && formData.address.length >= 3 && !matchedAddress) {
-        handleAddressSearch();
-      } else if (!formData.address) {
-        setSearchResults([]);
-        setFieldErrors(prev => ({ ...prev, address: "" }));
-      }
-    }, 400);
-
-    return () => clearTimeout(delayDebounceFn);
-  }, [formData.address, matchedAddress]);
-
-  // Manual Address Geocoding Logic
-  const handleAddressSearch = async () => {
-    setIsGeocoding(true);
-    setFieldErrors(prev => ({ ...prev, address: "", location: "" }));
-
-    try {
-      const response = await fetch(
-        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(formData.address)}&limit=5&addressdetails=1`,
-        {
-          headers: {
-            'Accept-Language': 'en-US,en;q=0.9',
-            'User-Agent': 'Aksecure-App-Search'
-          }
-        }
-      );
-      const data = await response.json();
-
-      if (data && data.length > 0) {
-        setSearchResults(data);
-
-        // Intelligent Filtering: Look for "high precision" types
-        const highPrecisionResult = data.find(r =>
-          ['house', 'house_number', 'road', 'building', 'residential', 'service', 'office', 'commercial', 'industrial'].includes(r.type) ||
-          ['building', 'highway', 'place', 'amenity', 'shop'].includes(r.class)
-        );
-
-        if (highPrecisionResult) {
-          // Auto-mark only if high precision is found
-          const { lat, lon, display_name } = highPrecisionResult;
-          setFormData(prev => ({
-            ...prev,
-            lat: parseFloat(lat),
-            lng: parseFloat(lon)
-          }));
-          setMatchedAddress(display_name);
-          setFieldErrors(prev => {
-            const newErrors = { ...prev };
-            delete newErrors.address;
-            delete newErrors.location;
-            return newErrors;
-          });
-        }
-        // NOTE: We don't set error here if broad, just show the suggestions dropdown
-      } else {
-        setFormData(prev => ({ ...prev, lat: null, lng: null }));
-        setFieldErrors(prev => ({
-          ...prev,
-          address: "Exact location not found. Please enter full address manually."
-        }));
-      }
-    } catch (err) {
-      console.error("Geocoding error:", err);
-    } finally {
-      setIsGeocoding(false);
-    }
-  };
-
-  const handleSelectResult = (result) => {
-    const { lat, lon, display_name } = result;
-    setFormData(prev => ({
-      ...prev,
-      lat: parseFloat(lat),
-      lng: parseFloat(lon),
-      address: display_name // Update address field with full name
-    }));
-    setMatchedAddress(display_name);
-    setSearchResults([]); // Hide results after selection
-    setFieldErrors(prev => {
-      const newErrors = { ...prev };
-      delete newErrors.address;
-      delete newErrors.location;
-      return newErrors;
-    });
-  };
 
   const calculatePasswordStrength = (password) => {
     let strength = 0;
@@ -145,35 +54,27 @@ const Register = () => {
       });
     }
 
-    // Clear location data if address is being modified
-    if (name === "address") {
-      setMatchedAddress("");
-      setSearchResults([]);
-      setFormData(prev => ({
-        ...prev,
-        lat: null,
-        lng: null
-      }));
-    }
-
     if (name === "password") {
       setPasswordStrength(calculatePasswordStrength(value));
     }
   };
 
-  const handleLocationSelect = (location) => {
-    setFormData(prev => ({
-      ...prev,
-      lat: location.lat,
-      lng: location.lng
-    }));
-    if (fieldErrors.location) {
-      setFieldErrors(prev => {
-        const newErrors = { ...prev };
-        delete newErrors.location;
-        return newErrors;
-      });
+  const handleSaveOutlets = (savedOutlets) => {
+    setOutlets(savedOutlets);
+    if (savedOutlets.length > 0) {
+      setShowOutletSuccess(true);
+      setTimeout(() => setShowOutletSuccess(false), 3000);
     }
+    setFieldErrors(prev => {
+      const newErrors = { ...prev };
+      delete newErrors.outlets;
+      return newErrors;
+    });
+    setInitialEditIndex(null);
+  };
+
+  const handleRemoveOutlet = (index) => {
+    setOutlets(outlets.filter((_, i) => i !== index));
   };
 
   const validateForm = () => {
@@ -183,7 +84,7 @@ const Register = () => {
       errors.name = "Name is required";
     }
     if (!formData.companyName.trim()) {
-      errors.companyName = "Company name is required";
+      errors.companyName = "Company Name is required";
     }
     if (!formData.phone.trim()) {
       errors.phone = "Phone number is required";
@@ -208,11 +109,8 @@ const Register = () => {
     } else if (formData.password !== formData.confirmPassword) {
       errors.confirmPassword = "Passwords do not match";
     }
-    if (!formData.address.trim()) {
-      errors.address = "Company address is required";
-    }
-    if (formData.lat === null || formData.lng === null) {
-      errors.location = "Please select your company location on the map";
+    if (outlets.length === 0) {
+      errors.outlets = "Please add at least one company outlet";
     }
 
     setFieldErrors(errors);
@@ -233,9 +131,6 @@ const Register = () => {
           if (errorField) {
             errorField.scrollIntoView({ behavior: 'smooth', block: 'center' });
             errorField.focus();
-          } else if (firstErrorKey === 'location') {
-            const mapEl = document.getElementById('location-picker-section');
-            if (mapEl) mapEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
           }
         }
       }, 100);
@@ -246,7 +141,12 @@ const Register = () => {
 
     try {
       const { confirmPassword, ...userData } = formData;
-      await register(userData);
+      // Add outlets to user data
+      const registrationData = {
+        ...userData,
+        outlets: outlets
+      };
+      await register(registrationData);
       navigate('/');
     } catch (err) {
       const errorMessage = err?.response?.data?.message || "Registration failed. Please try again.";
@@ -263,11 +163,10 @@ const Register = () => {
       }
       if (lowerMessage.includes("required fields")) {
         if (!formData.name.trim()) serverFieldErrors.name = "Name is required";
-        if (!formData.companyName.trim()) serverFieldErrors.companyName = "Company name is required";
         if (!formData.phone.trim()) serverFieldErrors.phone = "Phone number is required";
         if (!formData.email.trim()) serverFieldErrors.email = "Email is required";
         if (!formData.password) serverFieldErrors.password = "Password is required";
-        if (!formData.address.trim()) serverFieldErrors.address = "Company address is required";
+        if (outlets.length === 0) serverFieldErrors.outlets = "At least one outlet is required";
       }
 
       if (Object.keys(serverFieldErrors).length > 0) {
@@ -384,85 +283,62 @@ const Register = () => {
             )}
 
             {/* Scrollable Container */}
-            <div className="max-h-[55vh] overflow-y-auto custom-scrollbar pr-2 -mr-2">
-              <form className="space-y-6 pb-2">
+            <div className="max-h-[75vh] overflow-y-auto custom-scrollbar pr-2 -mr-2">
+              <form onSubmit={handleSubmit} className="space-y-6 pb-2">
 
-                {/* Section 1: Basic Info */}
-                <div className="space-y-4">
-                  <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3">Organization Details</h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                    <div className="group">
-                      <label className="block text-xs font-medium text-slate-400 mb-1.5">Full Name</label>
-                      <div className="relative">
-                        <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 group-focus-within:text-violet-400 transition-colors" />
-                        <input
-                          type="text"
-                          name="name"
-                          value={formData.name}
-                          onChange={handleChange}
-                          className={`w-full pl-10 pr-4 py-2.5 rounded-xl glass-input outline-none text-sm ${fieldErrors.name ? 'border-red-500/50 focus:border-red-500' : ''}`}
-                          placeholder="John Doe"
-                        />
-                      </div>
-                      {fieldErrors.name && <p className="mt-1 text-xs text-red-400">{fieldErrors.name}</p>}
+                <div className="space-y-5">
+                  {/* 1. Full Name */}
+                  <div className="group">
+                    <label className="block text-xs font-medium text-slate-400 mb-1.5">Full Name</label>
+                    <div className="relative">
+                      <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 group-focus-within:text-violet-400 transition-colors" />
+                      <input
+                        type="text"
+                        name="name"
+                        value={formData.name}
+                        onChange={handleChange}
+                        className={`w-full pl-10 pr-4 py-2.5 rounded-xl glass-input outline-none text-sm ${fieldErrors.name ? 'border-red-500/50 focus:border-red-500' : ''}`}
+                        placeholder="John Doe"
+                      />
                     </div>
-
-                    <div className="group">
-                      <label className="block text-xs font-medium text-slate-400 mb-1.5">Company Name</label>
-                      <div className="relative">
-                        <Building2 className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 group-focus-within:text-violet-400 transition-colors" />
-                        <input
-                          type="text"
-                          name="companyName"
-                          value={formData.companyName}
-                          onChange={handleChange}
-                          className={`w-full pl-10 pr-4 py-2.5 rounded-xl glass-input outline-none text-sm ${fieldErrors.companyName ? 'border-red-500/50 focus:border-red-500' : ''}`}
-                          placeholder="Acme Corp"
-                        />
-                      </div>
-                      {fieldErrors.companyName && <p className="mt-1 text-xs text-red-400">{fieldErrors.companyName}</p>}
-                    </div>
-                  </div>
-                </div>
-
-                {/* Section 2: Contact & Security */}
-                <div className="space-y-4 pt-2">
-                  <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3">Contact & Security</h3>
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                    <div className="group">
-                      <label className="block text-xs font-medium text-slate-400 mb-1.5">Email Address</label>
-                      <div className="relative">
-                        <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 group-focus-within:text-blue-400 transition-colors" />
-                        <input
-                          type="email"
-                          name="email"
-                          value={formData.email}
-                          onChange={handleChange}
-                          className={`w-full pl-10 pr-4 py-2.5 rounded-xl glass-input outline-none text-sm ${fieldErrors.email ? 'border-red-500/50 focus:border-red-500' : ''}`}
-                          placeholder="admin@company.com"
-                        />
-                      </div>
-                      {fieldErrors.email && <p className="mt-1 text-xs text-red-400">{fieldErrors.email}</p>}
-                    </div>
-
-                    <div className="group">
-                      <label className="block text-xs font-medium text-slate-400 mb-1.5">Phone Number</label>
-                      <div className="relative">
-                        <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 group-focus-within:text-blue-400 transition-colors" />
-                        <input
-                          type="tel"
-                          name="phone"
-                          value={formData.phone}
-                          onChange={handleChange}
-                          className={`w-full pl-10 pr-4 py-2.5 rounded-xl glass-input outline-none text-sm ${fieldErrors.phone ? 'border-red-500/50 focus:border-red-500' : ''}`}
-                          placeholder="+1 (555) 000-0000"
-                        />
-                      </div>
-                      {fieldErrors.phone && <p className="mt-1 text-xs text-red-400">{fieldErrors.phone}</p>}
-                    </div>
+                    {fieldErrors.name && <p className="mt-1 text-xs text-red-400">{fieldErrors.name}</p>}
                   </div>
 
+                  {/* 2. Phone Number */}
+                  <div className="group">
+                    <label className="block text-xs font-medium text-slate-400 mb-1.5">Phone Number</label>
+                    <div className="relative">
+                      <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 group-focus-within:text-blue-400 transition-colors" />
+                      <input
+                        type="tel"
+                        name="phone"
+                        value={formData.phone}
+                        onChange={handleChange}
+                        className={`w-full pl-10 pr-4 py-2.5 rounded-xl glass-input outline-none text-sm ${fieldErrors.phone ? 'border-red-500/50 focus:border-red-500' : ''}`}
+                        placeholder="+1 (555) 000-0000"
+                      />
+                    </div>
+                    {fieldErrors.phone && <p className="mt-1 text-xs text-red-400">{fieldErrors.phone}</p>}
+                  </div>
+
+                  {/* 3. Mail (Email) */}
+                  <div className="group">
+                    <label className="block text-xs font-medium text-slate-400 mb-1.5">Mail Address</label>
+                    <div className="relative">
+                      <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 group-focus-within:text-blue-400 transition-colors" />
+                      <input
+                        type="email"
+                        name="email"
+                        value={formData.email}
+                        onChange={handleChange}
+                        className={`w-full pl-10 pr-4 py-2.5 rounded-xl glass-input outline-none text-sm ${fieldErrors.email ? 'border-red-500/50 focus:border-red-500' : ''}`}
+                        placeholder="admin@company.com"
+                      />
+                    </div>
+                    {fieldErrors.email && <p className="mt-1 text-xs text-red-400">{fieldErrors.email}</p>}
+                  </div>
+
+                  {/* 4. Password and Confirm Password (Same Line) */}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                     <div className="group">
                       <label className="block text-xs font-medium text-slate-400 mb-1.5">Password</label>
@@ -484,7 +360,6 @@ const Register = () => {
                           {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                         </button>
                       </div>
-
                       {formData.password && !fieldErrors.password && (
                         <div className="mt-2 flex items-center gap-2">
                           <div className="flex-1 h-1 bg-slate-800 rounded-full overflow-hidden">
@@ -519,112 +394,94 @@ const Register = () => {
                       {fieldErrors.confirmPassword && <p className="mt-1 text-xs text-red-400">{fieldErrors.confirmPassword}</p>}
                     </div>
                   </div>
-                </div>
 
-                {/* Section 3: Location (Moved to bottom) */}
-                <div className="space-y-4 pt-2">
-                  <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3">Company Location</h3>
-                  <div className="group relative">
-                    <label className="block text-xs font-medium text-slate-400 mb-1.5">Company Address</label>
+                  {/* 5. Company Name */}
+                  <div className="group">
+                    <label className="block text-xs font-medium text-slate-400 mb-1.5">Company Name</label>
                     <div className="relative">
-                      <MapPin className="absolute left-3 top-3 w-4 h-4 text-slate-500 group-focus-within:text-violet-400 transition-colors" />
-                      <textarea
-                        name="address"
-                        rows="2"
-                        value={formData.address}
+                      <Building2 className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 group-focus-within:text-violet-400 transition-colors" />
+                      <input
+                        type="text"
+                        name="companyName"
+                        value={formData.companyName}
                         onChange={handleChange}
-                        onBlur={() => setTimeout(() => setSearchResults([]), 200)}
-                        className={`w-full pl-10 pr-10 py-2.5 rounded-xl glass-input outline-none text-sm resize-none ${fieldErrors.address ? 'border-red-500/50 focus:border-red-500' : ''}`}
-                        placeholder="Enter company address (e.g. 123 Business St, City)"
+                        className={`w-full pl-10 pr-4 py-2.5 rounded-xl glass-input outline-none text-sm ${fieldErrors.companyName ? 'border-red-500/50 focus:border-red-500' : ''}`}
+                        placeholder="Acme Corp"
                       />
-
-                      {/* Clear/Loading Indicators */}
-                      <div className="absolute right-3 top-3 flex items-center gap-2">
-                        {isGeocoding && (
-                          <div className="w-4 h-4 border-2 border-violet-400/20 border-t-violet-400 rounded-full animate-spin" />
-                        )}
-                        {formData.address && (
-                          <button
-                            type="button"
-                            onClick={() => {
-                              setFormData(prev => ({ ...prev, address: "", lat: null, lng: null }));
-                              setSearchResults([]);
-                              setMatchedAddress("");
-                            }}
-                            className="text-slate-500 hover:text-white transition-colors"
-                          >
-                            <XCircle className="w-4 h-4" />
-                          </button>
-                        )}
-                      </div>
                     </div>
-
-                    {/* Google Maps Style Floating Dropdown */}
-                    {searchResults.length > 0 && (
-                      <div className="absolute left-0 right-0 top-full mt-2 z-[100] animate-fade-in shadow-2xl">
-                        <div className="bg-slate-900/95 backdrop-blur-xl rounded-2xl border border-white/10 shadow-2xl shadow-black/50 overflow-hidden divide-y divide-white/5">
-                          <div className="px-3 py-2 bg-white/5 flex items-center justify-between">
-                            <p className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Suggestions</p>
-                            <span className="text-[9px] text-slate-600">OpenStreetMap</span>
-                          </div>
-                          <div className="max-h-60 overflow-y-auto custom-scrollbar">
-                            {searchResults.map((result, index) => (
-                              <button
-                                key={index}
-                                type="button"
-                                onClick={() => handleSelectResult(result)}
-                                className="w-full text-left p-3 hover:bg-violet-600/10 transition-all group flex gap-3 items-start border-l-2 border-l-transparent hover:border-l-violet-500"
-                              >
-                                <div className="p-1.5 rounded-lg bg-slate-800 group-hover:bg-violet-500/20 transition-colors">
-                                  <Navigation className="w-3.5 h-3.5 text-slate-400 group-hover:text-violet-400" />
-                                </div>
-                                <div className="min-w-0">
-                                  <p className="text-xs text-slate-200 group-hover:text-white font-medium transition-colors truncate">
-                                    {result.display_name.split(',')[0]}
-                                  </p>
-                                  <p className="text-[10px] text-slate-500 group-hover:text-slate-400 transition-colors truncate">
-                                    {result.display_name.split(',').slice(1).join(',')}
-                                  </p>
-                                </div>
-                              </button>
-                            ))}
-                          </div>
-                        </div>
-                      </div>
-                    )}
-
-                    {matchedAddress && searchResults.length === 0 && (
-                      <div className="mt-2 p-3 bg-emerald-500/5 border border-emerald-500/10 rounded-xl animate-fade-in flex gap-3 items-start relative z-10">
-                        <div className="p-1.5 rounded-lg bg-emerald-500/10 text-emerald-400 shrink-0">
-                          <CheckCircle2 className="w-3.5 h-3.5" />
-                        </div>
-                        <div>
-                          <p className="text-[10px] text-emerald-400 font-semibold uppercase tracking-wider mb-0.5">Location Verified</p>
-                          <p className="text-xs text-slate-300 leading-tight">{matchedAddress}</p>
-                        </div>
-                      </div>
-                    )}
-                    {fieldErrors.address && <p className="mt-1 text-xs text-red-400">{fieldErrors.address}</p>}
+                    {fieldErrors.companyName && <p className="mt-1 text-xs text-red-400">{fieldErrors.companyName}</p>}
                   </div>
 
-                  {/* Location Picker Section */}
-                  <div id="location-picker-section" className="pt-2">
-                    <LocationPicker
-                      onLocationSelect={handleLocationSelect}
-                      initialLocation={formData.lat ? { lat: formData.lat, lng: formData.lng } : null}
-                    />
-                    {fieldErrors.location && <p className="mt-2 text-xs text-red-400">{fieldErrors.location}</p>}
+                  {/* 6. Company Outlets */}
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <label className="block text-xs font-medium text-slate-400 uppercase tracking-wider font-semibold">Company Outlets</label>
+                      <span className="px-2 py-0.5 rounded-md bg-slate-800 text-[10px] text-slate-400 font-bold border border-white/5">{outlets.length} added</span>
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setInitialEditIndex(null);
+                        setShowOutletModal(true);
+                      }}
+                      className="w-full py-3 rounded-xl font-bold text-white shadow-lg transition-all transform hover:scale-[1.01] active:scale-[0.99]
+                                bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 flex items-center justify-center gap-2 border border-violet-500/20"
+                    >
+                      <Building2 className="w-4 h-4" />
+                      Add Company Branch Location
+                    </button>
+
+                    {outlets.length > 0 && (
+                      <div className="grid grid-cols-1 gap-3">
+                        {outlets.map((outlet, index) => (
+                          <div
+                            key={outlet.id || index}
+                            className="p-4 bg-slate-800/30 rounded-xl border border-white/5 hover:border-violet-500/30 transition-all group"
+                          >
+                            <div className="flex items-start justify-between">
+                              <div className="flex-1 min-w-0">
+                                <p className="font-bold text-white truncate text-sm">{outlet.outletName}</p>
+                                <p className="text-xs text-slate-500 flex items-start gap-1.5 mt-1 leading-relaxed">
+                                  <MapPin className="w-3.5 h-3.5 mt-0.5 flex-shrink-0 text-slate-600" />
+                                  <span className="line-clamp-2">{outlet.address}</span>
+                                </p>
+                              </div>
+                              <div className="flex items-center gap-2 ml-3 opacity-0 group-hover:opacity-100 transition-opacity">
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    setInitialEditIndex(index);
+                                    setShowOutletModal(true);
+                                  }}
+                                  className="p-2 rounded-lg bg-blue-500/10 text-blue-400 hover:bg-blue-500/20 transition-colors"
+                                >
+                                  <Edit2 className="w-3.5 h-3.5" />
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => handleRemoveOutlet(index)}
+                                  className="p-2 rounded-lg bg-red-500/10 text-red-400 hover:bg-red-500/20 transition-colors"
+                                >
+                                  <Trash2 className="w-3.5 h-3.5" />
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                    {fieldErrors.outlets && <p className="mt-1 text-xs text-red-400 font-medium">{fieldErrors.outlets}</p>}
                   </div>
                 </div>
 
                 {/* Submit Button */}
-                <div className="pt-4 pb-2">
+                <div className="pt-4">
                   <button
                     type="submit"
-                    onClick={handleSubmit}
                     disabled={loading}
                     className="w-full py-3.5 rounded-xl font-semibold text-white shadow-lg shadow-blue-500/25 transition-all transform hover:scale-[1.01] active:scale-[0.99] disabled:opacity-50 disabled:cursor-not-allowed
-                              bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-500 hover:to-cyan-500 flex items-center justify-center gap-2"
+                                  bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-500 hover:to-cyan-500 flex items-center justify-center gap-2"
                   >
                     {loading ? (
                       <span className="flex items-center gap-2">
@@ -639,31 +496,50 @@ const Register = () => {
                     )}
                   </button>
                 </div>
-
               </form>
             </div>
-
-            {/* Footer */}
-            <div className="mt-6 pt-6 border-t border-white/5 text-center">
-              <p className="text-sm text-slate-400">
-                Already have an account?{" "}
-                <button
-                  onClick={handleLoginClick}
-                  className="font-medium text-blue-400 hover:text-blue-300 hover:underline transition-all"
-                >
-                  Sign in here
-                </button>
-              </p>
-            </div>
-
           </div>
 
-          <p className="text-center text-xs text-slate-600 mt-6 pb-8">
-            By registering, you agree to our Terms of Service & Privacy Policy
-          </p>
-
+          {/* Footer */}
+          <div className="mt-4 pt-4 border-t border-white/5 text-center">
+            <p className="text-sm text-slate-400">
+              Already have an account?{" "}
+              <button
+                onClick={handleLoginClick}
+                className="font-medium text-blue-400 hover:text-blue-300 hover:underline transition-all"
+              >
+                Sign in here
+              </button>
+            </p>
+          </div>
         </div>
       </div>
+
+      {/* Centered Success Overlay */}
+      {showOutletSuccess && (
+        <div className="fixed inset-0 z-[200] flex items-center justify-center bg-slate-950/80 backdrop-blur-md animate-fade-in">
+          <div className="bg-slate-900 border border-emerald-500/30 p-10 rounded-[40px] shadow-2xl shadow-emerald-500/10 flex flex-col items-center gap-6 animate-scale-in">
+            <div className="w-24 h-24 rounded-full bg-emerald-500/20 flex items-center justify-center shadow-inner shadow-emerald-500/20">
+              <CheckCircle2 className="w-12 h-12 text-emerald-400 animate-check-pulse" />
+            </div>
+            <div className="text-center">
+              <h3 className="text-3xl font-black text-white mb-2 tracking-tight">Success!</h3>
+              <p className="text-emerald-400 font-bold uppercase tracking-[0.2em] text-xs">Outlets Registered Successfully</p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <OutletModal
+        isOpen={showOutletModal}
+        onClose={() => {
+          setShowOutletModal(false);
+          setInitialEditIndex(null);
+        }}
+        onSave={handleSaveOutlets}
+        existingOutlets={outlets}
+        initialEditIndex={initialEditIndex}
+      />
     </div>
   );
 };

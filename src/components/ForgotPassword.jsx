@@ -70,48 +70,54 @@ const ForgotPassword = () => {
       </div>
 
       {/* LEFT SIDE - BRANDING */}
-      <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 
-                      relative overflow-hidden z-10">
+      <div className="hidden lg:flex lg:w-1/2 bg-transparent
+                      relative overflow-hidden z-10 transition-all duration-500">
 
         {/* Pattern overlay */}
         <div className="absolute inset-0 opacity-5">
           <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 brightness-100 contrast-150"></div>
         </div>
 
-        <div className="relative z-10 flex flex-col justify-center px-16 text-white">
-          <div className="flex items-center space-x-3 mb-8">
-            <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-violet-600 to-blue-600 flex items-center justify-center shadow-lg shadow-blue-500/20">
-              <Shield className="w-7 h-7 text-white" />
+        <div className="relative z-10 flex flex-col justify-center px-16 text-white h-full">
+          <div className="mb-8">
+            <div className="flex items-center space-x-3 mb-8">
+              <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-violet-600 to-blue-600 flex items-center justify-center shadow-lg shadow-violet-500/20">
+                <Shield className="w-7 h-7 text-white" />
+              </div>
+              <h1 className="text-2xl font-bold text-white tracking-tight">Aksecure</h1>
             </div>
-            <h1 className="text-2xl font-bold text-white tracking-tight">Aksecure</h1>
+            <p className="text-lg text-slate-300 leading-relaxed max-w-md">
+              Reset your password securely and regain access to your surveillance dashboard.
+            </p>
           </div>
-          <p className="text-lg text-slate-300 leading-relaxed max-w-md mb">
-            Reset your password securely and regain access to your surveillance dashboard.
-          </p>
+
+          <div className="space-y-5 mt-8">
+            <div className="flex items-start space-x-4 group">
+              <div className="w-10 h-10 rounded-xl bg-slate-800/80 flex items-center justify-center flex-shrink-0 border border-white/10 group-hover:border-emerald-500/30 transition-colors">
+                <Shield className="w-5 h-5 text-emerald-400" />
+              </div>
+              <div>
+                <p className="font-bold text-slate-200">Secure Reset</p>
+                <p className="text-sm text-slate-400">Encrypted links for your security</p>
+              </div>
+            </div>
+
+            <div className="flex items-start space-x-4 group">
+              <div className="w-10 h-10 rounded-xl bg-slate-800/80 flex items-center justify-center flex-shrink-0 border border-white/10 group-hover:border-blue-500/30 transition-colors">
+                <MailCheck className="w-5 h-5 text-blue-400" />
+              </div>
+              <div>
+                <p className="font-bold text-slate-200">Instant Delivery</p>
+                <p className="text-sm text-slate-400">Check your inbox within seconds</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Copyright/Footer for left side */}
+          <div className="absolute bottom-8 left-16 text-xs text-slate-500 font-medium">
+            © {new Date().getFullYear()} Aksecure. All rights reserved.
+          </div>
         </div>
-
-        <div className="space-y-4 mt-8">
-          <div className="flex items-start space-x-3">
-            <div className="w-6 h-6 rounded-full bg-slate-800/80 flex items-center justify-center flex-shrink-0 mt-0.5 border border-white/10">
-              <div className="w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_10px_rgba(52,211,153,0.5)]"></div>
-            </div>
-            <div>
-              <p className="font-medium">Secure Reset</p>
-              <p className="text-sm text-slate-400">Encrypted links for your security</p>
-            </div>
-          </div>
-
-          <div className="flex items-start space-x-3">
-            <div className="w-6 h-6 rounded-full bg-slate-800/80 flex items-center justify-center flex-shrink-0 mt-0.5 border border-white/10">
-              <div className="w-2 h-2 rounded-full bg-blue-400 shadow-[0_0_10px_rgba(96,165,250,0.5)]"></div>
-            </div>
-            <div>
-              <p className="font-medium">Instant Delivery</p>
-              <p className="text-sm text-slate-400">Check your inbox within seconds</p>
-            </div>
-          </div>
-        </div>
-
       </div>
 
       {/* RIGHT SIDE - FORM */}

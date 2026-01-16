@@ -1,7 +1,8 @@
 import { useEffect, useState, useRef } from 'react';
 import api from '../services/api';
-import { Upload, X, Image as ImageIcon, ArrowLeft, Calendar, Clock, Wrench, Loader2 } from 'lucide-react';
+import { Upload, X, Image as ImageIcon, ArrowLeft, Calendar, Clock, Wrench, Loader2, Building, MapPin, ChevronDown } from 'lucide-react';
 import LoadingState from './common/LoadingState';
+import { useAuth } from '../context/AuthContext';
 import SuccessState from './common/SuccessState';
 import { compressImage } from '../utils/imageUtils';
 
@@ -15,23 +16,71 @@ const MAX_IMAGES = 5;
 
 const ServiceRequestForm = ({ category, onSuccess, onCancel }) => {
   const [formData, setFormData] = useState({
-    category: category || '',
-    description: '',
     preferredDate: '',
     preferredTimeSlot: '',
+    address: '',
+    outletName: '',
+    location: { lat: 0, lng: 0 }
   });
+  const { user } = useAuth();
   const [images, setImages] = useState([]);
   const [imagePreviews, setImagePreviews] = useState([]);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
   const fileInputRef = useRef(null);
+  const [isOutletDropdownOpen, setIsOutletDropdownOpen] = useState(false);
+  const outletDropdownRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (outletDropdownRef.current && !outletDropdownRef.current.contains(event.target)) {
+        setIsOutletDropdownOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   useEffect(() => {
     if (category) {
       setFormData((prev) => ({ ...prev, category }));
     }
   }, [category]);
+
+  // Fallback for users without outlets
+  const displayOutlets = user?.outlets && user.outlets.length > 0
+    ? user.outlets
+    : [{
+      outletName: user?.companyName || 'Main Branch',
+      address: user?.address || '',
+      location: user?.location || { lat: 0, lng: 0 }
+    }];
+
+  const handleOutletChange = (e) => {
+    const selectedOutletName = e.target.value;
+    const selectedOutlet = displayOutlets.find(o => o.outletName === selectedOutletName);
+
+    if (selectedOutlet) {
+      setFormData(prev => ({
+        ...prev,
+        outletName: selectedOutlet.outletName,
+        address: selectedOutlet.address,
+        location: {
+          lat: selectedOutlet.location?.lat || selectedOutlet.lat,
+          lng: selectedOutlet.location?.lng || selectedOutlet.lng
+        }
+      }));
+    } else {
+      setFormData(prev => ({
+        ...prev,
+        outletName: '',
+        address: '',
+        location: { lat: 0, lng: 0 }
+      }));
+    }
+    setError('');
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -99,8 +148,8 @@ const ServiceRequestForm = ({ category, onSuccess, onCancel }) => {
     setLoading(true);
     setError('');
 
-    if (!formData.category || !formData.description) {
-      setError('Category and description are required.');
+    if (!formData.category || !formData.description || !formData.outletName) {
+      setError('Category, description, and outlet selection are required.');
       setLoading(false);
       return;
     }
@@ -116,6 +165,10 @@ const ServiceRequestForm = ({ category, onSuccess, onCancel }) => {
       payload.append('category', formData.category);
       payload.append('title', `${formData.category || 'Service'} service request`);
       payload.append('description', formData.description.trim());
+      payload.append('address', formData.address);
+      payload.append('outletName', formData.outletName);
+      payload.append('location[lat]', formData.location.lat);
+      payload.append('location[lng]', formData.location.lng);
 
       const preferredDateTime = `${formData.preferredDate}T${formData.preferredTimeSlot}`;
       payload.append('preferredVisitAt', new Date(preferredDateTime).toISOString());
@@ -143,6 +196,9 @@ const ServiceRequestForm = ({ category, onSuccess, onCancel }) => {
         description: '',
         preferredDate: '',
         preferredTimeSlot: '',
+        address: '',
+        outletName: '',
+        location: { lat: 0, lng: 0 }
       });
       setImages([]);
       setImagePreviews([]);
@@ -235,6 +291,77 @@ const ServiceRequestForm = ({ category, onSuccess, onCancel }) => {
                     <div className="absolute right-5 top-1/2 -translate-y-1/2 pointer-events-none text-slate-600">
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" /></svg>
                     </div>
+                  </div>
+
+                  {/* Outlet Selection */}
+                  <div>
+                    <label className="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-3 ml-1 flex items-center gap-2">
+                      <Building className="w-3.5 h-3.5" />
+                      Registered Outlet
+                    </label>
+                    <div className="relative group" ref={outletDropdownRef}>
+                      <button
+                        type="button"
+                        onClick={() => setIsOutletDropdownOpen(!isOutletDropdownOpen)}
+                        className="w-full h-14 bg-slate-900/50 border border-white/10 rounded-2xl px-5 text-left flex items-center justify-between group-hover:border-violet-500/50 transition-all focus:ring-2 focus:ring-violet-500/20"
+                      >
+                        <div className="flex items-center gap-3">
+                          <Building className="w-5 h-5 text-violet-400" />
+                          <div className="flex flex-col">
+                            <span className="text-sm font-bold text-white leading-tight">
+                              {formData.outletName || 'Select Registered Outlet'}
+                            </span>
+                            {!formData.outletName && (
+                              <span className="text-[10px] text-slate-500 uppercase tracking-widest font-bold">
+                                Select branch location
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                        <ChevronDown className={`w-5 h-5 text-slate-500 transition-transform duration-300 ${isOutletDropdownOpen ? 'rotate-180' : ''}`} />
+                      </button>
+
+                      {isOutletDropdownOpen && (
+                        <div className="absolute top-full left-0 right-0 mt-3 bg-slate-900/95 backdrop-blur-xl border border-white/10 rounded-3xl shadow-2xl z-[100] max-h-[400px] overflow-hidden animate-fade-in-up">
+                          <div className="p-2 overflow-y-auto max-h-[390px] custom-scrollbar">
+                            {displayOutlets.map((outlet, index) => (
+                              <button
+                                key={index}
+                                type="button"
+                                onClick={() => {
+                                  handleOutletChange({ target: { value: outlet.outletName } });
+                                  setIsOutletDropdownOpen(false);
+                                }}
+                                className={`w-full text-left p-4 rounded-2xl transition-all mb-1 last:mb-0 group/item flex items-start gap-4 ${formData.outletName === outlet.outletName ? 'bg-violet-500/10 border border-violet-500/20' : 'hover:bg-white/5 border border-transparent'}`}
+                              >
+                                <div className={`p-2 rounded-xl flex-shrink-0 ${formData.outletName === outlet.outletName ? 'bg-violet-500/20' : 'bg-slate-800'}`}>
+                                  <MapPin className={`w-4 h-4 ${formData.outletName === outlet.outletName ? 'text-violet-400' : 'text-slate-400'}`} />
+                                </div>
+                                <div className="flex-1 min-w-0">
+                                  <p className={`text-sm font-bold mb-0.5 ${formData.outletName === outlet.outletName ? 'text-violet-400' : 'text-white'}`}>
+                                    {outlet.outletName}
+                                  </p>
+                                  <p className="text-xs text-slate-400 leading-relaxed font-medium break-words">
+                                    {outlet.address}
+                                  </p>
+                                </div>
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                    {formData.address && (
+                      <div className="mt-3 p-4 bg-violet-500/5 border border-violet-500/10 rounded-2xl animate-fade-in">
+                        <div className="flex items-start gap-3">
+                          <MapPin className="w-4 h-4 text-violet-400 mt-0.5 flex-shrink-0" />
+                          <p className="text-xs text-slate-400 leading-relaxed">
+                            <span className="text-violet-400 font-bold uppercase tracking-tighter mr-1">Address:</span>
+                            {formData.address}
+                          </p>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
 

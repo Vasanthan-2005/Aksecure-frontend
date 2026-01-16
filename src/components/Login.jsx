@@ -169,7 +169,7 @@ const Login = () => {
       </div>
 
       {/* LEFT SIDE - BRANDING */}
-      <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 
+      <div className="hidden lg:flex lg:w-1/2 bg-transparent
                       relative overflow-hidden z-10 transition-all duration-500">
 
         {/* Pattern overlay */}

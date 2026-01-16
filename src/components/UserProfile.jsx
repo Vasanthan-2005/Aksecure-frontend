@@ -2,9 +2,10 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import api from '../services/api';
-import { User, Mail, Phone, Building, MapPin, Save, ArrowLeft, Loader2, Calendar, Clock, ExternalLink } from 'lucide-react';
+import { User, Mail, Phone, Building, MapPin, Save, ArrowLeft, Loader2, Calendar, Clock, ExternalLink, Plus, Edit2 } from 'lucide-react';
 import LoadingState from './common/LoadingState';
 import { UserTopNav, UserBottomNav } from './UserNavigation';
+import OutletModal from './common/OutletModal';
 
 const UserProfile = () => {
   const { user, updateUser } = useAuth();
@@ -24,8 +25,11 @@ const UserProfile = () => {
     location: {
       lat: 0,
       lng: 0
-    }
+    },
+    outlets: []
   });
+  const [showOutletModal, setShowOutletModal] = useState(false);
+  const [initialEditIndex, setInitialEditIndex] = useState(null);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -43,7 +47,8 @@ const UserProfile = () => {
           phone: userData.phone || '',
           companyName: userData.companyName || '',
           address: userData.address || '',
-          location: userData.location || { lat: 0, lng: 0 }
+          location: userData.location || { lat: 0, lng: 0 },
+          outlets: userData.outlets || []
         });
       } catch (err) {
         console.error('Failed to fetch user data:', err);
@@ -57,7 +62,8 @@ const UserProfile = () => {
             phone: user.phone || '',
             companyName: user.companyName || '',
             address: user.address || '',
-            location: user.location || { lat: 0, lng: 0 }
+            location: user.location || { lat: 0, lng: 0 },
+            outlets: user.outlets || []
           });
         }
       } finally {
@@ -102,6 +108,15 @@ const UserProfile = () => {
     } else {
       setError('Geolocation is not supported by your browser.');
     }
+  };
+
+  const handleSaveOutlets = (newOutlets) => {
+    setFormData(prev => ({
+      ...prev,
+      outlets: newOutlets
+    }));
+    setError('');
+    setSuccess('');
   };
 
   const handleSubmit = async (e) => {
@@ -268,102 +283,85 @@ const UserProfile = () => {
                       </div>
                     </div>
 
-                    {/* Address */}
-                    <div className="space-y-3">
-                      <label className="block text-xs font-bold text-slate-500 uppercase tracking-widest ml-1">
-                        <MapPin className="w-3.5 h-3.5 inline mr-2 text-blue-400" />
-                        Physical Address
-                      </label>
-                      <textarea
-                        name="address"
-                        value={formData.address}
-                        onChange={handleChange}
-                        required
-                        rows={4}
-                        className="w-full px-5 py-4 bg-slate-900/50 border border-white/10 rounded-2xl text-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500/50 transition-all font-medium resize-none shadow-inner"
-                        placeholder="Complete office or residence address..."
-                      />
-                    </div>
-
-                    {/* Location Section */}
+                    {/* Outlets Section */}
                     <div className="pt-8 border-t border-white/5 space-y-6">
                       <div className="flex items-center justify-between">
                         <h3 className="text-xl font-bold text-white tracking-tight flex items-center gap-3">
                           <div className="w-8 h-8 rounded-lg bg-blue-500/10 border border-blue-500/20 flex items-center justify-center">
-                            <MapPin className="w-4 h-4 text-blue-400" />
+                            <Building className="w-4 h-4 text-blue-400" />
                           </div>
-                          Geo-Navigation
+                          Outlets & Locations
                         </h3>
                         <button
                           type="button"
-                          onClick={handleLocationSelect}
-                          disabled={loading}
-                          className="px-5 py-2.5 bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 border border-blue-500/20 rounded-xl text-xs font-bold uppercase tracking-wider transition-all disabled:opacity-50 active:scale-95 flex items-center gap-2"
+                          onClick={() => {
+                            setInitialEditIndex(null);
+                            setShowOutletModal(true);
+                          }}
+                          className="px-5 py-2.5 bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 border border-blue-500/20 rounded-xl text-xs font-bold uppercase tracking-wider transition-all active:scale-95 flex items-center gap-2"
                         >
-                          {loading ? (
-                            <Loader2 className="w-4 h-4 animate-spin" />
-                          ) : (
-                            <>
-                              <MapPin className="w-4 h-4" />
-                              Use Current Location
-                            </>
-                          )}
+                          <Plus className="w-4 h-4" />
+                          Manage Outlets
                         </button>
                       </div>
 
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div className="relative group/lat">
-                          <span className="absolute left-5 top-1/2 -translate-y-1/2 text-[10px] font-black text-slate-600 uppercase tracking-widest group-focus-within/lat:text-blue-500/50 transition-colors">LAT</span>
-                          <input
-                            type="number"
-                            step="any"
-                            value={formData.location.lat}
-                            onChange={(e) => setFormData(prev => ({
-                              ...prev,
-                              location: { ...prev.location, lat: parseFloat(e.target.value) || 0 }
-                            }))}
-                            className="w-full pl-14 pr-5 py-4 bg-slate-900/50 border border-white/10 rounded-2xl text-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500/50 transition-all font-mono text-sm"
-                          />
-                        </div>
-                        <div className="relative group/lng">
-                          <span className="absolute left-5 top-1/2 -translate-y-1/2 text-[10px] font-black text-slate-600 uppercase tracking-widest group-focus-within/lng:text-blue-500/50 transition-colors">LNG</span>
-                          <input
-                            type="number"
-                            step="any"
-                            value={formData.location.lng}
-                            onChange={(e) => setFormData(prev => ({
-                              ...prev,
-                              location: { ...prev.location, lng: parseFloat(e.target.value) || 0 }
-                            }))}
-                            className="w-full pl-14 pr-5 py-4 bg-slate-900/50 border border-white/10 rounded-2xl text-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500/50 transition-all font-mono text-sm"
-                          />
-                        </div>
-                      </div>
-
-                      {formData.location.lat !== 0 && formData.location.lng !== 0 && (
-                        <div className="p-1 rounded-[2.5rem] bg-gradient-to-br from-blue-600/20 via-slate-900/40 to-violet-600/20 border border-white/5 overflow-hidden">
-                          <div className="bg-slate-950/40 rounded-[2.25rem] p-6 flex flex-col sm:flex-row items-center justify-between gap-6">
-                            <div className="flex items-center gap-4">
-                              <div className="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center">
-                                <ExternalLink className="w-6 h-6 text-slate-400" />
-                              </div>
-                              <div>
-                                <p className="text-white font-bold leading-tight">Interactive Map Link</p>
-                                <p className="text-xs text-slate-500 uppercase tracking-widest font-bold mt-1">Satellite Coordinates Locked</p>
+                      <div className="grid grid-cols-1 gap-4">
+                        {formData.outlets && formData.outlets.length > 0 ? (
+                          formData.outlets.map((outlet, index) => (
+                            <div
+                              key={index}
+                              className="group relative overflow-hidden bg-slate-900/40 border border-white/5 rounded-3xl p-6 transition-all hover:border-blue-500/30"
+                            >
+                              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                                <div className="flex items-start gap-4">
+                                  <div className="w-12 h-12 rounded-2xl bg-blue-500/10 flex items-center justify-center flex-shrink-0">
+                                    <MapPin className="w-6 h-6 text-blue-400" />
+                                  </div>
+                                  <div>
+                                    <p className="text-white font-bold text-lg leading-tight">{outlet.outletName}</p>
+                                    <p className="text-sm text-slate-400 mt-1 max-w-xl">{outlet.address}</p>
+                                    <div className="flex items-center gap-3 mt-2">
+                                      <span className="text-[10px] font-black text-slate-600 uppercase tracking-widest">
+                                        LAT: <span className="text-blue-500/70">{outlet.location?.lat?.toFixed(4) || outlet.lat?.toFixed(4)}</span>
+                                      </span>
+                                      <span className="text-[10px] font-black text-slate-600 uppercase tracking-widest">
+                                        LNG: <span className="text-blue-500/70">{outlet.location?.lng?.toFixed(4) || outlet.lng?.toFixed(4)}</span>
+                                      </span>
+                                    </div>
+                                  </div>
+                                </div>
+                                <div className="flex items-center gap-2 w-full sm:w-auto">
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      setInitialEditIndex(index);
+                                      setShowOutletModal(true);
+                                    }}
+                                    className="p-3 rounded-xl bg-slate-800 text-slate-400 hover:text-white hover:bg-slate-700 transition-colors"
+                                  >
+                                    <Edit2 className="w-4 h-4" />
+                                  </button>
+                                  <a
+                                    href={`https://www.google.com/maps?q=${outlet.location?.lat || outlet.lat},${outlet.location?.lng || outlet.lng}`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="flex-1 sm:flex-none px-6 py-3 bg-white text-slate-950 rounded-2xl font-bold text-xs hover:bg-blue-50 transition-all active:scale-95 flex items-center justify-center gap-2"
+                                  >
+                                    <ExternalLink className="w-4 h-4" />
+                                    Navigate
+                                  </a>
+                                </div>
                               </div>
                             </div>
-                            <a
-                              href={`https://www.google.com/maps?q=${formData.location.lat},${formData.location.lng}`}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="w-full sm:w-auto px-8 py-3.5 bg-white text-slate-950 rounded-2xl font-bold text-sm hover:bg-blue-50 transition-all shadow-[0_0_20px_rgba(255,255,255,0.1)] active:scale-95 flex items-center justify-center gap-2"
-                            >
-                              <MapPin className="w-4 h-4" />
-                              Open Navigation
-                            </a>
+                          ))
+                        ) : (
+                          <div className="p-8 border-2 border-dashed border-white/5 rounded-3xl flex flex-col items-center justify-center text-center">
+                            <Building className="w-12 h-12 text-slate-600 mb-4 opacity-20" />
+                            <p className="text-slate-500 font-medium">No outlets registered for this account.</p>
+                            <p className="text-xs text-slate-600 mt-1 uppercase tracking-widest font-bold">Please add at least one branch for navigation</p>
                           </div>
-                        </div>
-                      )}
+                        )}
+                      </div>
                     </div>
 
                     {/* Account Information Section */}
@@ -453,6 +451,16 @@ const UserProfile = () => {
           </div>
         </div>
       </main>
+      <OutletModal
+        isOpen={showOutletModal}
+        onClose={() => {
+          setShowOutletModal(false);
+          setInitialEditIndex(null);
+        }}
+        onSave={handleSaveOutlets}
+        existingOutlets={formData.outlets}
+        initialEditIndex={initialEditIndex}
+      />
       <UserBottomNav />
     </div>
   );

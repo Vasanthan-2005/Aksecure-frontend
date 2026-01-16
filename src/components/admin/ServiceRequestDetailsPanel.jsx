@@ -4,6 +4,7 @@ import ImageGallery from './ImageGallery';
 import Timeline from './Timeline';
 import ReplyModal from './ReplyModal';
 import { getCategoryColor } from './utils.jsx';
+import OutletInfo from './OutletInfo';
 
 const serviceRequestStatusOptions = ['New', 'In Progress', 'Completed'];
 
@@ -207,6 +208,16 @@ const ServiceRequestDetailsPanel = ({
                 </div>
               )}
             </div>
+          </div>
+
+          <div className="mt-4">
+            {(serviceRequest.outletName || serviceRequest.address) && (
+              <OutletInfo
+                outletName={serviceRequest.outletName}
+                address={serviceRequest.address}
+                location={serviceRequest.location}
+              />
+            )}
           </div>
 
           <div className="mt-4">

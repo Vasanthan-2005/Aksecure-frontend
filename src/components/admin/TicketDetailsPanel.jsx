@@ -4,6 +4,7 @@ import UserInfo from './UserInfo';
 import ImageGallery from './ImageGallery';
 import Timeline from './Timeline';
 import ReplyModal from './ReplyModal';
+import OutletInfo from './OutletInfo';
 
 const TicketDetailsPanel = ({
   ticket,
@@ -83,6 +84,16 @@ const TicketDetailsPanel = ({
               updating={updating}
               onUpdate={onUpdateTicket}
             />
+          </div>
+
+          <div className="mt-4">
+            {(ticket.outletName || ticket.address) && (
+              <OutletInfo
+                outletName={ticket.outletName}
+                address={ticket.address}
+                location={ticket.location}
+              />
+            )}
           </div>
 
           <div className="mt-4">

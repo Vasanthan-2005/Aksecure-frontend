@@ -43,17 +43,35 @@ const ChangeView = ({ center }) => {
     return null;
 };
 
-const LocationPicker = ({ onLocationSelect, initialLocation }) => {
+// Component to handle map size invalidation (useful after modal animations)
+const MapResizeHandler = () => {
+    const map = useMap();
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            map.invalidateSize();
+        }, 300); // Wait for modal animation
+        return () => clearTimeout(timer);
+    }, [map]);
+    return null;
+};
+
+const LocationPicker = ({ onLocationSelect, onAddressFetched, initialLocation, title = "Location Selection", subTitle = "Pick the location on the map" }) => {
     const [position, setPosition] = useState(initialLocation || null);
     const [error, setError] = useState(null);
     const [fetchingLocation, setFetchingLocation] = useState(false);
 
     // Sync position with initialLocation if it changes externally (e.g., from address geocoding)
     useEffect(() => {
-        if (initialLocation && (!position || initialLocation.lat !== position.lat || initialLocation.lng !== position.lng)) {
-            setPosition(initialLocation);
+        if (initialLocation) {
+            const hasChanged = !position ||
+                Math.abs(initialLocation.lat - position.lat) > 0.000001 ||
+                Math.abs(initialLocation.lng - position.lng) > 0.000001;
+
+            if (hasChanged) {
+                setPosition(initialLocation);
+            }
         }
-    }, [initialLocation]);
+    }, [initialLocation?.lat, initialLocation?.lng]);
 
     const handleGetCurrentLocation = () => {
         setFetchingLocation(true);
@@ -65,13 +83,30 @@ const LocationPicker = ({ onLocationSelect, initialLocation }) => {
         }
 
         navigator.geolocation.getCurrentPosition(
-            (pos) => {
+            async (pos) => {
                 const newPos = {
                     lat: pos.coords.latitude,
                     lng: pos.coords.longitude
                 };
                 setPosition(newPos);
                 onLocationSelect(newPos);
+
+                // Reverse geocode to get address for current location
+                if (onAddressFetched) {
+                    try {
+                        const response = await fetch(
+                            `https://nominatim.openstreetmap.org/reverse?format=json&lat=${newPos.lat}&lon=${newPos.lng}&zoom=18&addressdetails=1`,
+                            { headers: { 'User-Agent': 'Aksecure-App-Reverse' } }
+                        );
+                        const data = await response.json();
+                        if (data && data.display_name) {
+                            onAddressFetched(data.display_name);
+                        }
+                    } catch (err) {
+                        console.error("Reverse geocoding error:", err);
+                    }
+                }
+
                 setFetchingLocation(false);
             },
             (err) => {
@@ -83,17 +118,33 @@ const LocationPicker = ({ onLocationSelect, initialLocation }) => {
         );
     };
 
-    const handleMapClick = (latlng) => {
+    const handleMapClick = async (latlng) => {
         setPosition(latlng);
         onLocationSelect(latlng);
+
+        // Reverse geocode to get address for clicked point
+        if (onAddressFetched) {
+            try {
+                const response = await fetch(
+                    `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latlng.lat}&lon=${latlng.lng}&zoom=18&addressdetails=1`,
+                    { headers: { 'User-Agent': 'Aksecure-App-Reverse' } }
+                );
+                const data = await response.json();
+                if (data && data.display_name) {
+                    onAddressFetched(data.display_name);
+                }
+            } catch (err) {
+                console.error("Reverse geocoding error:", err);
+            }
+        }
     };
 
     return (
         <div className="space-y-4">
             <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
                 <div>
-                    <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Company Location</h3>
-                    <p className="text-[10px] text-slate-500">Pick your organization's headquarters on the map</p>
+                    <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">{title}</h3>
+                    <p className="text-[10px] text-slate-500">{subTitle}</p>
                 </div>
                 <button
                     type="button"
@@ -112,8 +163,8 @@ const LocationPicker = ({ onLocationSelect, initialLocation }) => {
 
             <div className="relative h-64 w-full rounded-2xl overflow-hidden border border-white/10 glass-card">
                 <MapContainer
-                    center={position || [20.5937, 78.9629]} // Default center (India)
-                    zoom={position ? 13 : 5}
+                    center={position || [20.5937, 78.9629]} // Starting point
+                    zoom={position ? 13 : 2}
                     style={{ height: '100%', width: '100%', zIndex: 1 }}
                     className="rounded-2xl"
                 >
@@ -123,6 +174,7 @@ const LocationPicker = ({ onLocationSelect, initialLocation }) => {
                     />
                     <LocationMarker position={position} setPosition={handleMapClick} />
                     {position && <ChangeView center={position} />}
+                    <MapResizeHandler />
                 </MapContainer>
 
                 {!position && (

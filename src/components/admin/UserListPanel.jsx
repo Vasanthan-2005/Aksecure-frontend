@@ -144,6 +144,12 @@ const UserListPanel = ({
                   <h3 className={`font-bold text-base mb-0.5 truncate flex items-center gap-2 ${selectedUser?._id === userItem._id ? 'text-white' : 'text-slate-300 group-hover:text-white'
                     }`}>
                     {userItem.name}
+                    <span className={`px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider ${userItem.role === 'admin'
+                      ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30'
+                      : 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
+                      }`}>
+                      {userItem.role || 'user'}
+                    </span>
                     {userItem.location && userItem.location.lat && userItem.location.lng && (
                       <MapPin className="w-3.5 h-3.5 text-amber-500 shrink-0" title="Location marked" />
                     )}
@@ -154,7 +160,7 @@ const UserListPanel = ({
 
               {/* Company and Tickets Info */}
               <div className="flex items-center justify-between pt-3 border-t border-white/5 pl-2">
-                <div className="grid grid-cols-2 gap-4 flex-1">
+                <div className="grid grid-cols-3 gap-2 flex-1">
                   <div className="min-w-0">
                     <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider block mb-1">Company</span>
                     <p className="text-sm font-semibold text-slate-300 truncate group-hover:text-white" title={userItem.companyName || 'N/A'}>
@@ -162,8 +168,13 @@ const UserListPanel = ({
                     </p>
                   </div>
                   <div className="min-w-0">
+                    <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider block mb-1">Branches</span>
+                    <p className={`text-sm font-bold ${selectedUser?._id === userItem._id ? 'text-emerald-400' : 'text-slate-400 group-hover:text-emerald-400'
+                      }`}>{userItem.outlets?.length || 0}</p>
+                  </div>
+                  <div className="min-w-0 text-right pr-2">
                     <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider block mb-1">Tickets</span>
-                    <p className={`text-base font-bold ${selectedUser?._id === userItem._id ? 'text-violet-400' : 'text-slate-400 group-hover:text-violet-400'
+                    <p className={`text-sm font-bold ${selectedUser?._id === userItem._id ? 'text-violet-400' : 'text-slate-400 group-hover:text-violet-400'
                       }`}>{userItem.ticketCount || 0}</p>
                   </div>
                 </div>

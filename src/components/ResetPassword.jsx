@@ -161,73 +161,30 @@ const ResetPassword = () => {
   }
 
   return (
-    <div className="h-screen flex relative overflow-hidden bg-slate-950">
+    <div className="min-h-screen flex relative overflow-hidden bg-slate-950">
 
       {/* Background gradients */}
       <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none z-0">
-        <div className="absolute -top-[20%] -right-[10%] w-[60%] h-[60%] rounded-full bg-violet-600/10 blur-[120px]" />
-        <div className="absolute bottom-[0%] left-[0%] w-[50%] h-[50%] rounded-full bg-blue-600/10 blur-[100px]" />
+        <div className="absolute -top-[10%] -right-[10%] w-[60%] h-[60%] rounded-full bg-blue-600/10 blur-[120px]" />
+        <div className="absolute bottom-[10%] left-[10%] w-[40%] h-[40%] rounded-full bg-violet-600/10 blur-[100px]" />
       </div>
 
-      {/* LEFT SIDE - BRANDING */}
-      <div className="hidden xl:flex xl:w-5/12 sticky top-0 h-screen relative z-10 flex-col justify-center p-12">
-        <div className="mb-12">
-          <div className="flex items-center space-x-3 mb-8">
-            <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-violet-600 to-blue-600 flex items-center justify-center shadow-lg shadow-violet-500/20">
-              <Shield className="w-7 h-7 text-white" />
-            </div>
-            <h1 className="text-2xl font-bold text-white tracking-tight">Aksecure</h1>
-          </div>
+      <div className="flex-1 flex flex-col justify-start sm:justify-center pt-8 sm:py-12 px-4 sm:px-6 lg:px-8 relative z-10">
 
-          <h1 className="text-4xl lg:text-5xl font-bold text-white mb-6 tracking-tight leading-tight">
+        <div className="sm:mx-auto sm:w-full sm:max-w-md mb-8 text-center">
+          <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-violet-600 to-blue-600 flex items-center justify-center mx-auto mb-6 shadow-lg shadow-blue-500/20">
+            <Lock className="w-8 h-8 text-white" />
+          </div>
+          <p className="text-lg text-slate-300 leading-relaxed max-w-md">
             Reset your password securely and regain access to your surveillance dashboard.
-          </h1>
+          </p>
+          <p className="mt-2 text-slate-400">
+            Create a strong password for your account
+          </p>
         </div>
 
-        <div className="space-y-6">
-          <div className="glass p-5 rounded-2xl border-l-4 border-l-emerald-500">
-            <div className="flex items-start gap-4">
-              <div className="p-2 rounded-lg bg-emerald-500/10 text-emerald-400 mt-1">
-                <Shield className="w-6 h-6" />
-              </div>
-              <div>
-                <h3 className="text-white font-semibold text-lg mb-1">Secure Reset</h3>
-                <p className="text-slate-400 text-sm leading-relaxed">Encrypted links for your security</p>
-              </div>
-            </div>
-          </div>
-
-          <div className="glass p-5 rounded-2xl border-l-4 border-l-blue-500">
-            <div className="flex items-start gap-4">
-              <div className="p-2 rounded-lg bg-blue-500/10 text-blue-400 mt-1">
-                <CheckCircle2 className="w-6 h-6" />
-              </div>
-              <div>
-                <h3 className="text-white font-semibold text-lg mb-1">Instant Delivery</h3>
-                <p className="text-slate-400 text-sm leading-relaxed">Check your inbox within seconds</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* RIGHT SIDE - RESET PASSWORD FORM */}
-      <div className="flex-1 flex items-center justify-center p-4 sm:p-6 lg:p-8 relative z-10 h-full">
-        <div className="w-full max-w-md px-4 sm:px-8">
-          <div className="glass-card p-8 w-full animate-fade-in-up">
-
-            <div className="mb-8 text-center">
-              <div className="xl:hidden w-16 h-16 rounded-2xl bg-gradient-to-br from-violet-600 to-blue-600 flex items-center justify-center mx-auto mb-6 shadow-lg shadow-blue-500/20">
-                <Lock className="w-8 h-8 text-white" />
-              </div>
-              <h2 className="text-3xl font-bold text-white tracking-tight">
-                Reset Password
-              </h2>
-              <p className="mt-2 text-slate-400">
-                Create a strong password for your account
-              </p>
-            </div>
-
+        <div className="sm:mx-auto sm:w-full sm:max-w-md">
+          <div className="glass-card py-8 px-4 sm:px-10 animate-fade-in-up">
             <form className="space-y-6" onSubmit={handleSubmit}>
 
               <div className="group">
