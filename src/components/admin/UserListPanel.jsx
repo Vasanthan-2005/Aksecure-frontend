@@ -1,4 +1,5 @@
 import { Search, Users, User, Loader2, Home, AlertCircle, Trash2, MapPin } from 'lucide-react';
+import SkeletonLoader from '../common/SkeletonLoader';
 
 const UserListPanel = ({
   users,
@@ -28,7 +29,7 @@ const UserListPanel = ({
           <div className="mb-4">
             <button
               onClick={onBackToDashboard}
-              className="flex items-center gap-2 px-3 py-1.5 text-xs font-semibold text-slate-400 hover:text-white hover:bg-white/5 rounded-lg transition-colors border border-transparent hover:border-white/10"
+              className="flex items-center gap-2 px-3 py-1.5 text-xs font-semibold text-slate-400 hover:text-white hover:bg-white/5 rounded-lg border border-transparent hover:border-white/10"
             >
               <Home className="w-3.5 h-3.5" />
               Dashboard
@@ -49,7 +50,7 @@ const UserListPanel = ({
             {onRefresh && (
               <button
                 onClick={onRefresh}
-                className="flex items-center gap-2 p-2 bg-slate-800 text-slate-300 hover:text-white rounded-xl hover:bg-slate-700 transition-all border border-slate-700 hover:border-slate-600"
+                className="flex items-center gap-2 p-2 bg-slate-800 text-slate-300 hover:text-white rounded-xl hover:bg-slate-700 border border-slate-700 hover:border-slate-600"
                 title="Refresh Data"
               >
                 <AlertCircle className="w-4 h-4" />
@@ -63,13 +64,13 @@ const UserListPanel = ({
 
         {/* Search */}
         <div className="relative mb-4 group">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-500 group-focus-within:text-violet-400 transition-colors w-4 h-4" />
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-500 group-focus-within:text-violet-400 w-4 h-4" />
           <input
             type="text"
             placeholder="Search by name, email, company..."
             value={userSearchTerm}
             onChange={(e) => setUserSearchTerm(e.target.value)}
-            className="w-full pl-10 pr-4 py-3 bg-slate-800/50 border border-slate-700 rounded-xl focus:ring-2 focus:ring-violet-500/20 focus:border-violet-500/50 text-sm text-slate-200 placeholder-slate-500 transition-all outline-none"
+            className="w-full pl-10 pr-4 py-3 bg-slate-800/50 border border-slate-700 rounded-xl focus:ring-2 focus:ring-violet-500/20 focus:border-violet-500/50 text-sm text-slate-200 placeholder-slate-500 outline-none"
           />
         </div>
 
@@ -81,9 +82,33 @@ const UserListPanel = ({
       {/* Users List */}
       <div className="flex-1 overflow-y-auto p-4 space-y-3 custom-scrollbar">
         {loading ? (
-          <div className="flex items-center justify-center py-12">
-            <Loader2 className="w-8 h-8 text-violet-500 animate-spin" />
-          </div>
+          // Skeleton Loading State
+          Array.from({ length: 5 }).map((_, index) => (
+            <div
+              key={index}
+              className="w-full p-4 rounded-xl border border-white/5 bg-slate-900/40 relative overflow-hidden"
+            >
+              <div className="flex items-center gap-3 mb-3 pl-2">
+                <SkeletonLoader variant="circular" width="40px" height="40px" className="flex-shrink-0" />
+                <div className="flex-1">
+                  <SkeletonLoader variant="text" width="50%" height="16px" className="mb-1" />
+                  <SkeletonLoader variant="text" width="70%" height="12px" />
+                </div>
+              </div>
+              <div className="flex items-center justify-between pt-3 border-t border-white/5 pl-2">
+                <div className="grid grid-cols-2 gap-4 flex-1">
+                  <div>
+                    <SkeletonLoader variant="text" width="40px" height="10px" className="mb-1" />
+                    <SkeletonLoader variant="text" width="80px" height="14px" />
+                  </div>
+                  <div>
+                    <SkeletonLoader variant="text" width="40px" height="10px" className="mb-1" />
+                    <SkeletonLoader variant="text" width="30px" height="14px" />
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))
         ) : filteredUsers.length === 0 ? (
           <div className="text-center py-12 px-4">
             <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-slate-800/50 flex items-center justify-center border border-white/5">
@@ -99,7 +124,7 @@ const UserListPanel = ({
             <button
               key={userItem._id}
               onClick={() => onUserClick(userItem)}
-              className={`w-full text-left p-4 rounded-xl border transition-all group relative overflow-hidden ${selectedUser?._id === userItem._id
+              className={`w-full text-left p-4 rounded-xl border group relative overflow-hidden ${selectedUser?._id === userItem._id
                 ? 'bg-violet-500/10 border-violet-500/50 shadow-[0_0_20px_rgba(139,92,246,0.1)]'
                 : 'bg-slate-800/30 border-white/5 hover:border-violet-500/30 hover:bg-slate-800/60'
                 }`}
@@ -109,21 +134,21 @@ const UserListPanel = ({
               )}
               {/* User Avatar and Name */}
               <div className="flex items-center gap-3 mb-3 pl-2">
-                <div className={`w-10 h-10 rounded-full flex items-center justify-center ring-2 flex-shrink-0 transition-all ${selectedUser?._id === userItem._id
+                <div className={`w-10 h-10 rounded-full flex items-center justify-center ring-2 flex-shrink-0 ${selectedUser?._id === userItem._id
                   ? 'bg-violet-500 ring-violet-500/30'
                   : 'bg-slate-700 ring-slate-600 group-hover:ring-violet-500/30 group-hover:bg-slate-600'
                   }`}>
                   <User className="w-5 h-5 text-white" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <h3 className={`font-bold text-base mb-0.5 truncate transition-colors flex items-center gap-2 ${selectedUser?._id === userItem._id ? 'text-white' : 'text-slate-300 group-hover:text-white'
+                  <h3 className={`font-bold text-base mb-0.5 truncate flex items-center gap-2 ${selectedUser?._id === userItem._id ? 'text-white' : 'text-slate-300 group-hover:text-white'
                     }`}>
                     {userItem.name}
                     {userItem.location && userItem.location.lat && userItem.location.lng && (
                       <MapPin className="w-3.5 h-3.5 text-amber-500 shrink-0" title="Location marked" />
                     )}
                   </h3>
-                  <p className="text-sm text-slate-500 truncate group-hover:text-slate-400 transition-colors">{userItem.email}</p>
+                  <p className="text-sm text-slate-500 truncate group-hover:text-slate-400">{userItem.email}</p>
                 </div>
               </div>
 
@@ -132,7 +157,7 @@ const UserListPanel = ({
                 <div className="grid grid-cols-2 gap-4 flex-1">
                   <div className="min-w-0">
                     <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider block mb-1">Company</span>
-                    <p className="text-sm font-semibold text-slate-300 truncate group-hover:text-white transition-colors" title={userItem.companyName || 'N/A'}>
+                    <p className="text-sm font-semibold text-slate-300 truncate group-hover:text-white" title={userItem.companyName || 'N/A'}>
                       {userItem.companyName || 'N/A'}
                     </p>
                   </div>
@@ -148,7 +173,7 @@ const UserListPanel = ({
                       e.stopPropagation();
                       onDelete(userItem);
                     }}
-                    className="p-1.5 text-red-400 hover:text-red-300 bg-red-500/10 hover:bg-red-500/20 rounded-lg transition-colors border border-red-500/20 hover:border-red-500/40 flex-shrink-0"
+                    className="p-1.5 text-red-400 hover:text-red-300 bg-red-500/10 hover:bg-red-500/20 rounded-lg border border-red-500/20 hover:border-red-500/40 flex-shrink-0"
                     title="Delete user"
                   >
                     <Trash2 className="w-3.5 h-3.5" />

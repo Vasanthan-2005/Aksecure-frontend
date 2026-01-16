@@ -147,16 +147,7 @@ const UserDashboard = () => {
 
               <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
                 <div className="max-w-xl">
-                  <div className="flex flex-wrap items-center gap-2 mb-3 sm:mb-4">
-                    <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-[8px] sm:text-[9px] font-bold uppercase tracking-[0.2em] animate-fade-in">
-                      <Sparkles className="w-2.5 h-2.5" />
-                      <span>Enterprise</span>
-                    </div>
-                    <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[8px] sm:text-[9px] font-bold uppercase tracking-wider animate-pulse-slow">
-                      <Activity className="w-2.5 h-2.5" />
-                      <span>Normal</span>
-                    </div>
-                  </div>
+
 
                   <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-white mb-2 sm:mb-3 tracking-tight leading-tight flex items-center flex-wrap gap-x-2">
                     Welcome back,
@@ -221,11 +212,7 @@ const UserDashboard = () => {
                       <div className={`h-8 w-8 sm:h-10 sm:w-10 rounded-lg sm:rounded-xl bg-${category.color}-500/10 border border-${category.color}-500/20 flex items-center justify-center transition-all duration-500 group-hover:scale-110 group-hover:shadow-[0_0_20px_rgba(59,130,246,0.15)]`}>
                         <category.icon className={`w-3.5 h-3.5 sm:w-4.5 sm:h-4.5 text-${category.color}-400`} />
                       </div>
-                      {(index === 0 || index === 3) && (
-                        <div className="absolute -top-1 -right-2 sm:-top-2 sm:-right-6 px-1.5 py-0.5 rounded-full bg-blue-500 text-[6px] sm:text-[8px] font-black text-white uppercase tracking-tighter animate-pulse shadow-[0_0_10px_rgba(59,130,246,0.5)]">
-                          New
-                        </div>
-                      )}
+
                     </div>
 
                     <div className="w-full">

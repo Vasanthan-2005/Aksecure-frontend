@@ -10,7 +10,7 @@ const ImageGallery = ({ images }) => {
 
   return (
     <>
-      <div className="glass-card p-6 rounded-2xl border border-slate-700/50 shadow-xl bg-slate-900/60 backdrop-blur-xl animate-fade-in-up" style={{ animationDelay: '0.3s' }}>
+      <div className="glass-card p-6 rounded-2xl border border-slate-700/50 shadow-xl bg-slate-900/60 backdrop-blur-xl">
         <div className="flex items-center gap-3 mb-5">
           <div className="w-10 h-10 rounded-xl bg-cyan-500/10 flex items-center justify-center ring-1 ring-cyan-500/20">
             <ImageIcon className="w-5 h-5 text-cyan-400" />
@@ -23,21 +23,21 @@ const ImageGallery = ({ images }) => {
               ? image
               : `${baseUrl}${image}`;
             return (
-              <div key={index} className="relative group animate-scale-in" style={{ animationDelay: `${index * 0.05}s` }}>
+              <div key={index} className="relative group">
                 <div
-                  className="relative overflow-hidden rounded-xl border border-white/10 group-hover:border-cyan-500/50 transition-all cursor-pointer shadow-lg shadow-black/20 group-hover:shadow-cyan-500/20 aspect-video bg-slate-800"
+                  className="relative overflow-hidden rounded-xl border border-white/10 group-hover:border-cyan-500/50 cursor-pointer shadow-lg shadow-black/20 group-hover:shadow-cyan-500/20 aspect-video bg-slate-800"
                   onClick={() => setSelectedImageIndex(index)}
                 >
                   <img
                     src={imageUrl}
                     alt={`Ticket image ${index + 1}`}
-                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                    className="w-full h-full object-cover"
                   />
-                  <div className="absolute inset-0 bg-slate-900/0 group-hover:bg-slate-900/40 transition-all flex items-center justify-center">
-                    <Eye className="w-8 h-8 text-white opacity-0 group-hover:opacity-100 transition-all duration-300 transform scale-50 group-hover:scale-100 drop-shadow-lg" />
+                  <div className="absolute inset-0 bg-slate-900/0 group-hover:bg-slate-900/40 flex items-center justify-center">
+                    <Eye className="w-8 h-8 text-white opacity-0 group-hover:opacity-100 drop-shadow-lg" />
                   </div>
                 </div>
-                <div className="mt-2 text-[10px] text-center text-slate-500 font-bold uppercase tracking-wider group-hover:text-cyan-400 transition-colors">
+                <div className="mt-2 text-[10px] text-center text-slate-500 font-bold uppercase tracking-wider group-hover:text-cyan-400">
                   Image {index + 1}
                 </div>
               </div>

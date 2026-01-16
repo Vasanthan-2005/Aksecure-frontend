@@ -9,10 +9,11 @@ const TicketUpdateForm = ({
   errors,
   setErrors,
   updating,
-  onUpdate
+  onUpdate,
+  currentStatus // Added currentStatus prop
 }) => {
   return (
-    <div className="glass-card bg-slate-900/60 backdrop-blur-xl rounded-2xl border border-slate-700/50 shadow-xl p-6 relative overflow-hidden group">
+    <div className="glass-card p-6 rounded-2xl border border-slate-700/50 shadow-xl bg-slate-900/60 backdrop-blur-xl h-full">
       <div className="absolute top-0 right-0 p-4 opacity-5 pointer-events-none group-hover:opacity-10 transition-opacity">
         <ChevronsUp className="w-24 h-24 text-blue-500" />
       </div>
@@ -41,10 +42,12 @@ const TicketUpdateForm = ({
               setUpdateStatus(e.target.value);
               setErrors(prev => ({ ...prev, status: '', update: '' }));
             }}
-            className={`w-full px-4 py-3 bg-slate-800/50 border rounded-xl focus:ring-2 focus:border-transparent transition-all font-medium text-slate-200 outline-none cursor-pointer hover:bg-slate-800/80 ${errors.status || errors.update
-                ? 'border-red-500/50 focus:ring-red-500/50'
-                : 'border-slate-700 focus:ring-blue-500/50 hover:border-slate-600'
-              }`}
+            className={`w-full px-4 py-3 bg-slate-950/50 border rounded-xl icon-select appearance-none cursor-pointer font-bold text-sm
+                  ${currentStatus === 'Open' ? 'text-blue-400 border-blue-500/30 focus:border-blue-500 focus:ring-blue-500/20' : ''}
+                  ${currentStatus === 'In Progress' ? 'text-amber-400 border-amber-500/30 focus:border-amber-500 focus:ring-amber-500/20' : ''}
+                  ${currentStatus === 'Resolved' ? 'text-emerald-400 border-emerald-500/30 focus:border-emerald-500 focus:ring-emerald-500/20' : ''}
+                  ${currentStatus === 'Closed' ? 'text-slate-400 border-slate-500/30 focus:border-slate-500 focus:ring-slate-500/20' : ''}
+                  focus:outline-none focus:ring-2`}
           >
             {statusOptions.map((status) => (
               <option key={status} value={status}>
@@ -72,8 +75,8 @@ const TicketUpdateForm = ({
               setErrors(prev => ({ ...prev, visitDateTime: '', update: '' }));
             }}
             className={`w-full px-4 py-3 bg-slate-800/50 border rounded-xl focus:ring-2 focus:border-transparent transition-all font-medium text-slate-200 scheme-dark ${errors.visitDateTime || errors.update
-                ? 'border-red-500/50 focus:ring-red-500/50'
-                : 'border-slate-700 focus:ring-blue-500/50 hover:border-slate-600'
+              ? 'border-red-500/50 focus:ring-red-500/50'
+              : 'border-slate-700 focus:ring-blue-500/50 hover:border-slate-600'
               }`}
           />
           {errors.visitDateTime && (
@@ -87,10 +90,10 @@ const TicketUpdateForm = ({
           className="w-full inline-flex items-center justify-center gap-2 px-5 py-3.5 bg-blue-600 hover:bg-blue-500 text-white rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed font-bold text-sm shadow-lg shadow-blue-500/25 hover:shadow-blue-500/40 hover:-translate-y-0.5 active:translate-y-0"
         >
           {updating ? (
-            <>
-              <Loader2 className="w-5 h-5 animate-spin" />
-              Updating...
-            </>
+            <div className="flex items-center justify-center py-4 text-slate-400 gap-2">
+              <Loader2 className="w-5 h-5" />
+              <span>Updating status...</span>
+            </div>
           ) : (
             <>
               <Save className="w-5 h-5" />

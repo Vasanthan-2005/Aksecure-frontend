@@ -1,5 +1,6 @@
 import { useState, useRef } from 'react';
-import { X, Send, Clock, MessageSquare, Loader2, Image as ImageIcon, XCircle } from 'lucide-react';
+import { X, Send, Clock, MessageSquare, Loader2, Image as ImageIcon, XCircle, Star } from 'lucide-react';
+import DatePicker from './DatePicker';
 
 const timeSlotOptions = [
   { value: '09:00', label: 'Morning (9 AM – 12 PM)' },
@@ -124,8 +125,8 @@ const ReplyModal = ({ isOpen, onClose, ticket, onReply, updating }) => {
   };
 
   return (
-    <div className="fixed top-20 left-0 right-0 bottom-0 z-40 flex items-start justify-center pt-8 pb-8 px-4 bg-black/60 backdrop-blur-sm animate-fade-in overflow-y-auto">
-      <div className="bg-slate-900 rounded-2xl shadow-2xl max-w-2xl w-full max-h-[calc(100vh-8rem)] overflow-y-auto border border-slate-700/50 ring-1 ring-white/10 animate-scale-in">
+    <div className="fixed top-20 left-0 right-0 bottom-0 z-40 flex items-start justify-center pt-8 pb-8 px-4 bg-black/60 backdrop-blur-sm overflow-y-auto">
+      <div className="bg-slate-900 rounded-2xl shadow-2xl max-w-2xl w-full max-h-[calc(100vh-8rem)] overflow-y-auto border border-slate-700/50 ring-1 ring-white/10">
         {/* Header */}
         <div className="sticky top-0 bg-slate-900/95 backdrop-blur-xl border-b border-white/5 px-6 py-4 flex items-center justify-between z-10">
           <div className="flex items-center gap-3">
@@ -142,7 +143,7 @@ const ReplyModal = ({ isOpen, onClose, ticket, onReply, updating }) => {
           <button
             onClick={handleClose}
             disabled={updating}
-            className="p-2 hover:bg-white/5 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-slate-400 hover:text-white"
+            className="p-2 hover:bg-white/5 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed text-slate-400 hover:text-white"
           >
             <X className="w-5 h-5" />
           </button>
@@ -180,7 +181,7 @@ const ReplyModal = ({ isOpen, onClose, ticket, onReply, updating }) => {
               placeholder="Type your reply message here..."
               rows={6}
               disabled={updating}
-              className={`w-full px-4 py-3 bg-slate-950/50 border rounded-xl focus:ring-2 focus:border-transparent resize-none transition-colors font-medium text-slate-200 placeholder:text-slate-600 ${errors.message
+              className={`w-full px-4 py-3 bg-slate-950/50 border rounded-xl focus:ring-2 focus:border-transparent resize-none font-medium text-slate-200 placeholder:text-slate-600 ${errors.message
                 ? 'border-red-500/50 focus:ring-red-500/50'
                 : 'border-slate-700 focus:ring-blue-500/50 hover:border-slate-600'
                 } disabled:opacity-50 disabled:cursor-not-allowed`}
@@ -210,7 +211,7 @@ const ReplyModal = ({ isOpen, onClose, ticket, onReply, updating }) => {
             />
             <label
               htmlFor="image-upload"
-              className={`inline-flex items-center gap-2 px-4 py-2 border rounded-xl cursor-pointer transition-all font-medium text-sm ${updating || selectedImages.length >= 3
+              className={`inline-flex items-center gap-2 px-4 py-2 border rounded-xl cursor-pointer font-medium text-sm ${updating || selectedImages.length >= 3
                 ? 'border-slate-700 bg-slate-800 text-slate-500 cursor-not-allowed'
                 : 'border-slate-600 bg-slate-800/50 text-slate-300 hover:bg-slate-700 hover:border-slate-500 hover:text-white'
                 }`}
@@ -228,12 +229,12 @@ const ReplyModal = ({ isOpen, onClose, ticket, onReply, updating }) => {
                     <img
                       src={preview}
                       alt={`Preview ${index + 1}`}
-                      className="w-full h-24 object-cover rounded-lg border border-white/10 group-hover:border-white/20 transition-all"
+                      className="w-full h-24 object-cover rounded-lg border border-white/10 group-hover:border-white/20"
                     />
                     <button
                       type="button"
                       onClick={() => removeImage(index)}
-                      className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all hover:bg-red-600 shadow-lg transform group-hover:scale-100 scale-90"
+                      className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 hover:bg-red-600 shadow-lg"
                       disabled={updating}
                     >
                       <XCircle className="w-4 h-4" />
@@ -256,22 +257,31 @@ const ReplyModal = ({ isOpen, onClose, ticket, onReply, updating }) => {
                   Scheduling Date <span className="text-red-400">*</span>
                 </div>
               </label>
-              <input
-                type="date"
-                value={preferredDate}
-                onChange={(e) => {
-                  setPreferredDate(e.target.value);
+              <DatePicker
+                selectedDate={preferredDate}
+                onChange={(date) => {
+                  setPreferredDate(date);
                   setErrors(prev => ({ ...prev, schedule: '' }));
+
+                  // Auto-select slot if it matches preferred date
+                  if (ticket?.preferredVisitAt) {
+                    const prefDate = new Date(ticket.preferredVisitAt);
+                    const prefDateStr = prefDate.toISOString().split('T')[0];
+                    if (date === prefDateStr) {
+                      const hour = prefDate.getHours();
+                      let slot = '';
+                      if (hour >= 9 && hour < 12) slot = '09:00';
+                      else if (hour >= 12 && hour < 15) slot = '12:00';
+                      else if (hour >= 15 && hour < 18) slot = '15:00';
+                      if (slot) setPreferredSlot(slot);
+                    }
+                  }
                 }}
-                min={today}
-                disabled={updating}
-                required
-                className={`w-full px-4 py-3 bg-slate-950/50 border rounded-xl focus:ring-2 focus:border-transparent transition-colors font-medium text-slate-200 scheme-dark ${errors.schedule
-                  ? 'border-red-500/50 focus:ring-red-500/50'
-                  : 'border-slate-700 focus:ring-blue-500/50 hover:border-slate-600'
-                  } disabled:opacity-50 disabled:cursor-not-allowed`}
+                preferredDate={ticket?.preferredVisitAt}
+                minDate={today}
               />
             </div>
+
             <div>
               <label className="block text-sm font-bold text-slate-300 mb-2">
                 <div className="flex items-center gap-2">
@@ -279,31 +289,61 @@ const ReplyModal = ({ isOpen, onClose, ticket, onReply, updating }) => {
                   Time Slot <span className="text-red-400">*</span>
                 </div>
               </label>
-              <select
-                value={preferredSlot}
-                onChange={(e) => {
-                  setPreferredSlot(e.target.value);
-                  setErrors(prev => ({ ...prev, schedule: '' }));
-                }}
-                disabled={updating}
-                required
-                className={`w-full px-4 py-3 bg-slate-950/50 border rounded-xl focus:ring-2 focus:border-transparent transition-colors font-medium text-slate-200 outline-none cursor-pointer ${errors.schedule
-                  ? 'border-red-500/50 focus:ring-red-500/50'
-                  : 'border-slate-700 focus:ring-blue-500/50 hover:border-slate-600'
-                  } disabled:opacity-50 disabled:cursor-not-allowed`}
-              >
-                <option value="">Select a time slot</option>
-                {timeSlotOptions.map((slot) => (
-                  <option key={slot.value} value={slot.value}>
-                    {slot.label}
-                  </option>
-                ))}
-              </select>
+              <div className="flex flex-col gap-2">
+                {timeSlotOptions.map((slot) => {
+                  let isPreferred = false;
+                  if (ticket?.preferredVisitAt) {
+                    const date = new Date(ticket.preferredVisitAt);
+                    const hour = date.getHours();
+                    let prefTime = '';
+                    if (hour >= 9 && hour < 12) prefTime = '09:00';
+                    else if (hour >= 12 && hour < 15) prefTime = '12:00';
+                    else if (hour >= 15 && hour < 18) prefTime = '15:00';
+                    isPreferred = prefTime === slot.value;
+                  }
+
+                  const isSelected = preferredSlot === slot.value;
+
+                  return (
+                    <button
+                      key={slot.value}
+                      type="button"
+                      onClick={() => {
+                        setPreferredSlot(slot.value);
+                        setErrors(prev => ({ ...prev, schedule: '' }));
+                      }}
+                      disabled={updating}
+                      className={`
+                        w-full px-4 py-3 rounded-xl border flex items-center justify-between group transition-all
+                        ${isSelected
+                          ? 'bg-blue-600/20 border-blue-500/50 text-white shadow-lg shadow-blue-500/10'
+                          : 'bg-slate-950/50 border-slate-700 text-slate-400 hover:bg-slate-800 hover:text-white hover:border-slate-600'}
+                        ${isPreferred && !isSelected ? 'border-emerald-500/30 bg-emerald-500/5' : ''}
+                      `}
+                    >
+                      <div className="flex items-center gap-2">
+                        <div className={`w-2 h-2 rounded-full ${isSelected ? 'bg-blue-400' : isPreferred ? 'bg-emerald-400' : 'bg-slate-600'}`}></div>
+                        <span className="font-semibold text-sm">{slot.label}</span>
+                      </div>
+
+                      {isPreferred && (
+                        <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-emerald-500/10 border border-emerald-500/20">
+                          <Star className="w-3 h-3 text-emerald-400 fill-emerald-400" />
+                          <span className="text-[10px] font-bold text-emerald-400 uppercase tracking-wider">Preferred</span>
+                        </div>
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+
             </div>
           </div>
-          {errors.schedule && (
-            <p className="mt-1 text-xs text-red-400 font-medium">{errors.schedule}</p>
-          )}
+          {
+            errors.schedule && (
+              <p className="mt-1 text-xs text-red-400 font-medium">{errors.schedule}</p>
+            )
+          }
 
           {/* Actions */}
           <div className="flex items-center gap-3 pt-6 border-t border-white/5">
@@ -311,18 +351,18 @@ const ReplyModal = ({ isOpen, onClose, ticket, onReply, updating }) => {
               type="button"
               onClick={handleClose}
               disabled={updating}
-              className="flex-1 px-5 py-3 border border-slate-700 text-slate-300 rounded-xl hover:bg-slate-800 hover:text-white transition-all disabled:opacity-50 disabled:cursor-not-allowed font-semibold text-sm"
+              className="flex-1 px-5 py-3 border border-slate-700 text-slate-300 rounded-xl hover:bg-slate-800 hover:text-white disabled:opacity-50 disabled:cursor-not-allowed font-semibold text-sm"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={!replyMessage.trim() || !preferredDate || !preferredSlot || updating}
-              className="flex-1 inline-flex items-center justify-center gap-2 px-5 py-3 bg-blue-600 hover:bg-blue-500 text-white rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed font-bold text-sm shadow-lg shadow-blue-500/20"
+              className="flex-1 inline-flex items-center justify-center gap-2 px-5 py-3 bg-blue-600 hover:bg-blue-500 text-white rounded-xl disabled:opacity-50 disabled:cursor-not-allowed font-bold text-sm shadow-lg shadow-blue-500/20"
             >
               {updating ? (
                 <>
-                  <Loader2 className="w-4 h-4 animate-spin" />
+                  <Loader2 className="w-4 h-4" />
                   Sending...
                 </>
               ) : (
@@ -333,9 +373,9 @@ const ReplyModal = ({ isOpen, onClose, ticket, onReply, updating }) => {
               )}
             </button>
           </div>
-        </form>
-      </div>
-    </div>
+        </form >
+      </div >
+    </div >
   );
 };
 

@@ -8,8 +8,8 @@ const UserDetailsPanel = ({ user, onDelete, deleting, onClose }) => {
         <div className="flex items-center justify-center h-full min-h-[calc(100vh-4rem)] text-slate-500">
           <div className="text-center px-6">
             <div className="w-24 h-24 mx-auto mb-6 rounded-3xl bg-slate-900/50 flex items-center justify-center border border-white/5 relative overflow-hidden group">
-              <div className="absolute inset-0 bg-violet-600/10 blur-xl group-hover:bg-violet-600/20 transition-all duration-500" />
-              <Users className="w-10 h-10 text-violet-400/50 group-hover:text-violet-400 transition-colors z-10" />
+              <div className="absolute inset-0 bg-violet-600/10 blur-xl group-hover:bg-violet-600/20" />
+              <Users className="w-10 h-10 text-violet-400/50 group-hover:text-violet-400 z-10" />
             </div>
             <p className="text-xl font-bold text-white mb-2">Select a user</p>
             <p className="text-sm text-slate-500 max-w-md">Click on any user from the list to view their full profile and activity.</p>
@@ -29,7 +29,7 @@ const UserDetailsPanel = ({ user, onDelete, deleting, onClose }) => {
 
       <div className="p-8 max-w-5xl mx-auto space-y-6 relative z-10">
         {/* User Header */}
-        <div className="glass-card p-8 rounded-2xl border border-slate-700/50 shadow-xl bg-slate-900/60 backdrop-blur-xl animate-fade-in-up">
+        <div className="glass-card p-8 rounded-2xl border border-slate-700/50 shadow-xl bg-slate-900/60 backdrop-blur-xl">
           <div className="flex items-start justify-between mb-6">
             <div className="flex items-center gap-6">
               <div className="w-24 h-24 rounded-2xl bg-gradient-to-br from-violet-600 to-indigo-600 flex items-center justify-center ring-4 ring-violet-500/20 shadow-lg shadow-violet-500/20">
@@ -53,7 +53,7 @@ const UserDetailsPanel = ({ user, onDelete, deleting, onClose }) => {
         </div>
 
         {/* User Information */}
-        <div className="glass-card p-8 rounded-2xl border border-slate-700/50 shadow-xl bg-slate-900/60 backdrop-blur-xl animate-fade-in-up" style={{ animationDelay: '0.1s' }}>
+        <div className="glass-card p-8 rounded-2xl border border-slate-700/50 shadow-xl bg-slate-900/60 backdrop-blur-xl">
           <div className="flex items-center gap-3 mb-8 pb-4 border-b border-white/5">
             <div className="w-10 h-10 rounded-xl bg-violet-500/10 border border-violet-500/20 flex items-center justify-center">
               <User className="w-5 h-5 text-violet-400" />
@@ -66,64 +66,64 @@ const UserDetailsPanel = ({ user, onDelete, deleting, onClose }) => {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Email */}
-            <div className="group bg-slate-800/40 rounded-xl p-5 border border-white/5 hover:border-violet-500/30 hover:bg-slate-800/60 transition-all">
+            <div className="group bg-slate-800/40 rounded-xl p-5 border border-white/5 hover:border-violet-500/30 hover:bg-slate-800/60">
               <div className="flex items-center gap-2 mb-3">
                 <Mail className="w-4 h-4 text-violet-400" />
-                <span className="text-xs text-slate-500 font-bold uppercase tracking-tight group-hover:text-violet-300/80 transition-colors">Email</span>
+                <span className="text-xs text-slate-500 font-bold uppercase tracking-tight group-hover:text-violet-300/80">Email</span>
               </div>
-              <p className="text-base font-medium text-slate-200 break-all group-hover:text-white transition-colors">
+              <p className="text-base font-medium text-slate-200 break-all group-hover:text-white">
                 {user.email || 'N/A'}
               </p>
             </div>
 
             {/* Phone */}
-            <div className="group bg-slate-800/40 rounded-xl p-5 border border-white/5 hover:border-violet-500/30 hover:bg-slate-800/60 transition-all">
+            <div className="group bg-slate-800/40 rounded-xl p-5 border border-white/5 hover:border-violet-500/30 hover:bg-slate-800/60">
               <div className="flex items-center gap-2 mb-3">
                 <Phone className="w-4 h-4 text-violet-400" />
-                <span className="text-xs text-slate-500 font-bold uppercase tracking-tight group-hover:text-violet-300/80 transition-colors">Phone</span>
+                <span className="text-xs text-slate-500 font-bold uppercase tracking-tight group-hover:text-violet-300/80">Phone</span>
               </div>
-              <p className="text-base font-medium text-slate-200 group-hover:text-white transition-colors">
+              <p className="text-base font-medium text-slate-200 group-hover:text-white">
                 {user.phone || 'N/A'}
               </p>
             </div>
 
             {/* Company */}
-            <div className="group bg-slate-800/40 rounded-xl p-5 border border-white/5 hover:border-violet-500/30 hover:bg-slate-800/60 transition-all">
+            <div className="group bg-slate-800/40 rounded-xl p-5 border border-white/5 hover:border-violet-500/30 hover:bg-slate-800/60">
               <div className="flex items-center gap-2 mb-3">
                 <Building className="w-4 h-4 text-violet-400" />
-                <span className="text-xs text-slate-500 font-bold uppercase tracking-tight group-hover:text-violet-300/80 transition-colors">Company</span>
+                <span className="text-xs text-slate-500 font-bold uppercase tracking-tight group-hover:text-violet-300/80">Company</span>
               </div>
-              <p className="text-base font-medium text-slate-200 group-hover:text-white transition-colors">
+              <p className="text-base font-medium text-slate-200 group-hover:text-white">
                 {user.companyName || 'N/A'}
               </p>
             </div>
 
             {/* Role */}
-            <div className="group bg-slate-800/40 rounded-xl p-5 border border-white/5 hover:border-violet-500/30 hover:bg-slate-800/60 transition-all">
+            <div className="group bg-slate-800/40 rounded-xl p-5 border border-white/5 hover:border-violet-500/30 hover:bg-slate-800/60">
               <div className="flex items-center gap-2 mb-3">
                 <User className="w-4 h-4 text-violet-400" />
-                <span className="text-xs text-slate-500 font-bold uppercase tracking-tight group-hover:text-violet-300/80 transition-colors">Role</span>
+                <span className="text-xs text-slate-500 font-bold uppercase tracking-tight group-hover:text-violet-300/80">Role</span>
               </div>
-              <p className="text-base font-medium text-slate-200 capitalize group-hover:text-white transition-colors">
+              <p className="text-base font-medium text-slate-200 capitalize group-hover:text-white">
                 {user.role || 'user'}
               </p>
             </div>
 
             {/* Address */}
             {user.address && (
-              <div className="md:col-span-2 group bg-slate-800/40 rounded-xl p-5 border border-white/5 hover:border-violet-500/30 hover:bg-slate-800/60 transition-all">
+              <div className="md:col-span-2 group bg-slate-800/40 rounded-xl p-5 border border-white/5 hover:border-violet-500/30 hover:bg-slate-800/60">
                 <div className="flex items-center gap-2 mb-3">
                   <MapPin className="w-4 h-4 text-violet-400" />
-                  <span className="text-xs text-slate-500 font-bold uppercase tracking-tight group-hover:text-violet-300/80 transition-colors">Address</span>
+                  <span className="text-xs text-slate-500 font-bold uppercase tracking-tight group-hover:text-violet-300/80">Address</span>
                 </div>
-                <p className="text-base font-medium text-slate-200 leading-relaxed group-hover:text-white transition-colors">{user.address}</p>
+                <p className="text-base font-medium text-slate-200 leading-relaxed group-hover:text-white">{user.address}</p>
               </div>
             )}
 
             {/* Location Coordinates & Map */}
             {user.location && (
               <div className="md:col-span-2 space-y-4">
-                <div className="group bg-amber-500/5 rounded-xl p-5 border border-amber-500/10 hover:border-amber-500/30 hover:bg-amber-500/10 transition-all">
+                <div className="group bg-amber-500/5 rounded-xl p-5 border border-amber-500/10 hover:border-amber-500/30 hover:bg-amber-500/10">
                   <div className="flex items-center gap-2 mb-3">
                     <MapPin className="w-4 h-4 text-amber-500" />
                     <span className="text-xs text-amber-500/80 font-bold uppercase tracking-tight">Location Coordinates</span>
@@ -140,7 +140,7 @@ const UserDetailsPanel = ({ user, onDelete, deleting, onClose }) => {
                   </div>
                 </div>
 
-                <div className="group bg-slate-800/40 rounded-2xl p-6 border border-white/5 hover:border-violet-500/30 transition-all">
+                <div className="group bg-slate-800/40 rounded-2xl p-6 border border-white/5 hover:border-violet-500/30">
                   <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center gap-2">
                       <div className="w-8 h-8 rounded-lg bg-violet-500/10 border border-violet-500/20 flex items-center justify-center">
@@ -156,9 +156,9 @@ const UserDetailsPanel = ({ user, onDelete, deleting, onClose }) => {
                       href={`https://www.google.com/maps/dir/?api=1&destination=${user.location.lat},${user.location.lng}`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex items-center justify-center gap-2 w-full py-3 px-4 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/20 hover:border-emerald-500/40 text-emerald-400 rounded-xl font-bold text-sm transition-all group/nav"
+                      className="flex items-center justify-center gap-2 w-full py-3 px-4 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/20 hover:border-emerald-500/40 text-emerald-400 rounded-xl font-bold text-sm group/nav"
                     >
-                      <ExternalLink className="w-4 h-4 group-hover/nav:translate-x-0.5 group-hover/nav:-translate-y-0.5 transition-transform" />
+                      <ExternalLink className="w-4 h-4 group-hover/nav:translate-x-0.5 group-hover/nav:-translate-y-0.5" />
                       Open Navigation for Directions
                     </a>
                   </div>
@@ -168,12 +168,12 @@ const UserDetailsPanel = ({ user, onDelete, deleting, onClose }) => {
 
             {/* Registration Date */}
             {user.createdAt && (
-              <div className="group bg-slate-800/40 rounded-xl p-5 border border-white/5 hover:border-emerald-500/30 hover:bg-slate-800/60 transition-all">
+              <div className="group bg-slate-800/40 rounded-xl p-5 border border-white/5 hover:border-emerald-500/30 hover:bg-slate-800/60">
                 <div className="flex items-center gap-2 mb-3">
                   <Calendar className="w-4 h-4 text-emerald-400" />
-                  <span className="text-xs text-slate-500 font-bold uppercase tracking-tight group-hover:text-emerald-300/80 transition-colors">Registered</span>
+                  <span className="text-xs text-slate-500 font-bold uppercase tracking-tight group-hover:text-emerald-300/80">Registered</span>
                 </div>
-                <p className="text-base font-medium text-slate-200 group-hover:text-white transition-colors">
+                <p className="text-base font-medium text-slate-200 group-hover:text-white">
                   {new Date(user.createdAt).toLocaleDateString('en-US', {
                     year: 'numeric',
                     month: 'long',
@@ -191,12 +191,12 @@ const UserDetailsPanel = ({ user, onDelete, deleting, onClose }) => {
 
             {/* Last Updated */}
             {user.updatedAt && (
-              <div className="group bg-slate-800/40 rounded-xl p-5 border border-white/5 hover:border-blue-500/30 hover:bg-slate-800/60 transition-all">
+              <div className="group bg-slate-800/40 rounded-xl p-5 border border-white/5 hover:border-blue-500/30 hover:bg-slate-800/60">
                 <div className="flex items-center gap-2 mb-3">
                   <Clock className="w-4 h-4 text-blue-400" />
-                  <span className="text-xs text-slate-500 font-bold uppercase tracking-tight group-hover:text-blue-300/80 transition-colors">Last Updated</span>
+                  <span className="text-xs text-slate-500 font-bold uppercase tracking-tight group-hover:text-blue-300/80">Last Updated</span>
                 </div>
-                <p className="text-base font-medium text-slate-200 group-hover:text-white transition-colors">
+                <p className="text-base font-medium text-slate-200 group-hover:text-white">
                   {new Date(user.updatedAt).toLocaleDateString('en-US', {
                     year: 'numeric',
                     month: 'long',
@@ -213,8 +213,8 @@ const UserDetailsPanel = ({ user, onDelete, deleting, onClose }) => {
             )}
 
             {/* Total Tickets */}
-            <div className="md:col-span-2 relative overflow-hidden rounded-xl p-6 border border-blue-500/30 bg-blue-500/5 group hover:bg-blue-500/10 transition-all">
-              <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+            <div className="md:col-span-2 relative overflow-hidden rounded-xl p-6 border border-blue-500/30 bg-blue-500/5 group hover:bg-blue-500/10">
+              <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20">
                 <TicketIcon className="w-24 h-24 text-blue-500 rotate-12" />
               </div>
               <div className="relative z-10 flex items-center justify-between">

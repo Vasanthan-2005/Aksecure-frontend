@@ -18,6 +18,7 @@ import {
   Clock,
   LayoutDashboard,
   Settings as SettingsIcon,
+  Navigation,
 } from "lucide-react";
 import LoadingState from "./common/LoadingState";
 import SuccessState from "./common/SuccessState";
@@ -817,25 +818,8 @@ const AdminPortal = () => {
       .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
     : [];
 
-  if (loading) {
-    return (
-      <div className="fixed inset-0 min-h-screen flex items-center justify-center bg-slate-950 relative overflow-hidden">
-        {/* Background gradients */}
-        <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none z-0">
-          <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-blue-600/10 blur-[120px]" />
-          <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] rounded-full bg-violet-600/10 blur-[120px]" />
-        </div>
+  // if (loading) block removed to allow skeleton loading states
 
-        <div className="text-center relative z-10 p-8 glass-card rounded-2xl border border-white/5 bg-slate-900/50 backdrop-blur-xl shadow-2xl">
-          <Loader2 className="w-10 h-10 text-blue-400 animate-spin mx-auto mb-4" />
-          <div className="text-white text-lg font-bold tracking-tight">
-            Loading Dashboard...
-          </div>
-          <p className="text-slate-400 text-sm mt-2">Please wait while we fetch your data</p>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="fixed inset-0 h-screen w-screen flex flex-col bg-slate-950 overflow-hidden">
@@ -892,12 +876,12 @@ const AdminPortal = () => {
                     setActiveTab("dashboard");
                     fetchTickets();
                   }}
-                  className={`px-6 py-2 text-xs font-bold tracking-tight rounded-xl transition-all duration-300 relative flex items-center gap-2.5 ${(activeTab === "tickets" || activeTab === "dashboard") && viewMode === "dashboard"
+                  className={`px-6 py-2 text-xs font-bold tracking-tight rounded-xl relative flex items-center gap-2.5 ${(activeTab === "tickets" || activeTab === "dashboard") && viewMode === "dashboard"
                     ? "bg-blue-600 text-white shadow-[0_0_20px_rgba(37,99,235,0.4)] scale-105"
                     : "text-slate-400 hover:text-white hover:bg-white/5"
                     }`}
                 >
-                  <LayoutDashboard className={`w-4 h-4 transition-transform duration-300 ${((activeTab === "tickets" || activeTab === "dashboard") && viewMode === "dashboard") ? "scale-110" : "group-hover:scale-110"}`} />
+                  <LayoutDashboard className={`w-4 h-4 ${((activeTab === "tickets" || activeTab === "dashboard") && viewMode === "dashboard") ? "scale-110" : "group-hover:scale-110"}`} />
                   <span>Dashboard</span>
                 </button>
 
@@ -908,17 +892,17 @@ const AdminPortal = () => {
                     setViewMode("new-tickets");
                     setActiveTab("tickets");
                   }}
-                  className={`px-6 py-2 text-xs font-bold tracking-tight rounded-xl transition-all duration-300 relative flex items-center gap-2.5 ${viewMode === "new-tickets" && activeTab === "tickets"
+                  className={`px-6 py-2 text-xs font-bold tracking-tight rounded-xl relative flex items-center gap-2.5 ${viewMode === "new-tickets" && activeTab === "tickets"
                     ? "bg-blue-600 text-white shadow-[0_0_20px_rgba(37,99,235,0.4)] scale-105"
                     : "text-slate-400 hover:text-white hover:bg-white/5"
                     }`}
                 >
-                  <TicketIcon className={`w-4 h-4 transition-transform duration-300 ${(viewMode === "new-tickets" && activeTab === "tickets") ? "scale-110" : "group-hover:scale-110"}`} />
+                  <TicketIcon className={`w-4 h-4 ${(viewMode === "new-tickets" && activeTab === "tickets") ? "scale-110" : "group-hover:scale-110"}`} />
                   <span>New Tickets</span>
                   {newTickets.length > 0 && (
                     <span className={`text-[10px] font-black rounded-full px-2 py-0.5 min-w-[20px] text-center ${viewMode === "new-tickets" && activeTab === "tickets"
                       ? "bg-white text-blue-600 shadow-sm"
-                      : "bg-red-500 text-white animate-pulse"
+                      : "bg-red-500 text-white"
                       }`}>
                       {newTickets.length > 9 ? "9+" : newTickets.length}
                     </span>
@@ -932,18 +916,18 @@ const AdminPortal = () => {
                     setViewMode("new-service-requests");
                     setActiveTab("service-requests");
                   }}
-                  className={`px-6 py-2 text-xs font-bold tracking-tight rounded-xl transition-all duration-300 relative flex items-center gap-2.5 ${viewMode === "new-service-requests" &&
+                  className={`px-6 py-2 text-xs font-bold tracking-tight rounded-xl relative flex items-center gap-2.5 ${viewMode === "new-service-requests" &&
                     activeTab === "service-requests"
                     ? "bg-blue-600 text-white shadow-[0_0_20px_rgba(37,99,235,0.4)] scale-105"
                     : "text-slate-400 hover:text-white hover:bg-white/5"
                     }`}
                 >
-                  <FileText className={`w-4 h-4 transition-transform duration-300 ${(viewMode === "new-service-requests" && activeTab === "service-requests") ? "scale-110" : "group-hover:scale-110"}`} />
+                  <FileText className={`w-4 h-4 ${(viewMode === "new-service-requests" && activeTab === "service-requests") ? "scale-110" : "group-hover:scale-110"}`} />
                   <span>New Service Requests</span>
                   {newServiceRequests.length > 0 && (
                     <span className={`text-[10px] font-black rounded-full px-2 py-0.5 min-w-[20px] text-center ${viewMode === "new-service-requests" && activeTab === "service-requests"
                       ? "bg-white text-blue-600 shadow-sm"
-                      : "bg-red-500 text-white animate-pulse"
+                      : "bg-red-500 text-white"
                       }`}>
                       {newServiceRequests.length > 9
                         ? "9+"
@@ -958,12 +942,12 @@ const AdminPortal = () => {
                   onClick={() => {
                     setActiveTab("settings");
                   }}
-                  className={`px-6 py-2 text-xs font-bold tracking-tight rounded-xl transition-all duration-300 relative flex items-center gap-2.5 ${activeTab === "settings"
+                  className={`px-6 py-2 text-xs font-bold tracking-tight rounded-xl relative flex items-center gap-2.5 ${activeTab === "settings"
                     ? "bg-blue-600 text-white shadow-[0_0_20px_rgba(37,99,235,0.4)] scale-105"
                     : "text-slate-400 hover:text-white hover:bg-white/5"
                     }`}
                 >
-                  <SettingsIcon className={`w-4 h-4 transition-transform duration-300 ${activeTab === "settings" ? "scale-110" : "group-hover:scale-110"}`} />
+                  <SettingsIcon className={`w-4 h-4 ${activeTab === "settings" ? "scale-110" : "group-hover:scale-110"}`} />
                   <span>Settings</span>
                 </button>
               </div>
@@ -1022,12 +1006,12 @@ const AdminPortal = () => {
                         <button
                           key={ticket._id}
                           onClick={() => handleTicketClick(ticket)}
-                          className="w-full text-left p-4 rounded-xl border border-white/5 bg-slate-800/40 hover:border-emerald-500/30 hover:bg-slate-800/70 transition-all group"
+                          className="w-full text-left p-4 rounded-xl border border-white/5 bg-slate-800/40 hover:border-emerald-500/30 hover:bg-slate-800/70 group"
                         >
                           <div className="flex items-start justify-between mb-3">
                             <div className="flex-1 min-w-0">
                               <div className="flex items-center gap-3 mb-2 flex-wrap">
-                                <h3 className="font-bold text-base text-white group-hover:text-emerald-400 transition-colors">
+                                <h3 className="font-bold text-base text-white group-hover:text-emerald-400">
                                   {ticket.title}
                                   {ticket.userId?.companyName && (
                                     <span className="text-sm font-normal text-slate-500 ml-2">
@@ -1049,11 +1033,11 @@ const AdminPortal = () => {
                               <p className="text-[10px] font-mono text-slate-500 mb-2">
                                 {ticket.ticketId}
                               </p>
-                              <p className="text-sm text-slate-400 line-clamp-2 group-hover:text-slate-300 transition-colors">
+                              <p className="text-sm text-slate-400 line-clamp-2 group-hover:text-slate-300">
                                 {ticket.description}
                               </p>
                             </div>
-                            <ArrowRight className="w-5 h-5 text-slate-600 group-hover:text-emerald-400 transition-colors flex-shrink-0 ml-4" />
+                            <ArrowRight className="w-5 h-5 text-slate-600 group-hover:text-emerald-400 flex-shrink-0 ml-4" />
                           </div>
                           <div className="flex items-center justify-between gap-4 pt-3 border-t border-white/5">
                             <span
@@ -1090,9 +1074,9 @@ const AdminPortal = () => {
             {viewMode === "dashboard" && (
               <div className="flex-1 overflow-hidden p-5 pt-1 space-y-3 relative z-10">
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                  <div className="glass-card p-4 h-52 rounded-3xl animate-fade-in-up border border-white/5 shadow-2xl bg-slate-900/40 backdrop-blur-2xl flex flex-col group hover:border-blue-500/20 transition-all duration-500">
+                  <div className="glass-card p-4 h-52 rounded-3xl border border-white/5 shadow-2xl bg-slate-900/40 backdrop-blur-2xl flex flex-col group hover:border-blue-500/20">
                     <h2 className="flex items-center gap-3 mb-3">
-                      <div className="p-2 rounded-xl bg-blue-500/10 border border-blue-500/20 group-hover:bg-blue-500/20 transition-all">
+                      <div className="p-2 rounded-xl bg-blue-500/10 border border-blue-500/20 group-hover:bg-blue-500/20">
                         <TicketIcon className="w-4.5 h-4.5 text-blue-400" />
                       </div>
                       <span className="text-sm font-bold text-white tracking-tight">Ticket Statistics</span>
@@ -1110,9 +1094,9 @@ const AdminPortal = () => {
                     </div>
                   </div>
 
-                  <div className="glass-card p-4 h-52 rounded-3xl animate-fade-in-up border border-white/5 shadow-2xl bg-slate-900/40 backdrop-blur-2xl flex flex-col group hover:border-emerald-500/20 transition-all duration-500" style={{ animationDelay: '0.1s' }}>
+                  <div className="glass-card p-4 h-52 rounded-3xl border border-white/5 shadow-2xl bg-slate-900/40 backdrop-blur-2xl flex flex-col group hover:border-emerald-500/20">
                     <h2 className="flex items-center gap-3 mb-3">
-                      <div className="p-2 rounded-xl bg-emerald-500/10 border border-emerald-500/20 group-hover:bg-emerald-500/20 transition-all">
+                      <div className="p-2 rounded-xl bg-emerald-500/10 border border-emerald-500/20 group-hover:bg-emerald-500/20">
                         <FileText className="w-4.5 h-4.5 text-emerald-400" />
                       </div>
                       <span className="text-sm font-bold text-white tracking-tight">Service Request Statistics</span>
@@ -1133,7 +1117,7 @@ const AdminPortal = () => {
 
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                   <div className="lg:col-span-1">
-                    <div className="glass-card p-5 rounded-3xl h-[400px] flex flex-col animate-fade-in-up border border-white/5 shadow-2xl bg-slate-900/40 backdrop-blur-2xl group hover:border-blue-500/10 transition-all duration-500" style={{ animationDelay: '0.2s' }}>
+                    <div className="glass-card p-5 rounded-3xl h-[400px] flex flex-col border border-white/5 shadow-2xl bg-slate-900/40 backdrop-blur-2xl group hover:border-blue-500/10">
                       <h2 className="text-base font-bold text-white tracking-tight mb-4 flex-shrink-0 flex items-center gap-2">
                         <div className="w-1.5 h-1.5 rounded-full bg-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.5)]"></div>
                         Quick Actions
@@ -1144,9 +1128,9 @@ const AdminPortal = () => {
                             setViewMode("all");
                             setActiveTab("tickets");
                           }}
-                          className="flex-1 flex items-center gap-4 px-5 bg-slate-800/40 hover:bg-blue-600/10 text-white rounded-2xl border border-white/5 hover:border-blue-500/30 transition-all duration-300 group shadow-lg hover:shadow-blue-500/5"
+                          className="flex-1 flex items-center gap-4 px-5 bg-slate-800/40 hover:bg-blue-600/10 text-white rounded-2xl border border-white/5 hover:border-blue-500/30 group shadow-lg hover:shadow-blue-500/5"
                         >
-                          <div className="w-12 h-12 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center group-hover:scale-110 group-hover:bg-blue-500/20 transition-all duration-300">
+                          <div className="w-12 h-12 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center group-hover:bg-blue-500/20">
                             <List className="w-6 h-6 text-blue-400" />
                           </div>
                           <div className="text-left">
@@ -1161,9 +1145,9 @@ const AdminPortal = () => {
                             setViewMode("all-service-requests");
                             fetchServiceRequests();
                           }}
-                          className="flex-1 flex items-center gap-4 px-5 bg-slate-800/40 hover:bg-emerald-600/10 text-white rounded-2xl border border-white/5 hover:border-emerald-500/30 transition-all duration-300 group shadow-lg hover:shadow-emerald-500/5"
+                          className="flex-1 flex items-center gap-4 px-5 bg-slate-800/40 hover:bg-emerald-600/10 text-white rounded-2xl border border-white/5 hover:border-emerald-500/30 group shadow-lg hover:shadow-emerald-500/5"
                         >
-                          <div className="w-12 h-12 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center group-hover:scale-110 group-hover:bg-emerald-500/20 transition-all duration-300">
+                          <div className="w-12 h-12 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center group-hover:bg-emerald-500/20">
                             <FileText className="w-6 h-6 text-emerald-400" />
                           </div>
                           <div className="text-left">
@@ -1177,9 +1161,9 @@ const AdminPortal = () => {
                             setActiveTab("users");
                             fetchUsers();
                           }}
-                          className="flex-1 flex items-center gap-4 px-5 bg-slate-800/40 hover:bg-violet-600/10 text-white rounded-2xl border border-white/5 hover:border-violet-500/30 transition-all duration-300 group shadow-lg hover:shadow-violet-500/5"
+                          className="flex-1 flex items-center gap-4 px-5 bg-slate-800/40 hover:bg-violet-600/10 text-white rounded-2xl border border-white/5 hover:border-violet-500/30 group shadow-lg hover:shadow-violet-500/5"
                         >
-                          <div className="w-12 h-12 rounded-xl bg-violet-500/10 border border-violet-500/20 flex items-center justify-center group-hover:scale-110 group-hover:bg-violet-500/20 transition-all duration-300">
+                          <div className="w-12 h-12 rounded-xl bg-violet-500/10 border border-violet-500/20 flex items-center justify-center group-hover:bg-violet-500/20">
                             <Users className="w-6 h-6 text-violet-400" />
                           </div>
                           <div className="text-left">
@@ -1193,9 +1177,9 @@ const AdminPortal = () => {
                             fetchTickets();
                             fetchServiceRequests();
                           }}
-                          className="flex-1 flex items-center gap-4 px-5 bg-slate-800/40 hover:bg-amber-600/10 text-white rounded-2xl border border-white/5 hover:border-amber-500/30 transition-all duration-300 group shadow-lg hover:shadow-amber-500/5"
+                          className="flex-1 flex items-center gap-4 px-5 bg-slate-800/40 hover:bg-amber-600/10 text-white rounded-2xl border border-white/5 hover:border-amber-500/30 group shadow-lg hover:shadow-amber-500/5"
                         >
-                          <div className="w-12 h-12 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center group-hover:scale-110 group-hover:bg-amber-500/20 transition-all duration-300">
+                          <div className="w-12 h-12 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center group-hover:bg-amber-500/20">
                             <AlertCircle className="w-6 h-6 text-amber-400" />
                           </div>
                           <div className="text-left">
@@ -1207,7 +1191,7 @@ const AdminPortal = () => {
                     </div>
                   </div>
 
-                  <div className="h-[400px] flex flex-col animate-fade-in-up transition-all duration-500" style={{ animationDelay: '0.3s' }}>
+                  <div className="h-[400px] flex flex-col">
                     <VisitCalendar
                       tickets={tickets}
                       serviceRequests={serviceRequests}
@@ -1217,7 +1201,7 @@ const AdminPortal = () => {
 
                   {/* Event Details Panel */}
                   <div className="lg:col-span-1">
-                    <div className="glass-card p-5 rounded-3xl h-[400px] flex flex-col animate-fade-in-up border border-white/5 shadow-2xl bg-slate-900/40 backdrop-blur-2xl group hover:border-cyan-500/10 transition-all duration-500" style={{ animationDelay: '0.4s' }}>
+                    <div className="glass-card p-5 rounded-3xl h-[400px] flex flex-col border border-white/5 shadow-2xl bg-slate-900/40 backdrop-blur-2xl group hover:border-cyan-500/10">
                       <div className="flex items-start justify-between mb-4">
                         <h2 className="text-base font-bold text-white tracking-tight flex items-center gap-2">
                           <div className="w-1.5 h-1.5 rounded-full bg-cyan-500 shadow-[0_0_8px_rgba(6,182,212,0.5)]"></div>
@@ -1227,7 +1211,7 @@ const AdminPortal = () => {
                           <button
                             type="button"
                             onClick={() => setSelectedVisit(null)}
-                            className="inline-flex items-center gap-1 text-xs text-slate-400 hover:text-white hover:bg-white/10 px-2.5 py-1 rounded-lg transition-colors border border-transparent hover:border-white/10"
+                            className="inline-flex items-center gap-1 text-xs text-slate-400 hover:text-white hover:bg-white/10 px-2.5 py-1 rounded-lg border border-transparent hover:border-white/10"
                             aria-label="Close visit details"
                           >
                             <XCircle className="w-4 h-4" />
@@ -1237,17 +1221,7 @@ const AdminPortal = () => {
                       </div>
                       {selectedVisit ? (
                         <div className="flex-1 flex flex-col min-h-0">
-                          {/* Color Legend */}
-                          <div className="flex items-center gap-4 text-xs text-slate-400 pb-2 flex-shrink-0">
-                            <div className="flex items-center gap-1.5">
-                              <span className="w-2 h-2 rounded-full bg-blue-500 inline-block shadow-[0_0_8px_rgba(59,130,246,0.6)]"></span>
-                              <span className="font-medium">Ticket</span>
-                            </div>
-                            <div className="flex items-center gap-1.5">
-                              <span className="w-2 h-2 rounded-full bg-fuchsia-500 inline-block shadow-[0_0_8px_rgba(217,70,239,0.6)]"></span>
-                              <span className="font-medium">Service</span>
-                            </div>
-                          </div>
+
                           {selectedVisit.visits &&
                             selectedVisit.visits.length > 0 ? (
                             <div className="flex-1 overflow-y-auto space-y-3 pr-1 min-h-0 custom-scrollbar">
@@ -1261,13 +1235,13 @@ const AdminPortal = () => {
                                       handleServiceRequestClick({ _id: visit._id, ...visit });
                                     }
                                   }}
-                                  className={`p-4 rounded-xl border cursor-pointer hover:shadow-lg transition-all group ${visit.type === "ticket"
+                                  className={`p-4 rounded-xl border cursor-pointer group ${visit.type === "ticket"
                                     ? "bg-blue-500/5 border-blue-500/20 hover:border-blue-500/40 hover:bg-blue-500/10"
                                     : "bg-fuchsia-500/5 border-fuchsia-500/20 hover:border-fuchsia-500/40 hover:bg-fuchsia-500/10"
                                     }`}
                                 >
                                   <div className="flex justify-between items-start mb-2">
-                                    <h3 className="font-bold text-slate-200 group-hover:text-white transition-colors tracking-tight">
+                                    <h3 className="font-bold text-slate-200 group-hover:text-white tracking-tight">
                                       {visit.category}
                                     </h3>
                                     <span
@@ -1295,13 +1269,28 @@ const AdminPortal = () => {
                                           "Company N/A"}
                                       </span>
                                     </div>
-                                    <div className="flex items-center gap-2 text-xs text-slate-400 ml-0">
-                                      <User className="w-3 h-3 text-slate-500 flex-shrink-0" />
-                                      <span className="font-bold">
-                                        {visit.userId?.name ||
-                                          visit.userName ||
-                                          "User N/A"}
-                                      </span>
+                                    <div className="flex items-center justify-between ml-0">
+                                      <div className="flex items-center gap-2 text-xs text-slate-400">
+                                        <User className="w-3 h-3 text-slate-500 flex-shrink-0" />
+                                        <span className="font-bold">
+                                          {visit.userId?.name ||
+                                            visit.userName ||
+                                            "User N/A"}
+                                        </span>
+                                      </div>
+                                      {(visit.userId?.address || visit.address) && (
+                                        <a
+                                          href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(visit.userId?.address || visit.address)}`}
+                                          target="_blank"
+                                          rel="noopener noreferrer"
+                                          onClick={(e) => e.stopPropagation()}
+                                          className="p-1 px-2 rounded-lg bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 hover:text-blue-300 border border-blue-500/20 hover:border-blue-500/30 transition-colors group/nav flex items-center gap-1.5"
+                                          title="View Location"
+                                        >
+                                          <Navigation className="w-3.5 h-3.5" />
+                                          <span className="text-[10px] font-bold uppercase tracking-wider">Map</span>
+                                        </a>
+                                      )}
                                     </div>
                                     <div className="flex items-start gap-2 text-xs text-slate-400 ml-0">
                                       <FileText className="w-3 h-3 text-slate-500 flex-shrink-0 mt-0.5" />
@@ -1394,6 +1383,7 @@ const AdminPortal = () => {
                         setTicketToDelete(ticket);
                         setDeleteTicketModalOpen(true);
                       }}
+                      loading={loading}
                     />
                   </div>
                 </div>
@@ -1505,12 +1495,12 @@ const AdminPortal = () => {
                         <button
                           key={request._id}
                           onClick={() => handleServiceRequestClick(request)}
-                          className="w-full text-left p-4 rounded-xl border border-white/5 bg-slate-800/40 hover:border-amber-500/30 hover:bg-slate-800/70 transition-all group"
+                          className="w-full text-left p-4 rounded-xl border border-white/5 bg-slate-800/40 hover:border-amber-500/30 hover:bg-slate-800/70 group"
                         >
                           <div className="flex items-start justify-between mb-3">
                             <div className="flex-1 min-w-0">
                               <div className="flex items-center gap-3 mb-2 flex-wrap">
-                                <h3 className="font-bold text-base text-white group-hover:text-amber-400 transition-colors">
+                                <h3 className="font-bold text-base text-white group-hover:text-amber-400">
                                   {request.title}
                                   {request.userId?.companyName && (
                                     <span className="text-sm font-normal text-slate-500 ml-2">
@@ -1530,11 +1520,11 @@ const AdminPortal = () => {
                               <p className="text-[10px] font-mono text-slate-500 mb-2">
                                 {request.requestId}
                               </p>
-                              <p className="text-sm text-slate-400 line-clamp-2 group-hover:text-slate-300 transition-colors">
+                              <p className="text-sm text-slate-400 line-clamp-2 group-hover:text-slate-300">
                                 {request.description}
                               </p>
                             </div>
-                            <ArrowRight className="w-5 h-5 text-slate-600 group-hover:text-amber-400 transition-colors flex-shrink-0 ml-4" />
+                            <ArrowRight className="w-5 h-5 text-slate-600 group-hover:text-amber-400 flex-shrink-0 ml-4" />
                           </div>
                           <div className="flex items-center justify-between gap-4 pt-3 border-t border-white/5">
                             <span
@@ -1589,7 +1579,7 @@ const AdminPortal = () => {
 
                   {serviceRequestsLoading ? (
                     <div className="text-center py-12">
-                      <Loader2 className="w-10 h-10 text-blue-400 animate-spin mx-auto mb-4" />
+                      <Loader2 className="w-10 h-10 text-blue-400 mx-auto mb-4" />
                       <p className="text-white text-lg font-bold tracking-tight">
                         Loading service requests...
                       </p>
@@ -1687,6 +1677,7 @@ const AdminPortal = () => {
                         setServiceRequestToDelete(request);
                         setDeleteServiceRequestModalOpen(true);
                       }}
+                      loading={serviceRequestsLoading}
                     />
                   </div>
                 </div>
@@ -1715,10 +1706,10 @@ const AdminPortal = () => {
                       }}
                     />
                   ) : (
-                    <div className="bg-white rounded-2xl border border-slate-200 shadow-lg p-8 m-6 flex items-center justify-center h-full">
+                    <div className="glass-card rounded-2xl border border-slate-700/50 shadow-xl p-8 m-6 flex items-center justify-center h-full bg-slate-900/60 backdrop-blur-xl">
                       <div className="text-center">
-                        <TicketIcon className="w-16 h-16 text-slate-300 mx-auto mb-4" />
-                        <p className="text-lg font-semibold text-slate-600">
+                        <TicketIcon className="w-16 h-16 text-slate-600 mx-auto mb-4" />
+                        <p className="text-lg font-bold text-slate-400">
                           Select a service request to view details
                         </p>
                       </div>
@@ -1771,11 +1762,11 @@ const AdminPortal = () => {
                 <button
                   onClick={handleDeleteUser}
                   disabled={deletingUserId === userToDelete._id}
-                  className="px-4 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed inline-flex items-center gap-2"
+                  className="px-4 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed inline-flex items-center gap-2"
                 >
                   {deletingUserId === userToDelete._id ? (
                     <>
-                      <Loader2 className="w-4 h-4 animate-spin" />
+                      <Loader2 className="w-4 h-4" />
                       Deleting...
                     </>
                   ) : (
@@ -1819,13 +1810,13 @@ const AdminPortal = () => {
                     setDeleteTicketModalOpen(false);
                     setTicketToDelete(null);
                   }}
-                  className="px-4 py-2 rounded-lg border border-slate-200 text-slate-700 hover:bg-slate-50 transition-colors"
+                  className="px-4 py-2 rounded-lg border border-slate-200 text-slate-700 hover:bg-slate-50"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={handleDeleteTicket}
-                  className="px-4 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700 transition-colors inline-flex items-center gap-2"
+                  className="px-4 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700 inline-flex items-center gap-2"
                 >
                   Delete Ticket
                 </button>
@@ -1866,13 +1857,13 @@ const AdminPortal = () => {
                     setDeleteServiceRequestModalOpen(false);
                     setServiceRequestToDelete(null);
                   }}
-                  className="px-4 py-2 rounded-lg border border-slate-200 text-slate-700 hover:bg-slate-50 transition-colors"
+                  className="px-4 py-2 rounded-lg border border-slate-200 text-slate-700 hover:bg-slate-50"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={handleDeleteServiceRequest}
-                  className="px-4 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700 transition-colors inline-flex items-center gap-2"
+                  className="px-4 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700 inline-flex items-center gap-2"
                 >
                   Delete Service Request
                 </button>

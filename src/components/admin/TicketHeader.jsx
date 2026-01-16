@@ -15,7 +15,7 @@ const TicketHeader = ({ ticket, updateStatus, setUpdateStatus, visitDateTime, se
                 ticket.status
               )}`}
             >
-              <div className={`w-2 h-2 rounded-full animate-pulse ${ticket.status === 'Open' ? 'bg-emerald-400' : ticket.status === 'In Progress' ? 'bg-blue-400' : 'bg-green-400'}`} />
+              <div className={`w-2 h-2 rounded-full ${ticket.status === 'Open' ? 'bg-emerald-400' : ticket.status === 'In Progress' ? 'bg-blue-400' : 'bg-green-400'}`} />
               {getStatusIcon(ticket.status)}
               {ticket.status === 'Open' ? 'New' : ticket.status}
             </span>
@@ -29,8 +29,8 @@ const TicketHeader = ({ ticket, updateStatus, setUpdateStatus, visitDateTime, se
         </div>
 
         {/* Update Ticket Form - Top Right */}
-        <div className="ml-6 w-80 flex-shrink-0 animate-fade-in">
-          <div className="bg-slate-800/40 rounded-xl p-4 border border-white/10 hover:border-white/20 transition-all">
+        <div className="ml-6 w-80 flex-shrink-0">
+          <div className="bg-slate-800/40 rounded-xl p-4 border border-white/10 hover:border-white/20">
             <h3 className="text-sm font-bold text-white mb-3 flex items-center gap-2">
               <CheckCircle2 className="w-4 h-4 text-emerald-400" />
               Update Status
@@ -52,7 +52,7 @@ const TicketHeader = ({ ticket, updateStatus, setUpdateStatus, visitDateTime, se
                       setUpdateStatus(e.target.value);
                       setErrors(prev => ({ ...prev, status: '', update: '' }));
                     }}
-                    className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:border-transparent text-sm bg-slate-900/80 transition-all cursor-pointer outline-none ${errors.status || errors.update
+                    className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:border-transparent text-sm bg-slate-900/80 cursor-pointer outline-none ${errors.status || errors.update
                       ? 'border-red-500/50 focus:ring-red-500/50 text-red-400'
                       : 'border-slate-600 focus:ring-blue-500/50 text-slate-200 hover:border-slate-500'
                       }`}
@@ -67,10 +67,10 @@ const TicketHeader = ({ ticket, updateStatus, setUpdateStatus, visitDateTime, se
                 <button
                   onClick={onUpdate}
                   disabled={updating}
-                  className="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed text-[11px] font-black uppercase tracking-widest shadow-lg shadow-emerald-500/20 whitespace-nowrap border border-emerald-500/50"
+                  className="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl disabled:opacity-50 disabled:cursor-not-allowed text-[11px] font-black uppercase tracking-widest shadow-lg shadow-emerald-500/20 whitespace-nowrap border border-emerald-500/50"
                 >
                   {updating ? (
-                    <Loader2 className="w-4 h-4 animate-spin" />
+                    <Loader2 className="w-4 h-4" />
                   ) : (
                     <>
                       <Save className="w-4 h-4" />
@@ -90,12 +90,12 @@ const TicketHeader = ({ ticket, updateStatus, setUpdateStatus, visitDateTime, se
       </div>
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div className="bg-slate-900/40 rounded-2xl p-5 border border-white/5 hover:border-violet-500/20 transition-all duration-300 group shadow-lg">
+        <div className="bg-slate-900/40 rounded-2xl p-5 border border-white/5 hover:border-violet-500/20 group shadow-lg">
           <div className="flex items-center gap-3 mb-3">
-            <Calendar className="w-4 h-4 text-violet-400 group-hover:scale-110 transition-transform" />
-            <span className="text-xs text-slate-500 font-bold uppercase tracking-tight group-hover:text-violet-300 transition-colors">Created</span>
+            <Calendar className="w-4 h-4 text-violet-400" />
+            <span className="text-xs text-slate-500 font-bold uppercase tracking-tight group-hover:text-violet-300">Created</span>
           </div>
-          <p className="font-bold text-slate-100 text-base tracking-tight group-hover:text-white transition-colors">
+          <p className="font-bold text-slate-100 text-base tracking-tight group-hover:text-white">
             {new Date(ticket.createdAt).toLocaleDateString()}
           </p>
           <p className="text-sm text-slate-500 mt-0.5 font-mono">
@@ -103,12 +103,12 @@ const TicketHeader = ({ ticket, updateStatus, setUpdateStatus, visitDateTime, se
           </p>
         </div>
         {ticket.preferredVisitAt && (
-          <div className="bg-blue-500/5 rounded-2xl p-5 border border-blue-500/10 hover:border-blue-500/30 transition-all duration-300 group shadow-lg">
+          <div className="bg-blue-500/5 rounded-2xl p-5 border border-blue-500/10 hover:border-blue-500/30 group shadow-lg">
             <div className="flex items-center gap-3 mb-3">
-              <Clock className="w-4 h-4 text-blue-400 group-hover:scale-110 transition-transform" />
-              <span className="text-xs text-blue-500/60 font-bold uppercase tracking-tight group-hover:text-blue-400 transition-colors">Preferred</span>
+              <Clock className="w-4 h-4 text-blue-400" />
+              <span className="text-xs text-blue-500/60 font-bold uppercase tracking-tight group-hover:text-blue-400">Preferred</span>
             </div>
-            <p className="font-bold text-blue-100 text-base tracking-tight group-hover:text-white transition-colors">
+            <p className="font-bold text-blue-100 text-base tracking-tight group-hover:text-white">
               {new Date(ticket.preferredVisitAt).toLocaleDateString()}
             </p>
             <p className="text-sm text-blue-300/70 mt-0.5 font-mono">
@@ -117,12 +117,12 @@ const TicketHeader = ({ ticket, updateStatus, setUpdateStatus, visitDateTime, se
           </div>
         )}
         {ticket.assignedVisitAt && (
-          <div className="bg-emerald-500/5 rounded-2xl p-5 border border-emerald-500/10 hover:border-emerald-500/30 transition-all duration-300 group shadow-lg">
+          <div className="bg-emerald-500/5 rounded-2xl p-5 border border-emerald-500/10 hover:border-emerald-500/30 group shadow-lg">
             <div className="flex items-center gap-3 mb-3">
-              <Clock className="w-4 h-4 text-emerald-400 group-hover:scale-110 transition-transform" />
-              <span className="text-xs text-emerald-500/60 font-bold uppercase tracking-tight group-hover:text-emerald-400 transition-colors">Assigned</span>
+              <Clock className="w-4 h-4 text-emerald-400" />
+              <span className="text-xs text-emerald-500/60 font-bold uppercase tracking-tight group-hover:text-emerald-400">Assigned</span>
             </div>
-            <p className="font-bold text-emerald-100 text-base tracking-tight group-hover:text-white transition-colors">
+            <p className="font-bold text-emerald-100 text-base tracking-tight group-hover:text-white">
               {new Date(ticket.assignedVisitAt).toLocaleDateString()}
             </p>
             <p className="text-sm text-emerald-300/70 mt-0.5 font-mono">
@@ -131,12 +131,12 @@ const TicketHeader = ({ ticket, updateStatus, setUpdateStatus, visitDateTime, se
           </div>
         )}
         {ticket.completedAt && (
-          <div className="bg-slate-900/40 rounded-2xl p-5 border border-white/5 hover:border-slate-500/30 transition-all duration-300 group shadow-lg">
+          <div className="bg-slate-900/40 rounded-2xl p-5 border border-white/5 hover:border-slate-500/30 group shadow-lg">
             <div className="flex items-center gap-3 mb-3">
-              <CheckCircle2 className="w-4 h-4 text-slate-400 group-hover:scale-110 transition-transform" />
-              <span className="text-xs text-slate-500 font-bold uppercase tracking-tight group-hover:text-slate-300 transition-colors">Completed</span>
+              <CheckCircle2 className="w-4 h-4 text-slate-400" />
+              <span className="text-xs text-slate-500 font-bold uppercase tracking-tight group-hover:text-slate-300">Completed</span>
             </div>
-            <p className="font-bold text-slate-200 text-base tracking-tight group-hover:text-white transition-colors">
+            <p className="font-bold text-slate-200 text-base tracking-tight group-hover:text-white">
               {new Date(ticket.completedAt).toLocaleDateString()}
             </p>
             <p className="text-sm text-slate-400/70 mt-0.5 font-mono">

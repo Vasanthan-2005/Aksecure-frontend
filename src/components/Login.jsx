@@ -179,8 +179,11 @@ const Login = () => {
 
         <div className="relative z-10 flex flex-col justify-center px-16 text-white h-full">
           <div className="mb-8">
-            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-violet-600 to-blue-600 flex items-center justify-center mb-8 shadow-lg shadow-blue-500/20">
-              <Shield className="w-8 h-8 text-white" />
+            <div className="flex items-center space-x-3 mb-8">
+              <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-violet-600 to-blue-600 flex items-center justify-center shadow-lg shadow-violet-500/20">
+                <Shield className="w-7 h-7 text-white" />
+              </div>
+              <h1 className="text-2xl font-bold text-white tracking-tight">Aksecure</h1>
             </div>
             <h1 className="text-4xl md:text-5xl font-bold mb-6 tracking-tight leading-tight">
               Secure your world with <span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-400 to-blue-400">intelligent protection</span>

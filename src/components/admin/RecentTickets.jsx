@@ -23,9 +23,9 @@ const RecentTickets = ({ tickets, selectedTicket, onTicketClick }) => {
             <button
               key={ticket._id}
               onClick={() => onTicketClick(ticket)}
-              className={`w-full text-left p-3 rounded-xl border transition-all group relative overflow-hidden ${selectedTicket?._id === ticket._id
-                  ? 'bg-blue-600/10 border-blue-500/50 shadow-[0_0_15px_rgba(59,130,246,0.1)]'
-                  : 'bg-slate-800/40 border-white/5 hover:border-blue-500/30 hover:bg-slate-800/60'
+              className={`w-full text-left p-3 rounded-xl border group relative overflow-hidden ${selectedTicket?._id === ticket._id
+                ? 'bg-blue-600/10 border-blue-500/50 shadow-[0_0_15px_rgba(59,130,246,0.1)]'
+                : 'bg-slate-800/40 border-white/5 hover:border-blue-500/30 hover:bg-slate-800/60'
                 }`}
             >
               {selectedTicket?._id === ticket._id && (
@@ -33,7 +33,7 @@ const RecentTickets = ({ tickets, selectedTicket, onTicketClick }) => {
               )}
               <div className="flex items-start justify-between gap-2 mb-1.5 pl-2">
                 <div className="flex-1 min-w-0">
-                  <h4 className={`font-bold text-xs mb-0.5 line-clamp-1 transition-colors ${selectedTicket?._id === ticket._id ? 'text-white' : 'text-slate-200 group-hover:text-white'}`}>
+                  <h4 className={`font-bold text-xs mb-0.5 line-clamp-1 ${selectedTicket?._id === ticket._id ? 'text-white' : 'text-slate-200 group-hover:text-white'}`}>
                     {ticket.title}
                   </h4>
                   <p className="font-mono text-slate-500 text-[10px]">{ticket.ticketId}</p>

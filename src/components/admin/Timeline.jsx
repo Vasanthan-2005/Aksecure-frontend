@@ -62,7 +62,7 @@ const Timeline = ({ timeline, currentUserName }) => {
                   ? 'bg-slate-900 border-violet-500 shadow-violet-500/20'
                   : 'bg-slate-900 border-slate-500 shadow-slate-500/20'
                   }`}></div>
-                <div className={`p-5 rounded-xl border transition-all hover:bg-slate-800/40 ${isAdmin
+                <div className={`p-5 rounded-xl border hover:bg-slate-800/40 ${isAdmin
                   ? 'bg-violet-500/5 border-violet-500/10 hover:border-violet-500/20'
                   : 'bg-slate-800/20 border-white/5 hover:border-white/10'
                   }`}>
@@ -120,10 +120,10 @@ const Timeline = ({ timeline, currentUserName }) => {
                               <img
                                 src={imageUrl}
                                 alt={`Attachment ${imgIndex + 1}`}
-                                className="w-full h-full object-cover rounded-lg border border-white/10 hover:border-violet-500/50 transition-all"
+                                className="w-full h-full object-cover rounded-lg border border-white/10 hover:border-violet-500/50"
                               />
-                              <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-all rounded-lg flex items-center justify-center">
-                                <ImageIcon className="w-5 h-5 text-white opacity-0 group-hover:opacity-100 transition-opacity transform scale-90 group-hover:scale-100" />
+                              <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 rounded-lg flex items-center justify-center">
+                                <ImageIcon className="w-5 h-5 text-white opacity-0 group-hover:opacity-100" />
                               </div>
                             </div>
                           );
@@ -147,7 +147,7 @@ const Timeline = ({ timeline, currentUserName }) => {
           <div className="relative w-full h-full flex items-center justify-center">
             <button
               onClick={closeImageGallery}
-              className="absolute top-4 right-4 z-10 w-12 h-12 flex items-center justify-center bg-white/10 hover:bg-white/20 text-white rounded-full transition-all backdrop-blur-sm"
+              className="absolute top-4 right-4 z-10 w-12 h-12 flex items-center justify-center bg-white/10 hover:bg-white/20 text-white rounded-full backdrop-blur-sm"
               aria-label="Close"
             >
               <X className="w-6 h-6" />
@@ -160,7 +160,7 @@ const Timeline = ({ timeline, currentUserName }) => {
                   e.stopPropagation();
                   setSelectedImageIndex(selectedImageIndex - 1);
                 }}
-                className="absolute left-4 z-10 w-12 h-12 flex items-center justify-center bg-white/10 hover:bg-white/20 text-white rounded-full transition-all backdrop-blur-sm"
+                className="absolute left-4 z-10 w-12 h-12 flex items-center justify-center bg-white/10 hover:bg-white/20 text-white rounded-full backdrop-blur-sm"
                 aria-label="Previous image"
               >
                 <ChevronLeft className="w-6 h-6" />
@@ -174,7 +174,7 @@ const Timeline = ({ timeline, currentUserName }) => {
                   e.stopPropagation();
                   setSelectedImageIndex(selectedImageIndex + 1);
                 }}
-                className="absolute right-4 z-10 w-12 h-12 flex items-center justify-center bg-white/10 hover:bg-white/20 text-white rounded-full transition-all backdrop-blur-sm"
+                className="absolute right-4 z-10 w-12 h-12 flex items-center justify-center bg-white/10 hover:bg-white/20 text-white rounded-full backdrop-blur-sm"
                 aria-label="Next image"
               >
                 <ChevronRight className="w-6 h-6" />

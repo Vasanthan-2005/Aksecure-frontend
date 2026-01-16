@@ -300,7 +300,7 @@ const Register = () => {
   };
 
   return (
-    <div className="min-h-screen flex relative overflow-hidden bg-slate-950">
+    <div className="h-screen flex relative overflow-hidden bg-slate-950">
       {loading && <LoadingState message="Creating Security Profile" fullPage={true} />}
 
       {/* Background gradients */}
@@ -310,7 +310,7 @@ const Register = () => {
       </div>
 
       {/* LEFT SIDE - BRANDING */}
-      <div className="hidden xl:flex xl:w-5/12 relative z-10 flex-col justify-center p-12">
+      <div className="hidden xl:flex xl:w-5/12 sticky top-0 h-screen relative z-10 flex-col justify-center p-12">
         <div className="mb-12">
           <div className="flex items-center space-x-3 mb-8">
             <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-violet-600 to-blue-600 flex items-center justify-center shadow-lg shadow-violet-500/20">
@@ -356,12 +356,12 @@ const Register = () => {
       </div>
 
       {/* RIGHT SIDE - REGISTRATION FORM */}
-      <div className="flex-1 flex items-start sm:items-center justify-center p-4 sm:p-6 lg:p-8 relative z-10">
-        <div className="w-full max-w-2xl px-4 sm:px-8 mt-4 sm:mt-24">
+      <div className="flex-1 flex items-center justify-center p-4 sm:p-6 lg:p-8 relative z-10 h-full">
+        <div className="w-full max-w-2xl px-4 sm:px-8">
 
-          <div className="glass-card p-5 sm:p-10 w-full animate-fade-in-up">
+          <div className="glass-card p-5 sm:p-8 w-full animate-fade-in-up max-h-screen">
 
-            <div className="flex items-center justify-between mb-8">
+            <div className="flex items-center justify-between mb-4">
               <div>
                 <h2 className="text-2xl font-bold text-white">Create Account</h2>
                 <p className="text-slate-400 text-sm mt-1">Enter your organization details</p>
@@ -375,7 +375,7 @@ const Register = () => {
             </div>
 
             {error && Object.keys(fieldErrors).length === 0 && (
-              <div className="mb-6 p-4 bg-red-500/10 border border-red-500/20 rounded-xl flex items-start gap-3">
+              <div className="mb-4 p-3 bg-red-500/10 border border-red-500/20 rounded-xl flex items-start gap-3">
                 <div className="w-5 h-5 rounded-full bg-red-500/20 flex items-center justify-center flex-shrink-0 mt-0.5">
                   <span className="text-red-400 text-xs font-bold">!</span>
                 </div>
@@ -383,258 +383,265 @@ const Register = () => {
               </div>
             )}
 
-            <form className="space-y-6">
+            {/* Scrollable Container */}
+            <div className="max-h-[55vh] overflow-y-auto custom-scrollbar pr-2 -mr-2">
+              <form className="space-y-6 pb-2">
 
-              {/* Section 1: Organization Info */}
-              <div className="space-y-4">
-                <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3">Organization Details</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                  <div className="group">
-                    <label className="block text-xs font-medium text-slate-400 mb-1.5">Full Name</label>
-                    <div className="relative">
-                      <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 group-focus-within:text-violet-400 transition-colors" />
-                      <input
-                        type="text"
-                        name="name"
-                        value={formData.name}
-                        onChange={handleChange}
-                        className={`w-full pl-10 pr-4 py-2.5 rounded-xl glass-input outline-none text-sm ${fieldErrors.name ? 'border-red-500/50 focus:border-red-500' : ''}`}
-                        placeholder="John Doe"
-                      />
+                {/* Section 1: Basic Info */}
+                <div className="space-y-4">
+                  <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3">Organization Details</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <div className="group">
+                      <label className="block text-xs font-medium text-slate-400 mb-1.5">Full Name</label>
+                      <div className="relative">
+                        <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 group-focus-within:text-violet-400 transition-colors" />
+                        <input
+                          type="text"
+                          name="name"
+                          value={formData.name}
+                          onChange={handleChange}
+                          className={`w-full pl-10 pr-4 py-2.5 rounded-xl glass-input outline-none text-sm ${fieldErrors.name ? 'border-red-500/50 focus:border-red-500' : ''}`}
+                          placeholder="John Doe"
+                        />
+                      </div>
+                      {fieldErrors.name && <p className="mt-1 text-xs text-red-400">{fieldErrors.name}</p>}
                     </div>
-                    {fieldErrors.name && <p className="mt-1 text-xs text-red-400">{fieldErrors.name}</p>}
-                  </div>
 
-                  <div className="group">
-                    <label className="block text-xs font-medium text-slate-400 mb-1.5">Company Name</label>
-                    <div className="relative">
-                      <Building2 className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 group-focus-within:text-violet-400 transition-colors" />
-                      <input
-                        type="text"
-                        name="companyName"
-                        value={formData.companyName}
-                        onChange={handleChange}
-                        className={`w-full pl-10 pr-4 py-2.5 rounded-xl glass-input outline-none text-sm ${fieldErrors.companyName ? 'border-red-500/50 focus:border-red-500' : ''}`}
-                        placeholder="Acme Corp"
-                      />
+                    <div className="group">
+                      <label className="block text-xs font-medium text-slate-400 mb-1.5">Company Name</label>
+                      <div className="relative">
+                        <Building2 className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 group-focus-within:text-violet-400 transition-colors" />
+                        <input
+                          type="text"
+                          name="companyName"
+                          value={formData.companyName}
+                          onChange={handleChange}
+                          className={`w-full pl-10 pr-4 py-2.5 rounded-xl glass-input outline-none text-sm ${fieldErrors.companyName ? 'border-red-500/50 focus:border-red-500' : ''}`}
+                          placeholder="Acme Corp"
+                        />
+                      </div>
+                      {fieldErrors.companyName && <p className="mt-1 text-xs text-red-400">{fieldErrors.companyName}</p>}
                     </div>
-                    {fieldErrors.companyName && <p className="mt-1 text-xs text-red-400">{fieldErrors.companyName}</p>}
                   </div>
                 </div>
 
-                <div className="group relative">
-                  <label className="block text-xs font-medium text-slate-400 mb-1.5">Company Address</label>
-                  <div className="relative">
-                    <MapPin className="absolute left-3 top-3 w-4 h-4 text-slate-500 group-focus-within:text-violet-400 transition-colors" />
-                    <textarea
-                      name="address"
-                      rows="2"
-                      value={formData.address}
-                      onChange={handleChange}
-                      onBlur={() => setTimeout(() => setSearchResults([]), 200)} // Delay to allow clicks
-                      className={`w-full pl-10 pr-10 py-2.5 rounded-xl glass-input outline-none text-sm resize-none ${fieldErrors.address ? 'border-red-500/50 focus:border-red-500' : ''}`}
-                      placeholder="Enter company address (e.g. 123 Business St, City)"
-                    />
+                {/* Section 2: Contact & Security */}
+                <div className="space-y-4 pt-2">
+                  <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3">Contact & Security</h3>
 
-                    {/* Clear/Loading Indicators */}
-                    <div className="absolute right-3 top-3 flex items-center gap-2">
-                      {isGeocoding && (
-                        <div className="w-4 h-4 border-2 border-violet-400/20 border-t-violet-400 rounded-full animate-spin" />
-                      )}
-                      {formData.address && (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <div className="group">
+                      <label className="block text-xs font-medium text-slate-400 mb-1.5">Email Address</label>
+                      <div className="relative">
+                        <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 group-focus-within:text-blue-400 transition-colors" />
+                        <input
+                          type="email"
+                          name="email"
+                          value={formData.email}
+                          onChange={handleChange}
+                          className={`w-full pl-10 pr-4 py-2.5 rounded-xl glass-input outline-none text-sm ${fieldErrors.email ? 'border-red-500/50 focus:border-red-500' : ''}`}
+                          placeholder="admin@company.com"
+                        />
+                      </div>
+                      {fieldErrors.email && <p className="mt-1 text-xs text-red-400">{fieldErrors.email}</p>}
+                    </div>
+
+                    <div className="group">
+                      <label className="block text-xs font-medium text-slate-400 mb-1.5">Phone Number</label>
+                      <div className="relative">
+                        <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 group-focus-within:text-blue-400 transition-colors" />
+                        <input
+                          type="tel"
+                          name="phone"
+                          value={formData.phone}
+                          onChange={handleChange}
+                          className={`w-full pl-10 pr-4 py-2.5 rounded-xl glass-input outline-none text-sm ${fieldErrors.phone ? 'border-red-500/50 focus:border-red-500' : ''}`}
+                          placeholder="+1 (555) 000-0000"
+                        />
+                      </div>
+                      {fieldErrors.phone && <p className="mt-1 text-xs text-red-400">{fieldErrors.phone}</p>}
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <div className="group">
+                      <label className="block text-xs font-medium text-slate-400 mb-1.5">Password</label>
+                      <div className="relative">
+                        <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 group-focus-within:text-blue-400 transition-colors" />
+                        <input
+                          type={showPassword ? "text" : "password"}
+                          name="password"
+                          value={formData.password}
+                          onChange={handleChange}
+                          className={`w-full pl-10 pr-10 py-2.5 rounded-xl glass-input outline-none text-sm ${fieldErrors.password ? 'border-red-500/50 focus:border-red-500' : ''}`}
+                          placeholder="Create password"
+                        />
                         <button
                           type="button"
-                          onClick={() => {
-                            setFormData(prev => ({ ...prev, address: "", lat: null, lng: null }));
-                            setSearchResults([]);
-                            setMatchedAddress("");
-                          }}
-                          className="text-slate-500 hover:text-white transition-colors"
+                          onClick={() => setShowPassword(!showPassword)}
+                          className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300 transition-colors"
                         >
-                          <XCircle className="w-4 h-4" />
+                          {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                         </button>
+                      </div>
+
+                      {formData.password && !fieldErrors.password && (
+                        <div className="mt-2 flex items-center gap-2">
+                          <div className="flex-1 h-1 bg-slate-800 rounded-full overflow-hidden">
+                            <div className={`h-full transition-all duration-300 ${getPasswordStrengthColor()}`} style={{ width: `${(passwordStrength / 5) * 100}%` }} />
+                          </div>
+                          <span className="text-[10px] text-slate-500 font-medium uppercase">{getPasswordStrengthText()}</span>
+                        </div>
                       )}
+                      {fieldErrors.password && <p className="mt-1 text-xs text-red-400">{fieldErrors.password}</p>}
                     </div>
-                  </div>
 
-                  {/* Google Maps Style Floating Dropdown */}
-                  {searchResults.length > 0 && (
-                    <div className="absolute left-0 right-0 top-full mt-2 z-[100] animate-fade-in shadow-2xl">
-                      <div className="bg-slate-900/95 backdrop-blur-xl rounded-2xl border border-white/10 shadow-2xl shadow-black/50 overflow-hidden divide-y divide-white/5">
-                        <div className="px-3 py-2 bg-white/5 flex items-center justify-between">
-                          <p className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Suggestions</p>
-                          <span className="text-[9px] text-slate-600">OpenStreetMap</span>
-                        </div>
-                        <div className="max-h-60 overflow-y-auto custom-scrollbar">
-                          {searchResults.map((result, index) => (
-                            <button
-                              key={index}
-                              type="button"
-                              onClick={() => handleSelectResult(result)}
-                              className="w-full text-left p-3 hover:bg-violet-600/10 transition-all group flex gap-3 items-start border-l-2 border-l-transparent hover:border-l-violet-500"
-                            >
-                              <div className="p-1.5 rounded-lg bg-slate-800 group-hover:bg-violet-500/20 transition-colors">
-                                <Navigation className="w-3.5 h-3.5 text-slate-400 group-hover:text-violet-400" />
-                              </div>
-                              <div className="min-w-0">
-                                <p className="text-xs text-slate-200 group-hover:text-white font-medium transition-colors truncate">
-                                  {result.display_name.split(',')[0]}
-                                </p>
-                                <p className="text-[10px] text-slate-500 group-hover:text-slate-400 transition-colors truncate">
-                                  {result.display_name.split(',').slice(1).join(',')}
-                                </p>
-                              </div>
-                            </button>
-                          ))}
-                        </div>
+                    <div className="group">
+                      <label className="block text-xs font-medium text-slate-400 mb-1.5">Confirm Password</label>
+                      <div className="relative">
+                        <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 group-focus-within:text-blue-400 transition-colors" />
+                        <input
+                          type={showConfirmPassword ? "text" : "password"}
+                          name="confirmPassword"
+                          value={formData.confirmPassword}
+                          onChange={handleChange}
+                          className={`w-full pl-10 pr-10 py-2.5 rounded-xl glass-input outline-none text-sm ${fieldErrors.confirmPassword ? 'border-red-500/50 focus:border-red-500' : ''}`}
+                          placeholder="Confirm password"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                          className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300 transition-colors"
+                        >
+                          {showConfirmPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                        </button>
                       </div>
+                      {fieldErrors.confirmPassword && <p className="mt-1 text-xs text-red-400">{fieldErrors.confirmPassword}</p>}
                     </div>
-                  )}
-
-                  {matchedAddress && searchResults.length === 0 && (
-                    <div className="mt-2 p-3 bg-emerald-500/5 border border-emerald-500/10 rounded-xl animate-fade-in flex gap-3 items-start relative z-10">
-                      <div className="p-1.5 rounded-lg bg-emerald-500/10 text-emerald-400 shrink-0">
-                        <CheckCircle2 className="w-3.5 h-3.5" />
-                      </div>
-                      <div>
-                        <p className="text-[10px] text-emerald-400 font-semibold uppercase tracking-wider mb-0.5">Location Verified</p>
-                        <p className="text-xs text-slate-300 leading-tight">{matchedAddress}</p>
-                      </div>
-                    </div>
-                  )}
-                  {fieldErrors.address && <p className="mt-1 text-xs text-red-400">{fieldErrors.address}</p>}
-                </div>
-
-                {/* Location Picker Section */}
-                <div id="location-picker-section" className="pt-2">
-                  <LocationPicker
-                    onLocationSelect={handleLocationSelect}
-                    initialLocation={formData.lat ? { lat: formData.lat, lng: formData.lng } : null}
-                  />
-                  {fieldErrors.location && <p className="mt-2 text-xs text-red-400">{fieldErrors.location}</p>}
-                </div>
-              </div>
-
-              {/* Section 2: Contact & Security */}
-              <div className="space-y-4 pt-2">
-                <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3">Contact & Security</h3>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                  <div className="group">
-                    <label className="block text-xs font-medium text-slate-400 mb-1.5">Email Address</label>
-                    <div className="relative">
-                      <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 group-focus-within:text-blue-400 transition-colors" />
-                      <input
-                        type="email"
-                        name="email"
-                        value={formData.email}
-                        onChange={handleChange}
-                        className={`w-full pl-10 pr-4 py-2.5 rounded-xl glass-input outline-none text-sm ${fieldErrors.email ? 'border-red-500/50 focus:border-red-500' : ''}`}
-                        placeholder="admin@company.com"
-                      />
-                    </div>
-                    {fieldErrors.email && <p className="mt-1 text-xs text-red-400">{fieldErrors.email}</p>}
-                  </div>
-
-                  <div className="group">
-                    <label className="block text-xs font-medium text-slate-400 mb-1.5">Phone Number</label>
-                    <div className="relative">
-                      <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 group-focus-within:text-blue-400 transition-colors" />
-                      <input
-                        type="tel"
-                        name="phone"
-                        value={formData.phone}
-                        onChange={handleChange}
-                        className={`w-full pl-10 pr-4 py-2.5 rounded-xl glass-input outline-none text-sm ${fieldErrors.phone ? 'border-red-500/50 focus:border-red-500' : ''}`}
-                        placeholder="+1 (555) 000-0000"
-                      />
-                    </div>
-                    {fieldErrors.phone && <p className="mt-1 text-xs text-red-400">{fieldErrors.phone}</p>}
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                  <div className="group">
-                    <label className="block text-xs font-medium text-slate-400 mb-1.5">Password</label>
+                {/* Section 3: Location (Moved to bottom) */}
+                <div className="space-y-4 pt-2">
+                  <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3">Company Location</h3>
+                  <div className="group relative">
+                    <label className="block text-xs font-medium text-slate-400 mb-1.5">Company Address</label>
                     <div className="relative">
-                      <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 group-focus-within:text-blue-400 transition-colors" />
-                      <input
-                        type={showPassword ? "text" : "password"}
-                        name="password"
-                        value={formData.password}
+                      <MapPin className="absolute left-3 top-3 w-4 h-4 text-slate-500 group-focus-within:text-violet-400 transition-colors" />
+                      <textarea
+                        name="address"
+                        rows="2"
+                        value={formData.address}
                         onChange={handleChange}
-                        className={`w-full pl-10 pr-10 py-2.5 rounded-xl glass-input outline-none text-sm ${fieldErrors.password ? 'border-red-500/50 focus:border-red-500' : ''}`}
-                        placeholder="Create password"
+                        onBlur={() => setTimeout(() => setSearchResults([]), 200)}
+                        className={`w-full pl-10 pr-10 py-2.5 rounded-xl glass-input outline-none text-sm resize-none ${fieldErrors.address ? 'border-red-500/50 focus:border-red-500' : ''}`}
+                        placeholder="Enter company address (e.g. 123 Business St, City)"
                       />
-                      <button
-                        type="button"
-                        onClick={() => setShowPassword(!showPassword)}
-                        className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300 transition-colors"
-                      >
-                        {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                      </button>
+
+                      {/* Clear/Loading Indicators */}
+                      <div className="absolute right-3 top-3 flex items-center gap-2">
+                        {isGeocoding && (
+                          <div className="w-4 h-4 border-2 border-violet-400/20 border-t-violet-400 rounded-full animate-spin" />
+                        )}
+                        {formData.address && (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setFormData(prev => ({ ...prev, address: "", lat: null, lng: null }));
+                              setSearchResults([]);
+                              setMatchedAddress("");
+                            }}
+                            className="text-slate-500 hover:text-white transition-colors"
+                          >
+                            <XCircle className="w-4 h-4" />
+                          </button>
+                        )}
+                      </div>
                     </div>
 
-                    {formData.password && !fieldErrors.password && (
-                      <div className="mt-2 flex items-center gap-2">
-                        <div className="flex-1 h-1 bg-slate-800 rounded-full overflow-hidden">
-                          <div className={`h-full transition-all duration-300 ${getPasswordStrengthColor()}`} style={{ width: `${(passwordStrength / 5) * 100}%` }} />
+                    {/* Google Maps Style Floating Dropdown */}
+                    {searchResults.length > 0 && (
+                      <div className="absolute left-0 right-0 top-full mt-2 z-[100] animate-fade-in shadow-2xl">
+                        <div className="bg-slate-900/95 backdrop-blur-xl rounded-2xl border border-white/10 shadow-2xl shadow-black/50 overflow-hidden divide-y divide-white/5">
+                          <div className="px-3 py-2 bg-white/5 flex items-center justify-between">
+                            <p className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Suggestions</p>
+                            <span className="text-[9px] text-slate-600">OpenStreetMap</span>
+                          </div>
+                          <div className="max-h-60 overflow-y-auto custom-scrollbar">
+                            {searchResults.map((result, index) => (
+                              <button
+                                key={index}
+                                type="button"
+                                onClick={() => handleSelectResult(result)}
+                                className="w-full text-left p-3 hover:bg-violet-600/10 transition-all group flex gap-3 items-start border-l-2 border-l-transparent hover:border-l-violet-500"
+                              >
+                                <div className="p-1.5 rounded-lg bg-slate-800 group-hover:bg-violet-500/20 transition-colors">
+                                  <Navigation className="w-3.5 h-3.5 text-slate-400 group-hover:text-violet-400" />
+                                </div>
+                                <div className="min-w-0">
+                                  <p className="text-xs text-slate-200 group-hover:text-white font-medium transition-colors truncate">
+                                    {result.display_name.split(',')[0]}
+                                  </p>
+                                  <p className="text-[10px] text-slate-500 group-hover:text-slate-400 transition-colors truncate">
+                                    {result.display_name.split(',').slice(1).join(',')}
+                                  </p>
+                                </div>
+                              </button>
+                            ))}
+                          </div>
                         </div>
-                        <span className="text-[10px] text-slate-500 font-medium uppercase">{getPasswordStrengthText()}</span>
                       </div>
                     )}
-                    {fieldErrors.password && <p className="mt-1 text-xs text-red-400">{fieldErrors.password}</p>}
+
+                    {matchedAddress && searchResults.length === 0 && (
+                      <div className="mt-2 p-3 bg-emerald-500/5 border border-emerald-500/10 rounded-xl animate-fade-in flex gap-3 items-start relative z-10">
+                        <div className="p-1.5 rounded-lg bg-emerald-500/10 text-emerald-400 shrink-0">
+                          <CheckCircle2 className="w-3.5 h-3.5" />
+                        </div>
+                        <div>
+                          <p className="text-[10px] text-emerald-400 font-semibold uppercase tracking-wider mb-0.5">Location Verified</p>
+                          <p className="text-xs text-slate-300 leading-tight">{matchedAddress}</p>
+                        </div>
+                      </div>
+                    )}
+                    {fieldErrors.address && <p className="mt-1 text-xs text-red-400">{fieldErrors.address}</p>}
                   </div>
 
-                  <div className="group">
-                    <label className="block text-xs font-medium text-slate-400 mb-1.5">Confirm Password</label>
-                    <div className="relative">
-                      <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 group-focus-within:text-blue-400 transition-colors" />
-                      <input
-                        type={showConfirmPassword ? "text" : "password"}
-                        name="confirmPassword"
-                        value={formData.confirmPassword}
-                        onChange={handleChange}
-                        className={`w-full pl-10 pr-10 py-2.5 rounded-xl glass-input outline-none text-sm ${fieldErrors.confirmPassword ? 'border-red-500/50 focus:border-red-500' : ''}`}
-                        placeholder="Confirm password"
-                      />
-                      <button
-                        type="button"
-                        onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                        className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300 transition-colors"
-                      >
-                        {showConfirmPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                      </button>
-                    </div>
-                    {fieldErrors.confirmPassword && <p className="mt-1 text-xs text-red-400">{fieldErrors.confirmPassword}</p>}
+                  {/* Location Picker Section */}
+                  <div id="location-picker-section" className="pt-2">
+                    <LocationPicker
+                      onLocationSelect={handleLocationSelect}
+                      initialLocation={formData.lat ? { lat: formData.lat, lng: formData.lng } : null}
+                    />
+                    {fieldErrors.location && <p className="mt-2 text-xs text-red-400">{fieldErrors.location}</p>}
                   </div>
                 </div>
-              </div>
 
-              {/* Submit Button */}
-              <div className="pt-4 pb-12">
-                <button
-                  type="submit"
-                  onClick={handleSubmit}
-                  disabled={loading}
-                  className="w-full py-3.5 rounded-xl font-semibold text-white shadow-lg shadow-blue-500/25 transition-all transform hover:scale-[1.01] active:scale-[0.99] disabled:opacity-50 disabled:cursor-not-allowed
-                            bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-500 hover:to-cyan-500 flex items-center justify-center gap-2"
-                >
-                  {loading ? (
-                    <span className="flex items-center gap-2">
-                      <span className="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin" />
-                      Creating Account...
-                    </span>
-                  ) : (
-                    <>
-                      <span>Create Account</span>
-                      <ArrowRight className="w-4 h-4" />
-                    </>
-                  )}
-                </button>
-              </div>
+                {/* Submit Button */}
+                <div className="pt-4 pb-2">
+                  <button
+                    type="submit"
+                    onClick={handleSubmit}
+                    disabled={loading}
+                    className="w-full py-3.5 rounded-xl font-semibold text-white shadow-lg shadow-blue-500/25 transition-all transform hover:scale-[1.01] active:scale-[0.99] disabled:opacity-50 disabled:cursor-not-allowed
+                              bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-500 hover:to-cyan-500 flex items-center justify-center gap-2"
+                  >
+                    {loading ? (
+                      <span className="flex items-center gap-2">
+                        <span className="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin" />
+                        Creating Account...
+                      </span>
+                    ) : (
+                      <>
+                        <span>Create Account</span>
+                        <ArrowRight className="w-4 h-4" />
+                      </>
+                    )}
+                  </button>
+                </div>
 
-            </form>
+              </form>
+            </div>
 
             {/* Footer */}
             <div className="mt-6 pt-6 border-t border-white/5 text-center">

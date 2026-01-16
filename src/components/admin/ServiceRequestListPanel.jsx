@@ -3,6 +3,7 @@ import { getStatusColor, getCategoryColor, getStatusBorderColor } from './utils.
 import ServiceRequestStats from './ServiceRequestStats';
 import { useState } from 'react';
 import PropTypes from 'prop-types';
+import SkeletonLoader from '../common/SkeletonLoader';
 
 const serviceRequestStatusOptions = ['New', 'In Progress', 'Completed'];
 
@@ -17,7 +18,8 @@ const ServiceRequestListPanel = ({
   error,
   onBackToDashboard,
   onRefresh,
-  onDelete
+  onDelete,
+  loading
 }) => {
   const [selectedImage, setSelectedImage] = useState(null);
   const filteredServiceRequests = serviceRequests.filter((request) => {
@@ -51,7 +53,7 @@ const ServiceRequestListPanel = ({
           <div className="mb-4">
             <button
               onClick={onBackToDashboard}
-              className="flex items-center gap-2 px-3 py-1.5 text-xs font-semibold text-slate-400 hover:text-white hover:bg-white/5 rounded-lg transition-colors border border-transparent hover:border-white/10"
+              className="flex items-center gap-2 px-3 py-1.5 text-xs font-semibold text-slate-400 hover:text-white hover:bg-white/5 rounded-lg border border-transparent hover:border-white/10"
             >
               <Home className="w-3.5 h-3.5" />
               Dashboard
@@ -64,7 +66,7 @@ const ServiceRequestListPanel = ({
             {onRefresh && (
               <button
                 onClick={onRefresh}
-                className="flex items-center gap-2 p-2 bg-slate-800 text-slate-300 hover:text-white rounded-xl hover:bg-slate-700 transition-all border border-slate-700 hover:border-slate-600"
+                className="flex items-center gap-2 p-2 bg-slate-800 text-slate-300 hover:text-white rounded-xl hover:bg-slate-700 border border-slate-700 hover:border-slate-600"
                 title="Refresh Data"
               >
                 <AlertCircle className="w-4 h-4" />
@@ -90,7 +92,7 @@ const ServiceRequestListPanel = ({
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="flex-1 px-3 py-2 bg-slate-800/50 border border-slate-700 rounded-xl focus:ring-2 focus:ring-violet-500/20 focus:border-violet-500/50 text-xs text-slate-200 focus:outline-none appearance-none cursor-pointer hover:bg-slate-800 transition-colors"
+              className="flex-1 px-3 py-2 bg-slate-800/50 border border-slate-700 rounded-xl focus:ring-2 focus:ring-violet-500/20 focus:border-violet-500/50 text-xs text-slate-200 focus:outline-none appearance-none cursor-pointer hover:bg-slate-800"
             >
               <option value="All">All Status</option>
               {serviceRequestStatusOptions.map((status) => (
@@ -114,7 +116,31 @@ const ServiceRequestListPanel = ({
           </div>
         )}
 
-        {filteredServiceRequests.length === 0 ? (
+        {loading ? (
+          // Skeleton Loading State
+          Array.from({ length: 5 }).map((_, index) => (
+            <div
+              key={index}
+              className="w-full p-4 rounded-xl border border-white/5 bg-slate-900/40 relative overflow-hidden"
+            >
+              <div className="flex items-start justify-between gap-2 mb-2 pl-2">
+                <div className="flex-1">
+                  <SkeletonLoader variant="text" width="60%" className="mb-2" />
+                  <SkeletonLoader variant="text" width="30%" height="10px" />
+                </div>
+                <SkeletonLoader variant="rectangular" width="60px" height="20px" />
+              </div>
+              <div className="pl-2 mb-3">
+                <SkeletonLoader variant="text" width="90%" height="12px" className="mb-1" />
+                <SkeletonLoader variant="text" width="70%" height="12px" />
+              </div>
+              <div className="flex items-center justify-between gap-2 pt-3 border-t border-white/5 pl-2">
+                <SkeletonLoader variant="rectangular" width="80px" height="16px" />
+                <SkeletonLoader variant="text" width="100px" height="12px" />
+              </div>
+            </div>
+          ))
+        ) : filteredServiceRequests.length === 0 ? (
           <div className="text-center py-12 px-4">
             <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-slate-800/50 flex items-center justify-center border border-white/5">
               <AlertCircle className="w-8 h-8 text-slate-600" />
@@ -135,7 +161,7 @@ const ServiceRequestListPanel = ({
             <button
               key={request._id}
               onClick={() => onServiceRequestClick(request)}
-              className={`w-full text-left p-4 rounded-xl border transition-all group relative overflow-hidden ${getStatusBorderColor(request.status)} ${selectedServiceRequest?._id === request._id
+              className={`w-full text-left p-4 rounded-xl border group relative overflow-hidden ${getStatusBorderColor(request.status)} ${selectedServiceRequest?._id === request._id
                 ? 'ring-2 ring-blue-500 ring-offset-2 ring-offset-slate-900 border-blue-500 shadow-[0_0_20px_rgba(59,130,246,0.2)]'
                 : 'hover:border-white/20 hover:bg-white/5'
                 }`}
@@ -145,7 +171,7 @@ const ServiceRequestListPanel = ({
               )}
               <div className="flex items-start justify-between gap-2 mb-2 pl-2">
                 <div className="flex-1 min-w-0">
-                  <h3 className={`font-bold text-base mb-1 line-clamp-1 transition-colors ${selectedServiceRequest?._id === request._id ? 'text-white' : 'text-slate-300 group-hover:text-white'
+                  <h3 className={`font-bold text-base mb-1 line-clamp-1 ${selectedServiceRequest?._id === request._id ? 'text-white' : 'text-slate-300 group-hover:text-white'
                     }`}>
                     {request.title}
                     {request.userId?.companyName && (
@@ -170,14 +196,14 @@ const ServiceRequestListPanel = ({
               </div>
 
               <div className="pl-2 mb-3 pr-8 relative">
-                <p className="text-sm text-slate-400 line-clamp-2 leading-relaxed group-hover:text-slate-300 transition-colors">
+                <p className="text-sm text-slate-400 line-clamp-2 leading-relaxed group-hover:text-slate-300">
                   {request.description}
                 </p>
                 {onDelete && (
                   <div className="absolute top-1/2 -translate-y-1/2 right-0">
                     <button
                       onClick={(e) => handleDeleteClick(e, request)}
-                      className="p-1.5 text-red-400 hover:text-red-300 bg-red-500/10 hover:bg-red-500/20 rounded-lg transition-colors border border-red-500/20 hover:border-red-500/40"
+                      className="p-1.5 text-red-400 hover:text-red-300 bg-red-500/10 hover:bg-red-500/20 rounded-lg border border-red-500/20 hover:border-red-500/40"
                       title="Delete service request"
                     >
                       <Trash2 className="w-3.5 h-3.5" />
@@ -205,10 +231,10 @@ const ServiceRequestListPanel = ({
                         <img
                           src={imageUrl}
                           alt={`Service request image ${imgIndex + 1}`}
-                          className="w-10 h-10 object-cover rounded-lg border border-white/10 group-hover/image:border-white/30 transition-all"
+                          className="w-10 h-10 object-cover rounded-lg border border-white/10 group-hover/image:border-white/30"
                         />
-                        <div className="absolute inset-0 bg-black/0 group-hover/image:bg-black/30 transition-all rounded-lg flex items-center justify-center">
-                          <Eye className="w-3 h-3 text-white opacity-0 group-hover/image:opacity-100 transition-opacity" />
+                        <div className="absolute inset-0 bg-black/0 group-hover/image:bg-black/30 rounded-lg flex items-center justify-center">
+                          <Eye className="w-3 h-3 text-white opacity-0 group-hover/image:opacity-100" />
                         </div>
                       </div>
                     );
@@ -243,7 +269,7 @@ const ServiceRequestListPanel = ({
           <div className="relative w-full h-full flex items-center justify-center">
             <button
               onClick={() => setSelectedImage(null)}
-              className="absolute top-4 right-4 z-10 w-12 h-12 flex items-center justify-center bg-white/10 hover:bg-white/20 text-white rounded-full transition-all backdrop-blur-sm"
+              className="absolute top-4 right-4 z-10 w-12 h-12 flex items-center justify-center bg-white/10 hover:bg-white/20 text-white rounded-full backdrop-blur-sm"
               aria-label="Close"
             >
               <X className="w-6 h-6" />

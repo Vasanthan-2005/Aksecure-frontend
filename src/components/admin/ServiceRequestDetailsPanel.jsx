@@ -31,8 +31,8 @@ const ServiceRequestDetailsPanel = ({
         <div className="flex items-center justify-center h-full min-h-[calc(100vh-4rem)] text-slate-500">
           <div className="text-center px-6">
             <div className="w-24 h-24 mx-auto mb-6 rounded-3xl bg-slate-900/50 flex items-center justify-center border border-white/5 relative overflow-hidden group">
-              <div className="absolute inset-0 bg-blue-600/10 blur-xl group-hover:bg-blue-600/20 transition-all duration-500" />
-              <Shield className="w-10 h-10 text-blue-400/50 group-hover:text-blue-400 transition-colors z-10" />
+              <div className="absolute inset-0 bg-blue-600/10 blur-xl group-hover:bg-blue-600/20" />
+              <Shield className="w-10 h-10 text-blue-400/50 group-hover:text-blue-400 z-10" />
             </div>
             <p className="text-xl font-bold text-white mb-2">Select a service request</p>
             <p className="text-sm text-slate-500 max-w-md">Click on any request from the list to view full details and management options</p>
@@ -53,10 +53,10 @@ const ServiceRequestDetailsPanel = ({
 
         <div className="p-4 space-y-4 relative z-10 w-full max-w-full">
           {/* Reply Button */}
-          <div className="flex justify-end gap-3 mb-2 animate-fade-in-up">
+          <div className="flex justify-end gap-3 mb-2">
             <button
               onClick={() => setShowReplyModal(true)}
-              className="inline-flex items-center gap-2 px-5 py-2.5 bg-blue-500 hover:bg-blue-600 text-white rounded-xl transition-all font-semibold shadow-lg shadow-blue-500/20 hover:shadow-blue-500/30 border border-blue-400"
+              className="inline-flex items-center gap-2 px-5 py-2.5 bg-blue-500 hover:bg-blue-600 text-white rounded-xl font-semibold shadow-lg shadow-blue-500/20 hover:shadow-blue-500/30 border border-blue-400"
             >
               <MessageSquare className="w-4 h-4" />
               Reply to User
@@ -64,7 +64,7 @@ const ServiceRequestDetailsPanel = ({
           </div>
 
           {/* Service Request Header */}
-          <div className="glass-card p-6 rounded-2xl border border-slate-700/50 shadow-xl bg-slate-900/60 backdrop-blur-xl animate-fade-in-up" style={{ animationDelay: '0.1s' }}>
+          <div className="glass-card p-6 rounded-2xl border border-slate-700/50 shadow-xl bg-slate-900/60 backdrop-blur-xl">
             <div className="flex items-start justify-between mb-6">
               <div className="flex-1">
                 <div className="flex items-center gap-4 mb-4">
@@ -78,7 +78,7 @@ const ServiceRequestDetailsPanel = ({
                           'bg-slate-500/10 text-slate-400 border-slate-500/20'
                       }`}
                   >
-                    <div className={`w-2 h-2 rounded-full animate-pulse ${serviceRequest.status === 'New' ? 'bg-emerald-400' : serviceRequest.status === 'In Progress' ? 'bg-blue-400' : 'bg-green-400'}`} />
+                    <div className={`w-2 h-2 rounded-full ${serviceRequest.status === 'New' ? 'bg-emerald-400' : serviceRequest.status === 'In Progress' ? 'bg-blue-400' : 'bg-green-400'}`} />
                     {serviceRequest.status}
                   </span>
                 </div>
@@ -91,8 +91,8 @@ const ServiceRequestDetailsPanel = ({
               </div>
 
               {/* Update Service Request Form - Top Right */}
-              <div className="ml-6 w-80 flex-shrink-0 animate-fade-in">
-                <div className="bg-slate-800/40 rounded-xl p-4 border border-white/10 hover:border-white/20 transition-all">
+              <div className="ml-6 w-80 flex-shrink-0">
+                <div className="bg-slate-800/40 rounded-xl p-4 border border-white/10 hover:border-white/20">
                   <h3 className="text-sm font-bold text-white mb-3 flex items-center gap-2">
                     <CheckCircle2 className="w-4 h-4 text-emerald-400" />
                     Update Status
@@ -114,7 +114,7 @@ const ServiceRequestDetailsPanel = ({
                             setUpdateStatus(e.target.value);
                             setErrors(prev => ({ ...prev, status: '', update: '' }));
                           }}
-                          className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:border-transparent text-sm bg-slate-900/80 transition-all cursor-pointer outline-none ${errors.status || errors.update
+                          className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:border-transparent text-sm bg-slate-900/80 cursor-pointer outline-none ${errors.status || errors.update
                             ? 'border-red-500/50 focus:ring-red-500/50 text-red-400'
                             : 'border-slate-600 focus:ring-blue-500/50 text-slate-200 hover:border-slate-500'
                             }`}
@@ -129,10 +129,10 @@ const ServiceRequestDetailsPanel = ({
                       <button
                         onClick={onUpdateServiceRequest}
                         disabled={updating}
-                        className="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed text-[11px] font-black uppercase tracking-widest shadow-lg shadow-emerald-500/20 whitespace-nowrap border border-emerald-500/50"
+                        className="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl disabled:opacity-50 disabled:cursor-not-allowed text-[11px] font-black uppercase tracking-widest shadow-lg shadow-emerald-500/20 whitespace-nowrap border border-emerald-500/50"
                       >
                         {updating ? (
-                          <Loader2 className="w-4 h-4 animate-spin" />
+                          <Loader2 className="w-4 h-4" />
                         ) : (
                           <>
                             <Save className="w-4 h-4" />
@@ -152,7 +152,7 @@ const ServiceRequestDetailsPanel = ({
             </div>
 
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <div className="bg-slate-800/40 rounded-xl p-4 border border-white/5 hover:border-white/10 transition-all">
+              <div className="bg-slate-800/40 rounded-xl p-4 border border-white/5 hover:border-white/10">
                 <div className="flex items-center gap-2 mb-2">
                   <Calendar className="w-4 h-4 text-slate-400" />
                   <span className="text-xs text-slate-500 font-bold uppercase tracking-tight">Created</span>
@@ -165,7 +165,7 @@ const ServiceRequestDetailsPanel = ({
                 </p>
               </div>
               {serviceRequest.preferredVisitAt && (
-                <div className="bg-blue-500/5 rounded-xl p-4 border border-blue-500/10 hover:border-blue-500/20 transition-all">
+                <div className="bg-blue-500/5 rounded-xl p-4 border border-blue-500/10 hover:border-blue-500/20">
                   <div className="flex items-center gap-2 mb-2">
                     <Clock className="w-4 h-4 text-blue-400" />
                     <span className="text-xs text-blue-400/80 font-bold uppercase tracking-tight">Preferred</span>
@@ -179,7 +179,7 @@ const ServiceRequestDetailsPanel = ({
                 </div>
               )}
               {serviceRequest.assignedVisitAt && (
-                <div className="bg-emerald-500/5 rounded-xl p-4 border border-emerald-500/10 hover:border-emerald-500/20 transition-all">
+                <div className="bg-emerald-500/5 rounded-xl p-4 border border-emerald-500/10 hover:border-emerald-500/20">
                   <div className="flex items-center gap-2 mb-2">
                     <Clock className="w-4 h-4 text-emerald-400" />
                     <span className="text-xs text-emerald-400/80 font-bold uppercase tracking-tight">Assigned</span>
@@ -193,7 +193,7 @@ const ServiceRequestDetailsPanel = ({
                 </div>
               )}
               {serviceRequest.completedAt && (
-                <div className="bg-slate-700/20 rounded-xl p-4 border border-slate-600/30 hover:border-slate-500/40 transition-all">
+                <div className="bg-slate-700/20 rounded-xl p-4 border border-slate-600/30 hover:border-slate-500/40">
                   <div className="flex items-center gap-2 mb-2">
                     <CheckCircle2 className="w-4 h-4 text-slate-400" />
                     <span className="text-xs text-slate-400/80 font-bold uppercase tracking-tight">Completed</span>
@@ -209,15 +209,15 @@ const ServiceRequestDetailsPanel = ({
             </div>
           </div>
 
-          <div className="animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
+          <div className="mt-4">
             {serviceRequest.userId && <UserInfo userData={serviceRequest.userId} />}
           </div>
 
-          <div className="animate-fade-in-up" style={{ animationDelay: '0.3s' }}>
+          <div className="mt-4">
             {serviceRequest.images && serviceRequest.images.length > 0 && <ImageGallery images={serviceRequest.images} />}
           </div>
 
-          <div className="animate-fade-in-up" style={{ animationDelay: '0.4s' }}>
+          <div className="mt-4">
             {serviceRequest.timeline && serviceRequest.timeline.length > 0 && (
               <Timeline timeline={serviceRequest.timeline} currentUserName={user?.name} />
             )}

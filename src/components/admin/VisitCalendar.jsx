@@ -103,7 +103,7 @@ const VisitCalendar = ({ tickets, serviceRequests, onEventSelect }) => {
             onClick={() =>
               setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1))
             }
-            className="p-1.5 rounded-lg hover:bg-white/10 text-slate-400 hover:text-cyan-400 transition-all"
+            className="p-1.5 rounded-lg hover:bg-white/10 text-slate-400 hover:text-cyan-400"
           >
             <ChevronLeft className="w-4 h-4" />
           </button>
@@ -114,7 +114,7 @@ const VisitCalendar = ({ tickets, serviceRequests, onEventSelect }) => {
             onClick={() =>
               setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1))
             }
-            className="p-1.5 rounded-lg hover:bg-white/10 text-slate-400 hover:text-cyan-400 transition-all"
+            className="p-1.5 rounded-lg hover:bg-white/10 text-slate-400 hover:text-cyan-400"
           >
             <ChevronRight className="w-4 h-4" />
           </button>
@@ -165,12 +165,12 @@ const VisitCalendar = ({ tickets, serviceRequests, onEventSelect }) => {
               onClick={() => handleDateClick(date)}
               disabled={past}
               className={`
-                w-[90%] aspect-square rounded-md mx-auto my-auto flex flex-col items-center justify-center text-[11px] transition-all relative group
+                w-[90%] aspect-square rounded-md mx-auto my-auto flex flex-col items-center justify-center text-[11px] relative group
                 ${past ? "opacity-40 cursor-not-allowed text-slate-500 bg-slate-800/10" : "cursor-pointer"}
                 ${isTodayDate && !selected ? "bg-gradient-to-br from-cyan-500/30 to-blue-500/30 text-cyan-200 border border-cyan-400/60 font-bold shadow-[0_0_15px_rgba(6,182,212,0.3)]" : ""}
-                ${selected ? "bg-gradient-to-br from-cyan-500 to-blue-600 text-white border border-cyan-400 shadow-[0_0_20px_rgba(6,182,212,0.4)] scale-105 z-10 font-bold" : ""}
+                ${selected ? "bg-gradient-to-br from-cyan-500 to-blue-600 text-white border border-cyan-400 shadow-[0_0_20px_rgba(6,182,212,0.4)] z-10 font-bold" : ""}
                 ${!past && !selected && !isTodayDate && !hasVisits ? "text-slate-400 hover:bg-slate-800/60 hover:border-slate-600 hover:text-white border border-transparent bg-slate-800/5" : ""}
-                ${!past && !selected && !isTodayDate && hasVisits ? `border ${visitBgClass} hover:scale-105` : ""}
+                ${!past && !selected && !isTodayDate && hasVisits ? `border ${visitBgClass}` : ""}
               `}
             >
               <span className={`leading-none ${selected || isTodayDate ? 'font-bold' : 'font-medium'}`}>{date.getDate()}</span>

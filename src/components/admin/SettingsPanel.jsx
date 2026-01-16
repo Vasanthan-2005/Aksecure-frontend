@@ -51,14 +51,14 @@ const SettingsPanel = ({ onClose }) => {
     if (loading) {
         return (
             <div className="flex flex-col items-center justify-center py-20">
-                <Loader2 className="w-10 h-10 text-blue-500 animate-spin mb-4" />
+                <Loader2 className="w-10 h-10 text-blue-500 mb-4" />
                 <p className="text-slate-400 font-medium">Loading system configurations...</p>
             </div>
         );
     }
 
     return (
-        <div className="max-w-4xl mx-auto animate-fade-in">
+        <div className="max-w-4xl mx-auto">
             <div className="mb-8 flex justify-between items-start">
                 <div>
                     <h2 className="text-2xl font-bold text-white flex items-center gap-3">
@@ -72,7 +72,7 @@ const SettingsPanel = ({ onClose }) => {
                 {onClose && (
                     <button
                         onClick={onClose}
-                        className="p-2 rounded-xl bg-slate-800/50 hover:bg-slate-800 text-slate-400 hover:text-white transition-all border border-white/5"
+                        className="p-2 rounded-xl bg-slate-800/50 hover:bg-slate-800 text-slate-400 hover:text-white border border-white/5"
                         title="Close Settings"
                     >
                         <X className="w-6 h-6" />
@@ -83,7 +83,7 @@ const SettingsPanel = ({ onClose }) => {
             <form onSubmit={handleSave} className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     {/* Support Phone */}
-                    <div className="bg-slate-900/40 border border-white/5 rounded-3xl p-6 hover:border-blue-500/20 transition-all group">
+                    <div className="bg-slate-900/40 border border-white/5 rounded-3xl p-6 hover:border-blue-500/20 group">
                         <div className="flex items-center gap-3 mb-4">
                             <div className="p-2 rounded-lg bg-blue-500/10 text-blue-400">
                                 <Phone className="w-4 h-4" />
@@ -94,14 +94,14 @@ const SettingsPanel = ({ onClose }) => {
                             type="text"
                             value={settings.supportPhone}
                             onChange={(e) => setSettings({ ...settings, supportPhone: e.target.value })}
-                            className="w-full bg-slate-950/50 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all font-medium"
+                            className="w-full bg-slate-950/50 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50 font-medium"
                             placeholder="+91 00000 00000"
                             required
                         />
                     </div>
 
                     {/* Support Email */}
-                    <div className="bg-slate-900/40 border border-white/5 rounded-3xl p-6 hover:border-violet-500/20 transition-all group">
+                    <div className="bg-slate-900/40 border border-white/5 rounded-3xl p-6 hover:border-violet-500/20 group">
                         <div className="flex items-center gap-3 mb-4">
                             <div className="p-2 rounded-lg bg-violet-500/10 text-violet-400">
                                 <Mail className="w-4 h-4" />
@@ -112,14 +112,14 @@ const SettingsPanel = ({ onClose }) => {
                             type="email"
                             value={settings.supportEmail}
                             onChange={(e) => setSettings({ ...settings, supportEmail: e.target.value })}
-                            className="w-full bg-slate-950/50 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-violet-500/50 transition-all font-medium"
+                            className="w-full bg-slate-950/50 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-violet-500/50 font-medium"
                             placeholder="support@company.com"
                             required
                         />
                     </div>
 
                     {/* WhatsApp Number */}
-                    <div className="bg-slate-900/40 border border-white/5 rounded-3xl p-6 hover:border-emerald-500/20 transition-all group md:col-span-2">
+                    <div className="bg-slate-900/40 border border-white/5 rounded-3xl p-6 hover:border-emerald-500/20 group md:col-span-2">
                         <div className="flex items-center gap-3 mb-4">
                             <div className="p-2 rounded-lg bg-emerald-500/10 text-emerald-400">
                                 <Phone className="w-4 h-4" />
@@ -131,7 +131,7 @@ const SettingsPanel = ({ onClose }) => {
                                 type="text"
                                 value={settings.supportWhatsApp}
                                 onChange={(e) => setSettings({ ...settings, supportWhatsApp: e.target.value })}
-                                className="flex-1 bg-slate-950/50 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-emerald-500/50 transition-all font-medium"
+                                className="flex-1 bg-slate-950/50 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-emerald-500/50 font-medium"
                                 placeholder="917550212046"
                                 required
                             />
@@ -144,7 +144,7 @@ const SettingsPanel = ({ onClose }) => {
                 </div>
 
                 {message.text && (
-                    <div className={`p-4 rounded-2xl flex items-center gap-3 animate-fade-in ${message.type === 'success'
+                    <div className={`p-4 rounded-2xl flex items-center gap-3 ${message.type === 'success'
                         ? 'bg-emerald-500/10 border border-emerald-500/20 text-emerald-400'
                         : 'bg-red-500/10 border border-red-500/20 text-red-400'
                         }`}>
@@ -158,7 +158,7 @@ const SettingsPanel = ({ onClose }) => {
                         <button
                             type="button"
                             onClick={onClose}
-                            className="px-8 py-4 bg-slate-800/50 hover:bg-slate-800 text-slate-300 font-bold rounded-2xl border border-white/5 transition-all transform hover:scale-[1.02] active:scale-[0.98]"
+                            className="px-8 py-4 bg-slate-800/50 hover:bg-slate-800 text-slate-300 font-bold rounded-2xl border border-white/5"
                         >
                             Exit Settings
                         </button>
@@ -166,11 +166,11 @@ const SettingsPanel = ({ onClose }) => {
                     <button
                         type="submit"
                         disabled={saving}
-                        className="flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-blue-600 to-violet-600 hover:from-blue-500 hover:to-violet-500 text-white font-bold rounded-2xl shadow-xl shadow-blue-500/25 transition-all transform hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50"
+                        className="flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-blue-600 to-violet-600 hover:from-blue-500 hover:to-violet-500 text-white font-bold rounded-2xl shadow-xl shadow-blue-500/25 disabled:opacity-50"
                     >
                         {saving ? (
                             <>
-                                <Loader2 className="w-5 h-5 animate-spin" />
+                                <Loader2 className="w-5 h-5" />
                                 Saving Changes...
                             </>
                         ) : (

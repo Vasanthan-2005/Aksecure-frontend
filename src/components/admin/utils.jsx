@@ -33,7 +33,7 @@ export const getStatusIcon = (status) => {
     case 'New':
       return <AlertCircle className="w-3.5 h-3.5" />;
     case 'In Progress':
-      return <Loader2 className="w-3.5 h-3.5 animate-spin" />;
+      return <Loader2 className="w-3.5 h-3.5" />;
     case 'Closed':
     case 'Completed':
       return <XCircle className="w-3.5 h-3.5" />;
