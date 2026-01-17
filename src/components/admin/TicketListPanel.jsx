@@ -32,7 +32,7 @@ const TicketListPanel = ({
   const stats = getTicketStats(tickets);
 
   return (
-    <div className="h-full flex flex-col w-96 border-r border-white/5 bg-slate-900/50 backdrop-blur-sm relative z-20 overflow-hidden">
+    <div className="flex flex-col w-96 border-r border-white/5 bg-slate-900/50 backdrop-blur-sm relative z-20">
       <div className="p-4 border-b border-white/5 bg-slate-900/50 backdrop-blur-md sticky top-0 z-10 w-full">
         {onBackToDashboard && (
           <div className="mb-4">
@@ -266,4 +266,3 @@ const TicketListPanel = ({
 };
 
 export default TicketListPanel;
-

@@ -222,12 +222,12 @@ const OutletModal = ({ isOpen, onClose, onSave, existingOutlets = [], initialEdi
     if (!isOpen) return null;
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in">
-            <div className="bg-slate-900 rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden border border-white/10 animate-fade-in-up">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-6 bg-black/40 backdrop-blur-sm">
+            <div className="bg-slate-900 rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto border border-white/10">
 
-                {/* Header */}
+                {/* Header - Fixed */}
                 <div className="flex items-center justify-between p-6 border-b border-white/10">
-                    <h2 className="text-2xl font-bold text-white">Add Outlets</h2>
+                    <h2 className="text-xl sm:text-2xl font-bold text-white">Add Outlets</h2>
                     <button
                         onClick={onClose}
                         className="p-2 rounded-lg hover:bg-slate-800 transition-colors text-slate-400 hover:text-white"
@@ -236,8 +236,8 @@ const OutletModal = ({ isOpen, onClose, onSave, existingOutlets = [], initialEdi
                     </button>
                 </div>
 
-                {/* Content */}
-                <div className="p-6 overflow-y-auto max-h-[calc(90vh-140px)] custom-scrollbar">
+                {/* Content - Scrollable */}
+                <div className="p-6">
 
                     {/* Saved Outlets List */}
                     {outlets.length > 0 && (
@@ -428,17 +428,17 @@ const OutletModal = ({ isOpen, onClose, onSave, existingOutlets = [], initialEdi
                     )}
                 </div>
 
-                {/* Footer */}
+                {/* Footer - Fixed */}
                 <div className="flex items-center justify-end gap-3 p-6 border-t border-white/10 bg-slate-900/50">
                     <button
                         onClick={onClose}
-                        className="px-6 py-2.5 rounded-xl font-medium text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+                        className="px-6 py-2.5 rounded-xl font-medium text-slate-400 hover:text-white hover:bg-slate-800 transition-colors text-sm"
                     >
                         Cancel
                     </button>
                     <button
                         onClick={handleSave}
-                        className="px-6 py-2.5 rounded-xl font-semibold text-white bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-500 hover:to-cyan-500 shadow-lg shadow-blue-500/25 transition-all"
+                        className="px-6 py-2.5 rounded-xl font-semibold text-white bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-500 hover:to-cyan-500 transition-all text-sm"
                     >
                         Save Outlets
                     </button>

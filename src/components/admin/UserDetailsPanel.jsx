@@ -1,4 +1,4 @@
-import { User, Building, Phone, MapPin, Ticket as TicketIcon, Trash2, Loader2, Users, Mail, Calendar, Clock, X, Navigation, ExternalLink, Wrench } from 'lucide-react';
+import { User, Building, Phone, MapPin, Ticket as TicketIcon, Trash2, Loader2, Users } from 'lucide-react';
 import MapView from '../common/MapView';
 
 const UserDetailsPanel = ({ user, onDelete, deleting, onClose }) => {

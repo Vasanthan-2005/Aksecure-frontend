@@ -832,16 +832,12 @@ const AdminPortal = () => {
 
 
   return (
-    <div className="fixed inset-0 h-screen w-screen flex flex-col bg-slate-950 overflow-hidden lg:overflow-hidden">
+    <div className="relative min-h-screen w-full flex flex-col bg-slate-950">
       {showSuccess && (
         <SuccessState
           title="Update Successful"
           message={successMessage}
-          onComplete={() => {
-            setShowSuccess(false);
-            setViewMode("dashboard");
-            setActiveTab("dashboard");
-          }}
+          onComplete={() => setShowSuccess(false)}
         />
       )}
       {/* Background gradients */}
@@ -875,7 +871,7 @@ const AdminPortal = () => {
       />
 
       {/* Main Content Area - Scrollable */}
-      <div className="flex-1 overflow-y-auto lg:overflow-hidden flex flex-col relative z-10">
+      <div className="flex-1 flex flex-col relative z-10">
 
         {/* Tab Selector - Hidden when viewing all tickets, all service requests, or users */}
         {viewMode !== "all" &&
@@ -969,7 +965,7 @@ const AdminPortal = () => {
           )}
 
         {activeTab === "settings" && (
-          <div className="flex-1 flex items-center justify-center p-6 overflow-hidden">
+          <div className="flex-1 flex items-center justify-center p-6">
             <SettingsPanel onClose={() => {
               setActiveTab("dashboard");
               setViewMode("dashboard");
@@ -978,7 +974,7 @@ const AdminPortal = () => {
         )}
 
         {(activeTab === "tickets" || activeTab === "dashboard") && (
-          <div className="flex-1 flex flex-col min-h-0">
+          <div className="flex-1">
             {viewMode === "new-tickets" && (
               <div className="p-6">
                 <div className="glass-card rounded-2xl border border-slate-700/50 shadow-xl p-6 bg-slate-900/60 backdrop-blur-xl min-h-[500px]">
@@ -1375,7 +1371,7 @@ const AdminPortal = () => {
             )}
 
             {viewMode === "all" && (
-              <div className="flex h-full gap-0 w-full relative z-10 overflow-hidden">
+              <div className="flex min-h-[calc(100vh-4rem)] gap-0 w-full relative z-10">
                 <TicketListPanel
                   tickets={tickets}
                   searchTerm={searchTerm}
@@ -1395,7 +1391,7 @@ const AdminPortal = () => {
                   }}
                   loading={loading}
                 />
-                <div className="flex-1 overflow-y-auto bg-slate-950 h-full">
+                <div className="flex-1 bg-slate-950">
                   {selectedTicket ? (
                     <TicketDetailsPanel
                       ticket={selectedTicket}
@@ -1433,8 +1429,8 @@ const AdminPortal = () => {
         )}
 
         {activeTab === "users" && (
-          <div className="flex-1 flex flex-col min-h-0 h-full">
-            <div className="flex h-full gap-0 w-full relative z-10">
+          <div className="flex-1 h-full">
+            <div className="flex min-h-[calc(100vh-4rem)] gap-0 w-full relative z-10">
               <UserListPanel
                 users={users}
                 userSearchTerm={userSearchTerm}
@@ -1449,7 +1445,7 @@ const AdminPortal = () => {
                 onRefresh={fetchUsers}
                 onDelete={openDeleteUserModal}
               />
-              <div className="flex-1 flex flex-col overflow-hidden bg-slate-950/50 backdrop-blur-2xl h-full">
+              <div className="flex-1 flex flex-col bg-slate-950/50 backdrop-blur-2xl">
                 <div className="flex-1 overflow-y-auto">
                   <UserDetailsPanel
                     user={selectedUser}
@@ -1463,7 +1459,7 @@ const AdminPortal = () => {
         )}
 
         {activeTab === "service-requests" && (
-          <div className="flex-1 flex flex-col min-h-0 h-full">
+          <div className="flex-1">
             {viewMode === "new-service-requests" && (
               <div className="p-6">
                 <div className="glass-card rounded-2xl border border-slate-700/50 shadow-xl p-6 bg-slate-900/60 backdrop-blur-xl min-h-[500px]">
@@ -1665,7 +1661,7 @@ const AdminPortal = () => {
             )}
 
             {viewMode === "all-service-requests" && (
-              <div className="flex h-full gap-0 w-full relative z-10 overflow-hidden">
+              <div className="flex min-h-[calc(100vh-4rem)] gap-0 w-full relative z-10">
                 <ServiceRequestListPanel
                   serviceRequests={serviceRequests}
                   searchTerm={serviceRequestSearchTerm}
@@ -1685,7 +1681,7 @@ const AdminPortal = () => {
                   }}
                   loading={serviceRequestsLoading}
                 />
-                <div className="flex-1 overflow-y-auto bg-slate-950 h-full">
+                <div className="flex-1 bg-slate-950">
                   {selectedServiceRequest ? (
                     <ServiceRequestDetailsPanel
                       serviceRequest={selectedServiceRequest}

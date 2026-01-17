@@ -125,4 +125,3 @@ const TicketDetailsPanel = ({
 };
 
 export default TicketDetailsPanel;
-

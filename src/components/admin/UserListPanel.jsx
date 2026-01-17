@@ -23,7 +23,7 @@ const UserListPanel = ({
   });
 
   return (
-    <div className="w-96 border-r border-white/5 bg-slate-900/50 backdrop-blur-sm overflow-hidden flex flex-col relative z-20">
+    <div className="w-96 border-r border-white/5 bg-slate-900/50 backdrop-blur-sm flex flex-col relative z-20">
       <div className="p-6 border-b border-white/5 bg-slate-900/50 backdrop-blur-md sticky top-0 z-10 w-full">
         {onBackToDashboard && (
           <div className="mb-4">

@@ -235,47 +235,66 @@ const Register = () => {
           </span>
         </div>
 
-        {/* Middle Section: Headline & Description */}
-        <div className="relative z-10 flex-1 flex flex-col justify-center py-10">
+        {/* Middle Section: Headline, Description & Features */}
+        <div className="relative z-10 flex-1 flex flex-col justify-center pt-6 lg:py-10">
           <div className="max-w-xl">
-            <h1 className="text-2xl sm:text-4xl lg:text-[42px] font-extrabold tracking-tight leading-[1.2] mb-4 lg:mb-6">
+            <h1 className="text-4xl sm:text-5xl lg:text-[42px] font-extrabold tracking-tight leading-[1.2] mb-6 lg:mb-8">
               <span className="block text-white">Join the future of</span>
               <span className="block text-transparent bg-clip-text bg-gradient-to-r from-violet-400 via-purple-400 to-blue-500 pb-1">
                 enterprise security
               </span>
             </h1>
-            <p className="text-xs sm:text-base lg:text-lg text-slate-400/80 max-w-sm leading-relaxed font-medium">
+            <p className="text-sm sm:text-base lg:text-lg text-slate-400/80 max-w-sm leading-relaxed font-medium mb-8 lg:mb-0">
               Create your organization account to access our comprehensive surveillance and safety management platform.
             </p>
+
+            {/* Feature Points (Moved up for mobile interaction) */}
+            <div className="space-y-4 lg:space-y-5 lg:hidden mt-2">
+              {[
+                { icon: <Shield className="w-4 h-4 sm:w-5 h-5" />, title: "Bank-Grade Security", sub: "Data protection standards", color: "text-emerald-400" },
+                { icon: <CheckCircle2 className="w-4 h-4 sm:w-5 h-5" />, title: "Instant Activation", sub: "Immediate dashboard access", color: "text-blue-400" },
+                { icon: <Shield className="w-4 h-4 sm:w-5 h-5" />, title: "Global Compliance", sub: "International safety regulations", color: "text-purple-400" }
+              ].map((feature, idx) => (
+                <div key={idx} className="flex items-start gap-3 sm:gap-4">
+                  <div className={`w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-slate-800/60 flex items-center justify-center flex-shrink-0 border border-white/10 ${feature.color}`}>
+                    {feature.icon}
+                  </div>
+                  <div>
+                    <h3 className="text-xs sm:text-[15px] font-bold text-slate-200 leading-tight">{feature.title}</h3>
+                    <p className="text-[10px] sm:text-sm text-slate-500 font-medium">{feature.sub}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
 
-        {/* Bottom Section: Features */}
+        {/* Bottom Section: Features (Desktop Only) & Swipe button */}
         <div className="relative z-10 flex-none bottom-0">
-          {/* Feature Points */}
-          <div className="space-y-4 lg:space-y-5 mb-8 lg:mb-16">
+          {/* Feature Points (Desktop Only) */}
+          <div className="hidden lg:block space-y-5 mb-16">
             {[
-              { icon: <Shield className="w-4 h-4 sm:w-5 h-5" />, title: "Bank-Grade Security", sub: "Data protection standards", color: "text-emerald-400" },
-              { icon: <CheckCircle2 className="w-4 h-4 sm:w-5 h-5" />, title: "Instant Activation", sub: "Immediate dashboard access", color: "text-blue-400" },
-              { icon: <Shield className="w-4 h-4 sm:w-5 h-5" />, title: "Global Compliance", sub: "International safety regulations", color: "text-purple-400" }
+              { icon: <Shield className="w-5 h-5" />, title: "Bank-Grade Security", sub: "Data protection standards", color: "text-emerald-400" },
+              { icon: <CheckCircle2 className="w-5 h-5" />, title: "Instant Activation", sub: "Immediate dashboard access", color: "text-blue-400" },
+              { icon: <Shield className="w-5 h-5" />, title: "Global Compliance", sub: "International safety regulations", color: "text-purple-400" }
             ].map((feature, idx) => (
-              <div key={idx} className="flex items-start gap-3 sm:gap-4">
-                <div className={`w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-slate-800/60 flex items-center justify-center flex-shrink-0 border border-white/10 ${feature.color}`}>
+              <div key={idx} className="flex items-start gap-4">
+                <div className={`w-9 h-9 rounded-full bg-slate-800/60 flex items-center justify-center flex-shrink-0 border border-white/10 ${feature.color}`}>
                   {feature.icon}
                 </div>
                 <div>
-                  <h3 className="text-xs sm:text-[15px] font-bold text-slate-200 leading-tight">{feature.title}</h3>
-                  <p className="text-[10px] sm:text-sm text-slate-500 font-medium">{feature.sub}</p>
+                  <h3 className="text-[15px] font-bold text-slate-200 leading-tight">{feature.title}</h3>
+                  <p className="text-sm text-slate-500 font-medium">{feature.sub}</p>
                 </div>
               </div>
             ))}
           </div>
 
           {/* Swipe Indicator (Mobile Only) */}
-          <div className="lg:hidden mt-4">
+          <div className="lg:hidden mt-10">
             <button 
               onClick={() => setShowMobileForm(true)}
-              className="px-4 py-2 rounded-full text-[10px] font-extrabold uppercase tracking-wider bg-white/5 border border-white/20 text-slate-300 hover:text-white hover:bg-white/10 transition-all flex items-center gap-2"
+              className="w-full px-4 py-2 rounded-full text-[10px] font-extrabold uppercase tracking-wider bg-white/5 border border-white/20 text-slate-300 hover:text-white hover:bg-white/10 transition-all flex justify-center items-center gap-2"
             >
               Swipe to Register
               <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
