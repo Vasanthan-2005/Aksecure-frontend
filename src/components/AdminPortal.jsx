@@ -116,6 +116,14 @@ const AdminPortal = () => {
     }
     fetchTickets();
     fetchServiceRequests();
+
+    // Start polling for real-time updates every 2 seconds
+    const pollInterval = setInterval(() => {
+      fetchTickets(false, true);
+      fetchServiceRequests(true);
+    }, 2000);
+
+    return () => clearInterval(pollInterval);
   }, [user, navigate]);
 
   useEffect(() => {
@@ -193,10 +201,10 @@ const AdminPortal = () => {
     }
   };
 
-  const fetchTickets = async (markAsViewed = false) => {
+  const fetchTickets = async (markAsViewed = false, silent = false) => {
     try {
-      setLoading(true);
-      const response = await api.get("/tickets");
+      if (!silent) setLoading(true);
+      const response = await api.get("/tickets?showAll=true");
       const ticketsData = response.data;
 
       // Mark tickets as viewed if needed
@@ -219,10 +227,10 @@ const AdminPortal = () => {
       setTickets(ticketsData);
       setError("");
     } catch (err) {
-      setError("Failed to load tickets");
+      if (!silent) setError("Failed to load tickets");
       console.error(err);
     } finally {
-      setLoading(false);
+      if (!silent) setLoading(false);
     }
   };
 
@@ -240,19 +248,19 @@ const AdminPortal = () => {
     }
   };
 
-  const fetchServiceRequests = async () => {
+  const fetchServiceRequests = async (silent = false) => {
     try {
-      setServiceRequestsLoading(true);
+      if (!silent) setServiceRequestsLoading(true);
       const response = await api.get("/service-requests");
       // Handle the paginated response
       const serviceRequestsData = response.data.requests || [];
       setServiceRequests(serviceRequestsData);
       setError("");
     } catch (err) {
-      setError("Failed to load service requests");
+      if (!silent) setError("Failed to load service requests");
       console.error(err);
     } finally {
-      setServiceRequestsLoading(false);
+      if (!silent) setServiceRequestsLoading(false);
     }
   };
 
@@ -957,20 +965,18 @@ const AdminPortal = () => {
           )}
 
         {activeTab === "settings" && (
-          <div className="flex-1 overflow-y-auto p-6">
-            <div className="glass-card rounded-2xl border border-slate-700/50 shadow-xl p-8 bg-slate-900/60 backdrop-blur-xl min-h-[500px]">
-              <SettingsPanel onClose={() => {
-                setActiveTab("dashboard");
-                setViewMode("dashboard");
-              }} />
-            </div>
+          <div className="flex-1 flex items-center justify-center p-6 overflow-hidden">
+            <SettingsPanel onClose={() => {
+              setActiveTab("dashboard");
+              setViewMode("dashboard");
+            }} />
           </div>
         )}
 
         {(activeTab === "tickets" || activeTab === "dashboard") && (
-          <div className="flex-1 overflow-y-auto p-6">
+          <div className="flex-1 overflow-hidden h-full">
             {viewMode === "new-tickets" && (
-              <div>
+              <div className="p-6">
                 <div className="glass-card rounded-2xl border border-slate-700/50 shadow-xl p-6 bg-slate-900/60 backdrop-blur-xl min-h-[500px]">
                   <div className="flex items-center justify-between mb-5">
                     <div className="flex items-center gap-3">
@@ -1074,7 +1080,7 @@ const AdminPortal = () => {
             )}
 
             {viewMode === "dashboard" && (
-              <div className="flex-1 overflow-hidden p-5 pt-0 space-y-3 relative z-10">
+              <div className="flex-1 overflow-y-auto p-6 space-y-3 relative z-10">
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                   <div className="glass-card p-4 h-45 rounded-3xl border border-white/5 shadow-2xl bg-slate-900/40 backdrop-blur-2xl flex flex-col group hover:border-blue-500/20">
                     <h2 className="flex items-center gap-3 mb-3">
@@ -1298,7 +1304,7 @@ const AdminPortal = () => {
                                       <FileText className="w-3 h-3 text-slate-500 flex-shrink-0 mt-0.5" />
                                       <span className="line-clamp-1">{visit.title || "No Title"}</span>
                                     </div>
-                                    <div className="flex items-center gap-2 text-xs font-bold text-slate-300 ml-0 pt-1 border-t border-white/5 mt-2 tracking-tight">
+                                    <div className="flex items-center gap-2 text-xs font-bold text-slate-300 ml-0 pt-2 border-t border-white/5 mt-2 tracking-tight">
                                       <Clock className="w-3 h-3 text-emerald-400 flex-shrink-0" />
                                       {visit.visitTime &&
                                         !isNaN(
@@ -1365,30 +1371,26 @@ const AdminPortal = () => {
             )}
 
             {viewMode === "all" && (
-              <div className="flex h-full gap-0 w-full relative z-10">
-                <div className="w-[26rem] flex-shrink-0 flex flex-col border-r border-white/5 bg-slate-900/50 backdrop-blur-sm">
-                  <div className="flex-1 overflow-hidden">
-                    <TicketListPanel
-                      tickets={tickets}
-                      searchTerm={searchTerm}
-                      setSearchTerm={setSearchTerm}
-                      statusFilter={statusFilter}
-                      setStatusFilter={setStatusFilter}
-                      selectedTicket={selectedTicket}
-                      onTicketClick={handleTicketClick}
-                      error={error}
-                      onBackToDashboard={() => {
-                        setViewMode("dashboard");
-                        setActiveTab("dashboard");
-                      }}
-                      onDelete={(ticket) => {
-                        setTicketToDelete(ticket);
-                        setDeleteTicketModalOpen(true);
-                      }}
-                      loading={loading}
-                    />
-                  </div>
-                </div>
+              <div className="flex h-full gap-0 w-full relative z-10 overflow-hidden">
+                <TicketListPanel
+                  tickets={tickets}
+                  searchTerm={searchTerm}
+                  setSearchTerm={setSearchTerm}
+                  statusFilter={statusFilter}
+                  setStatusFilter={setStatusFilter}
+                  selectedTicket={selectedTicket}
+                  onTicketClick={handleTicketClick}
+                  error={error}
+                  onBackToDashboard={() => {
+                    setViewMode("dashboard");
+                    setActiveTab("dashboard");
+                  }}
+                  onDelete={(ticket) => {
+                    setTicketToDelete(ticket);
+                    setDeleteTicketModalOpen(true);
+                  }}
+                  loading={loading}
+                />
                 <div className="flex-1 overflow-y-auto bg-slate-950 h-full">
                   {selectedTicket ? (
                     <TicketDetailsPanel
@@ -1457,9 +1459,9 @@ const AdminPortal = () => {
         )}
 
         {activeTab === "service-requests" && (
-          <div className="flex-1 overflow-y-auto p-6">
+          <div className="flex-1 overflow-hidden h-full">
             {viewMode === "new-service-requests" && (
-              <div>
+              <div className="p-6">
                 <div className="glass-card rounded-2xl border border-slate-700/50 shadow-xl p-6 bg-slate-900/60 backdrop-blur-xl min-h-[500px]">
                   <div className="flex items-center justify-between mb-5">
                     <div className="flex items-center gap-3">
@@ -1561,7 +1563,7 @@ const AdminPortal = () => {
             )}
 
             {viewMode === "dashboard" && (
-              <div>
+              <div className="p-6">
                 <div className="glass-card rounded-2xl border border-slate-700/50 shadow-xl p-6 bg-slate-900/60 backdrop-blur-xl min-h-[500px]">
                   <div className="flex items-center justify-between mb-5">
                     <div className="flex items-center gap-3">
@@ -1659,30 +1661,26 @@ const AdminPortal = () => {
             )}
 
             {viewMode === "all-service-requests" && (
-              <div className="flex h-full gap-0 w-full relative z-10">
-                <div className="w-[26rem] flex-shrink-0 flex flex-col border-r border-white/5 bg-slate-900/50 backdrop-blur-sm">
-                  <div className="flex-1 overflow-hidden">
-                    <ServiceRequestListPanel
-                      serviceRequests={serviceRequests}
-                      searchTerm={serviceRequestSearchTerm}
-                      setSearchTerm={setServiceRequestSearchTerm}
-                      statusFilter={serviceRequestStatusFilter}
-                      setStatusFilter={setServiceRequestStatusFilter}
-                      selectedServiceRequest={selectedServiceRequest}
-                      onServiceRequestClick={handleServiceRequestClick}
-                      error={error}
-                      onBackToDashboard={() => {
-                        setViewMode("dashboard");
-                        setActiveTab("dashboard");
-                      }}
-                      onDelete={(request) => {
-                        setServiceRequestToDelete(request);
-                        setDeleteServiceRequestModalOpen(true);
-                      }}
-                      loading={serviceRequestsLoading}
-                    />
-                  </div>
-                </div>
+              <div className="flex h-full gap-0 w-full relative z-10 overflow-hidden">
+                <ServiceRequestListPanel
+                  serviceRequests={serviceRequests}
+                  searchTerm={serviceRequestSearchTerm}
+                  setSearchTerm={setServiceRequestSearchTerm}
+                  statusFilter={serviceRequestStatusFilter}
+                  setStatusFilter={setServiceRequestStatusFilter}
+                  selectedServiceRequest={selectedServiceRequest}
+                  onServiceRequestClick={handleServiceRequestClick}
+                  error={error}
+                  onBackToDashboard={() => {
+                    setViewMode("dashboard");
+                    setActiveTab("dashboard");
+                  }}
+                  onDelete={(request) => {
+                    setServiceRequestToDelete(request);
+                    setDeleteServiceRequestModalOpen(true);
+                  }}
+                  loading={serviceRequestsLoading}
+                />
                 <div className="flex-1 overflow-y-auto bg-slate-950 h-full">
                   {selectedServiceRequest ? (
                     <ServiceRequestDetailsPanel

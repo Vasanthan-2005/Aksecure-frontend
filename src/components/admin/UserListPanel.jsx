@@ -168,15 +168,11 @@ const UserListPanel = ({
                     </p>
                   </div>
                   <div className="min-w-0">
-                    <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider block mb-1">Branches</span>
-                    <p className={`text-sm font-bold ${selectedUser?._id === userItem._id ? 'text-emerald-400' : 'text-slate-400 group-hover:text-emerald-400'
+                    <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider block mb-1 ml-13 ">Branches</span>
+                    <p className={`text-sm px-19 font-bold ${selectedUser?._id === userItem._id ? 'text-emerald-400' : 'text-slate-400 group-hover:text-emerald-400'
                       }`}>{userItem.outlets?.length || 0}</p>
                   </div>
-                  <div className="min-w-0 text-right pr-2">
-                    <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider block mb-1">Tickets</span>
-                    <p className={`text-sm font-bold ${selectedUser?._id === userItem._id ? 'text-violet-400' : 'text-slate-400 group-hover:text-violet-400'
-                      }`}>{userItem.ticketCount || 0}</p>
-                  </div>
+  
                 </div>
                 {onDelete && (
                   <button

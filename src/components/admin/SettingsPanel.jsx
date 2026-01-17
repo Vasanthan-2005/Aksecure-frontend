@@ -58,7 +58,7 @@ const SettingsPanel = ({ onClose }) => {
     }
 
     return (
-        <div className="glass-card p-6 bg-slate-900/40 backdrop-blur-md border border-white/5 h-full overflow-y-auto custom-scrollbar">
+        <div className="glass-card p-8 bg-slate-900/60 backdrop-blur-2xl border border-slate-700/50 rounded-3xl shadow-2xl w-full max-w-2xl max-h-[85vh] overflow-y-auto custom-scrollbar relative">
             <div className="mb-6 flex justify-between items-start gap-4 ">
                 <div>
                     <h2 className="text-2xl font-bold text-white flex items-center gap-3">

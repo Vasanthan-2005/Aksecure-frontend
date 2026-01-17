@@ -57,7 +57,7 @@ const ServiceRequestDetailsPanel = ({
           <div className="flex justify-end gap-3 mb-2">
             <button
               onClick={() => setShowReplyModal(true)}
-              className="inline-flex items-center gap-2 px-5 py-2.5 bg-blue-500 hover:bg-blue-600 text-white rounded-xl font-semibold shadow-lg shadow-blue-500/20 hover:shadow-blue-500/30 border border-blue-400"
+              className="inline-flex items-center gap-2 px-5 py-2.5 bg-blue-500 hover:bg-blue-600 text-white rounded-xl font-semibold hover:shadow-blue-500/30 border border-blue-400"
             >
               <MessageSquare className="w-4 h-4" />
               Reply to User

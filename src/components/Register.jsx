@@ -13,6 +13,7 @@ const Register = () => {
   const [formData, setFormData] = useState({
     name: "",
     companyName: "",
+    countryCode: "+91",
     phone: "",
     email: "",
     password: "",
@@ -127,7 +128,7 @@ const Register = () => {
       // Check for duplicate email/phone on backend
       await api.post('/auth/check-availability', {
         email: formData.email,
-        phone: formData.phone
+        phone: `${formData.countryCode}${formData.phone}`
       });
       
       // Only reach here if successful (200 OK)
@@ -186,6 +187,7 @@ const Register = () => {
       const { confirmPassword, ...userData } = formData;
       const registrationData = {
         ...userData,
+        phone: `${formData.countryCode}${formData.phone}`,
         outlets: outlets
       };
       await register(registrationData);
@@ -363,16 +365,39 @@ const Register = () => {
                   {/* Phone Number */}
                   <div className="group">
                     <label className="block text-xs font-medium text-slate-400 mb-1.5">Phone Number *</label>
-                    <div className="relative">
-                      <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 group-focus-within:text-blue-400 transition-colors" />
-                      <input
-                        type="tel"
-                        name="phone"
-                        value={formData.phone}
-                        onChange={handleChange}
-                        className={`w-full pl-10 pr-4 py-2.5 rounded-xl glass-input outline-none text-sm ${fieldErrors.phone ? 'border-red-500/50 focus:border-red-500' : ''}`}
-                        placeholder="+1 (555) 000-0000"
-                      />
+                    <div className="flex gap-2">
+                      <div className="relative w-1/3">
+                        <select
+                          name="countryCode"
+                          value={formData.countryCode}
+                          onChange={handleChange}
+                          className="w-full pl-3 pr-8 py-2.5 rounded-xl glass-input outline-none text-sm appearance-none cursor-pointer"
+                        >
+                          <option value="+91">IN (+91)</option>
+                          <option value="+1">US (+1)</option>
+                          <option value="+44">UK (+44)</option>
+                          <option value="+971">AE (+971)</option>
+                          <option value="+65">SG (+65)</option>
+                          <option value="+61">AU (+61)</option>
+                          <option value="+1">CA (+1)</option>
+                        </select>
+                        <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
+                          <svg className="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                          </svg>
+                        </div>
+                      </div>
+                      <div className="relative flex-1">
+                        <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 group-focus-within:text-blue-400 transition-colors" />
+                        <input
+                          type="tel"
+                          name="phone"
+                          value={formData.phone}
+                          onChange={handleChange}
+                          className={`w-full pl-10 pr-4 py-2.5 rounded-xl glass-input outline-none text-sm ${fieldErrors.phone ? 'border-red-500/50 focus:border-red-500' : ''}`}
+                          placeholder="555 000-0000"
+                        />
+                      </div>
                     </div>
                     {fieldErrors.phone && <p className="mt-1 text-xs text-red-400">{fieldErrors.phone}</p>}
                   </div>
@@ -541,8 +566,7 @@ const Register = () => {
                 <button
                   type="button"
                   onClick={handleNextStep}
-                  disabled={!isStep1Complete}
-                  className="w-full py-3.5 rounded-xl font-semibold text-white shadow-lg shadow-blue-500/25 transition-all transform hover:scale-[1.01] active:scale-[0.99] disabled:opacity-50 disabled:cursor-not-allowed
+                  className="w-full py-3.5 rounded-xl font-semibold text-white shadow-lg shadow-blue-500/25 transition-all transform hover:scale-[1.01] active:scale-[0.99]
                                 bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-500 hover:to-cyan-500 flex items-center justify-center gap-2"
                 >
                   <span>Next: Company Outlets</span>
