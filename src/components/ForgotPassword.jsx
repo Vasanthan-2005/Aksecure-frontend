@@ -1,14 +1,16 @@
 import { useState, useEffect, useRef } from 'react';
-import { Link } from 'react-router-dom';
-import { ArrowLeft, Shield, Mail, MailCheck } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
+import { ArrowLeft, Shield, Mail, MailCheck, Loader2, CheckCircle2 } from 'lucide-react';
 import { toast } from 'react-toastify';
 import api from '../services/api';
+import LoadingState from './common/LoadingState';
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
   const [isSuccess, setIsSuccess] = useState(false);
+  const navigate = useNavigate();
 
   // Keep track of mounting to avoid state updates on unmount
   const mounted = useRef(true);
@@ -61,201 +63,167 @@ const ForgotPassword = () => {
   };
 
   return (
-    <div className="min-h-screen flex relative overflow-hidden bg-slate-950">
+    <div className="min-h-screen lg:h-screen flex flex-col lg:flex-row relative overflow-x-hidden overflow-y-auto lg:overflow-hidden bg-[#020617] text-white">
+      {loading && <LoadingState message="Verifying Identity" fullPage={true} />}
 
-      {/* Background gradients */}
-      <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none z-0">
-        <div className="absolute top-[20%] -left-[10%] w-[60%] h-[60%] rounded-full bg-blue-600/10 blur-[120px]" />
-        <div className="absolute -bottom-[20%] right-[10%] w-[50%] h-[50%] rounded-full bg-violet-600/10 blur-[120px]" />
-      </div>
-
-      {/* LEFT SIDE - BRANDING */}
-      <div className="hidden lg:flex lg:w-1/2 bg-transparent
-                      relative overflow-hidden z-10 transition-all duration-500">
-
-        {/* Pattern overlay */}
-        <div className="absolute inset-0 opacity-5">
-          <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 brightness-100 contrast-150"></div>
+      {/* LEFT PANEL - BRAND SECTION */}
+      <div className="flex lg:w-1/2 relative flex-col justify-between p-12 lg:p-20 overflow-hidden bg-gradient-to-b from-[#0A192F] to-[#020617] min-h-[40vh] lg:h-screen">
+        {/* Subtle Vignette & Glow */}
+        <div className="absolute inset-0 pointer-events-none">
+          <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-blue-500/10 blur-[120px] rounded-full"></div>
+          <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-indigo-500/10 blur-[120px] rounded-full"></div>
+          <div className="absolute inset-0 shadow-[inner_0_0_100px_rgba(0,0,0,0.5)]"></div>
         </div>
 
-        <div className="relative z-10 flex flex-col justify-center px-16 text-white h-full">
-          <div className="mb-8">
-            <div className="flex items-center space-x-3 mb-8">
-              <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-violet-600 to-blue-600 flex items-center justify-center shadow-lg shadow-violet-500/20">
-                <Shield className="w-7 h-7 text-white" />
-              </div>
-              <h1 className="text-2xl font-bold text-white tracking-tight">Aksecure</h1>
-            </div>
-            <p className="text-lg text-slate-300 leading-relaxed max-w-md">
-              Reset your password securely and regain access to your surveillance dashboard.
+        {/* Top Section: Logo */}
+        <div className="relative z-10 flex-none">
+          <div className="w-12 h-12 lg:w-14 lg:h-14 rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-700 flex items-center justify-center shadow-[0_0_20px_rgba(37,99,235,0.4)]">
+            <Shield className="w-7 h-7 lg:w-8 lg:h-8 text-white" />
+          </div>
+        </div>
+
+        {/* Middle Section: Headline & Description */}
+        <div className="relative z-10 flex-1 flex flex-col justify-center py-10">
+          <div className="max-w-xl">
+            <h1 className="text-3xl sm:text-4xl lg:text-[42px] font-extrabold tracking-tight leading-[1.2] mb-6">
+              <span className="block text-white">Regain your access</span>
+              <span className="block text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-blue-400 to-blue-500 pb-1">
+                securely & instantly
+              </span>
+            </h1>
+            <p className="text-base lg:text-lg text-slate-400/80 max-w-sm leading-relaxed font-medium">
+              Forgot your password? No worries. Enter your details and we'll help you get back to your surveillance dashboard in no time.
             </p>
           </div>
+        </div>
 
-          <div className="space-y-5 mt-8">
-            <div className="flex items-start space-x-4 group">
-              <div className="w-10 h-10 rounded-xl bg-slate-800/80 flex items-center justify-center flex-shrink-0 border border-white/10 group-hover:border-emerald-500/30 transition-colors">
-                <Shield className="w-5 h-5 text-emerald-400" />
+        {/* Bottom Section: Features */}
+        <div className="relative z-10 flex-none bottom-0">
+          <div className="space-y-5 mb-0">
+            {[
+              { icon: <Shield className="w-5 h-5" />, title: "Secure Recovery", sub: "Encrypted recovery links for your protection", color: "text-blue-400" },
+              { icon: <MailCheck className="w-5 h-5" />, title: "Instant Delivery", sub: "Verification links delivered in seconds", color: "text-purple-400" },
+              { icon: <CheckCircle2 className="w-5 h-5" />, title: "2FA Integration", sub: "Maintains multi-layer security protocols", color: "text-indigo-400" }
+            ].map((feature, idx) => (
+              <div key={idx} className="flex items-start gap-4">
+                <div className={`w-9 h-9 rounded-full bg-slate-800/60 flex items-center justify-center flex-shrink-0 border border-white/10 ${feature.color}`}>
+                  {feature.icon}
+                </div>
+                <div>
+                  <h3 className="text-sm lg:text-[15px] font-bold text-slate-200 leading-tight">{feature.title}</h3>
+                  <p className="text-[12px] lg:text-sm text-slate-500 font-medium">{feature.sub}</p>
+                </div>
               </div>
-              <div>
-                <p className="font-bold text-slate-200">Secure Reset</p>
-                <p className="text-sm text-slate-400">Encrypted links for your security</p>
-              </div>
-            </div>
-
-            <div className="flex items-start space-x-4 group">
-              <div className="w-10 h-10 rounded-xl bg-slate-800/80 flex items-center justify-center flex-shrink-0 border border-white/10 group-hover:border-blue-500/30 transition-colors">
-                <MailCheck className="w-5 h-5 text-blue-400" />
-              </div>
-              <div>
-                <p className="font-bold text-slate-200">Instant Delivery</p>
-                <p className="text-sm text-slate-400">Check your inbox within seconds</p>
-              </div>
-            </div>
-          </div>
-
-          {/* Copyright/Footer for left side */}
-          <div className="absolute bottom-8 left-16 text-xs text-slate-500 font-medium">
-            © {new Date().getFullYear()} Aksecure. All rights reserved.
+            ))}
           </div>
         </div>
       </div>
 
-      {/* RIGHT SIDE - FORM */}
-      <div className="flex-1 flex items-start sm:items-center justify-center p-6 pt-8 sm:pt-6 relative z-10">
-        <div className="w-full max-w-md">
+      {/* RIGHT PANEL - FORM SECTION */}
+      <div className="flex-1 flex items-center justify-center p-8 relative overflow-hidden">
+        {/* Dark Background with subtle shading */}
+        <div className="absolute inset-0 bg-[#020617]">
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[60%] h-[60%] bg-indigo-500/5 blur-[150px] rounded-full"></div>
+        </div>
 
-          {/* Back Button */}
-          <div className="flex justify-start mb-6">
+        <div className="w-full max-w-[480px] relative z-10 flex flex-col items-center">
+          {/* Back Button Pin */}
+          <div className="absolute -top-12 left-0 lg:left-0">
             <Link
               to="/login"
-              className="inline-flex items-center space-x-2 px-4 py-2 text-xs font-medium text-slate-400 
-                         hover:text-white bg-slate-800/30 hover:bg-slate-800/50 rounded-lg border border-white/5 
-                         transition-all duration-200"
+              className="flex items-center gap-2 text-[10px] font-bold text-slate-500 hover:text-white uppercase tracking-widest transition-all"
             >
-              <ArrowLeft className="w-4 h-4" />
-              <span>Back to Login</span>
+              <ArrowLeft className="w-3 h-3" />
+              Back to Login
             </Link>
           </div>
 
-          {/* Form Card */}
-          <div className="glass-card p-8 animate-fade-in-up">
-
+          {/* Glass Card */}
+          <div className="w-full bg-slate-900/30 backdrop-blur-3xl border border-white/10 rounded-[40px] p-8 lg:p-12 shadow-2xl relative">
+            
             {/* Header */}
-            <div className="text-center mb-8">
-              <div className={`inline-flex items-center justify-center w-14 h-14 rounded-2xl mb-4 shadow-lg transition-transform hover:scale-105 duration-300 ${isSuccess ? 'bg-emerald-500/10 text-emerald-400' : 'bg-blue-500/10 text-blue-400'
-                }`}>
-                {isSuccess ?
-                  <MailCheck className="w-7 h-7" /> :
-                  <Mail className="w-7 h-7" />
-                }
+            <div className="mb-10">
+              <div className={`w-14 h-14 rounded-2xl flex items-center justify-center mb-6 shadow-lg transition-transform duration-300 ${isSuccess ? 'bg-emerald-500/10 text-emerald-400' : 'bg-blue-500/10 text-blue-400'}`}>
+                {isSuccess ? <MailCheck className="w-7 h-7" /> : <Mail className="w-7 h-7" />}
               </div>
-              <h2 className="text-2xl font-bold text-white">
-                {isSuccess ? "Check Your Email" : "Forgot Password"}
+              <h2 className="text-3xl font-bold text-white mb-2 tracking-tight">
+                {isSuccess ? "Check Your Email" : "Forgot Password?"}
               </h2>
-              <p className="text-slate-400 mt-2 text-sm">
-                {isSuccess
-                  ? "We've sent you a password reset link"
-                  : "Enter your email to receive a reset link"}
+              <p className="text-slate-500 text-sm font-medium">
+                {isSuccess 
+                  ? "A recovery link has been sent to your registered email address." 
+                  : "Enter your registered email and we'll send you a link to reset your password."}
               </p>
             </div>
 
             {!isSuccess ? (
               <form onSubmit={handleSubmit} className="space-y-6">
-                <div className="group">
-                  <label htmlFor="email" className="block text-xs font-medium text-slate-400 mb-1.5 uppercase tracking-wider">
+                <div>
+                  <label className="block text-[10px] font-bold text-slate-500 mb-2 uppercase tracking-[0.15em]">
                     Email Address
                   </label>
-                  <div className="relative">
-                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500 group-focus-within:text-blue-400 transition-colors" />
+                  <div className="relative group">
+                    <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-blue-400 transition-colors">
+                      <Mail className="w-5 h-5" />
+                    </div>
                     <input
-                      id="email"
-                      name="email"
                       type="email"
-                      autoComplete="email"
                       required
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      className="w-full pl-11 pr-4 py-3 rounded-xl glass-input outline-none 
-                                 focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all"
-                      placeholder="you@company.com"
+                      className={`w-full bg-black/40 border border-white/5 rounded-2xl pl-12 pr-4 py-4 text-white placeholder:text-slate-700 outline-none focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/20 transition-all ${message ? 'border-red-500/50' : ''}`}
+                      placeholder="admin@company.com"
                     />
                   </div>
+                  {message && (
+                    <p className="mt-2 text-[11px] text-red-400 font-bold uppercase tracking-wider">{message}</p>
+                  )}
                 </div>
-
-                {message && !isSuccess && (
-                  <div className="p-4 bg-red-500/10 border border-red-500/20 rounded-xl flex items-start space-x-3">
-                    <div className="w-5 h-5 rounded-full bg-red-500/20 flex items-center justify-center flex-shrink-0 mt-0.5">
-                      <span className="text-red-400 text-xs font-bold">!</span>
-                    </div>
-                    <p className="text-sm text-red-300 flex-1">{message}</p>
-                  </div>
-                )}
 
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full py-3.5 rounded-xl font-semibold text-white shadow-lg shadow-blue-500/25 transition-all transform hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed
-                            bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-500 hover:to-cyan-500"
+                  className="w-full bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-500 hover:to-cyan-500 text-white font-extrabold py-4 rounded-2xl shadow-[0_10px_20px_rgba(37,99,235,0.2)] transform active:scale-[0.98] transition-all disabled:opacity-50 disabled:cursor-not-allowed uppercase tracking-widest text-[13px]"
                 >
                   {loading ? (
                     <span className="flex items-center justify-center gap-2">
-                      <span className="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin" />
-                      Sending...
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      Processing...
                     </span>
-                  ) : "Send Reset Link"}
+                  ) : "Send Recovery Link"}
                 </button>
               </form>
             ) : (
-              <div className="text-center space-y-6">
-                <div className="p-6 bg-emerald-500/10 border border-emerald-500/20 rounded-xl">
-                  <p className="text-sm text-emerald-300 font-medium mb-2">
-                    Link Sent Successfully!
-                  </p>
-                  <p className="text-sm text-emerald-400/80">
-                    We've sent an email to <span className="font-semibold text-emerald-300">{email}</span> with instructions to reset your password.
+              <div className="space-y-6 animate-fade-in">
+                <div className="p-6 bg-emerald-500/10 border border-emerald-500/20 rounded-2xl">
+                  <p className="text-sm text-emerald-400 leading-relaxed font-medium">
+                    We've sent an email to <span className="text-white font-bold">{email}</span> with instructions to reset your password. Please check your inbox and spam folder.
                   </p>
                 </div>
-
-                <div className="space-y-3">
-                  <p className="text-xs text-slate-500">
-                    Didn't receive the email? Check your spam folder or try again.
-                  </p>
-                  <button
-                    onClick={() => {
-                      setIsSuccess(false);
-                      setEmail('');
-                      setMessage('');
-                    }}
-                    className="w-full py-2.5 text-sm font-medium text-blue-400 hover:text-blue-300 
-                             border border-blue-500/30 rounded-lg hover:bg-blue-500/10 transition-colors"
-                  >
-                    Try Again
-                  </button>
-                </div>
-              </div>
-            )}
-
-            {/* Footer */}
-            {!isSuccess && (
-              <div className="mt-8 pt-6 border-t border-white/5 text-center">
-                <Link
-                  to="/login"
-                  className="text-sm font-medium text-slate-400 hover:text-white transition-colors"
+                
+                <button
+                  onClick={() => {
+                    setIsSuccess(false);
+                    setEmail('');
+                    setMessage('');
+                  }}
+                  className="w-full py-4 rounded-2xl border border-white/10 text-slate-300 font-bold text-xs uppercase tracking-widest hover:bg-white/5 transition-all active:scale-[0.98]"
                 >
-                  Return to Login
-                </Link>
+                  Try alternate email
+                </button>
               </div>
             )}
-
           </div>
 
-          {/* Security Notice */}
-          <p className="text-center text-xs text-slate-500 mt-6">
-            Protected by enterprise-grade encryption
-          </p>
+          {/* Encryption & Copyright Notice */}
+          <div className="mt-10 text-center w-full">
+            <p className="text-[9px] text-slate-500/60 font-medium uppercase tracking-[0.15em]">
+              © {new Date().getFullYear()} AKSECURE. ALL RIGHTS RESERVED.
+            </p>
+          </div>
         </div>
       </div>
-    </div >
+    </div>
   );
 };
 

@@ -832,7 +832,7 @@ const AdminPortal = () => {
 
 
   return (
-    <div className="fixed inset-0 h-screen w-screen flex flex-col bg-slate-950 overflow-hidden">
+    <div className="fixed inset-0 h-screen w-screen flex flex-col bg-slate-950">
       {showSuccess && (
         <SuccessState
           title="Update Successful"
@@ -871,7 +871,7 @@ const AdminPortal = () => {
       />
 
       {/* Main Content Area - Scrollable */}
-      <div className="flex-1 overflow-hidden flex flex-col relative z-10">
+      <div className="flex-1 overflow-y-auto relative z-10 custom-scrollbar">
 
         {/* Tab Selector - Hidden when viewing all tickets, all service requests, or users */}
         {viewMode !== "all" &&
@@ -965,7 +965,7 @@ const AdminPortal = () => {
           )}
 
         {activeTab === "settings" && (
-          <div className="flex-1 flex items-center justify-center p-6 overflow-hidden">
+          <div className="flex-1 flex items-center justify-center p-6">
             <SettingsPanel onClose={() => {
               setActiveTab("dashboard");
               setViewMode("dashboard");
@@ -974,7 +974,7 @@ const AdminPortal = () => {
         )}
 
         {(activeTab === "tickets" || activeTab === "dashboard") && (
-          <div className="flex-1 overflow-hidden h-full">
+          <div className="flex-1 h-full">
             {viewMode === "new-tickets" && (
               <div className="p-6">
                 <div className="glass-card rounded-2xl border border-slate-700/50 shadow-xl p-6 bg-slate-900/60 backdrop-blur-xl min-h-[500px]">
@@ -1009,7 +1009,7 @@ const AdminPortal = () => {
                       </p>
                     </div>
                   ) : (
-                    <div className="space-y-3 max-h-[400px] overflow-y-auto custom-scrollbar pr-2">
+                    <div className="space-y-3 pr-2">
                       {newTickets.map((ticket) => (
                         <button
                           key={ticket._id}
@@ -1080,7 +1080,7 @@ const AdminPortal = () => {
             )}
 
             {viewMode === "dashboard" && (
-              <div className="flex-1 overflow-y-auto p-6 space-y-3 relative z-10">
+              <div className="p-6 space-y-3 relative z-10">
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                   <div className="glass-card p-4 h-45 rounded-3xl border border-white/5 shadow-2xl bg-slate-900/40 backdrop-blur-2xl flex flex-col group hover:border-blue-500/20">
                     <h2 className="flex items-center gap-3 mb-3">
@@ -1125,7 +1125,7 @@ const AdminPortal = () => {
 
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                   <div className="lg:col-span-1">
-                    <div className="glass-card p-5 rounded-3xl h-[400px] flex flex-col border border-white/5 shadow-2xl bg-slate-900/40 backdrop-blur-2xl group hover:border-blue-500/10">
+                    <div className="glass-card p-5 rounded-3xl flex flex-col border border-white/5 shadow-2xl bg-slate-900/40 backdrop-blur-2xl group hover:border-blue-500/10">
                       <h2 className="text-base font-bold text-white tracking-tight mb-4 flex-shrink-0 flex items-center gap-2">
                         <Zap className="w-5 h-5 text-blue-400" />
                         Quick Actions
@@ -1199,7 +1199,7 @@ const AdminPortal = () => {
                     </div>
                   </div>
 
-                  <div className="h-[400px] flex flex-col">
+                  <div className="flex flex-col">
                     <VisitCalendar
                       tickets={tickets}
                       serviceRequests={serviceRequests}
@@ -1209,7 +1209,7 @@ const AdminPortal = () => {
 
                   {/* Event Details Panel */}
                   <div className="lg:col-span-1">
-                    <div className="glass-card p-5 rounded-3xl h-[400px] flex flex-col border border-white/5 shadow-2xl bg-slate-900/40 backdrop-blur-2xl group hover:border-cyan-500/10">
+                    <div className="glass-card p-5 rounded-3xl flex flex-col border border-white/5 shadow-2xl bg-slate-900/40 backdrop-blur-2xl group hover:border-cyan-500/10">
                       <div className="flex items-start justify-between mb-4">
                         <h2 className="text-base font-bold text-white tracking-tight flex items-center gap-2">
                           <Info className="w-5 h-5 text-cyan-400" />
@@ -1232,7 +1232,7 @@ const AdminPortal = () => {
 
                           {selectedVisit.visits &&
                             selectedVisit.visits.length > 0 ? (
-                            <div className="flex-1 overflow-y-auto space-y-3 pr-1 min-h-0 custom-scrollbar">
+                            <div className="flex-1 space-y-3 pr-1 custom-scrollbar">
                               {selectedVisit.visits.map((visit, index) => (
                                 <div
                                   key={index}
@@ -1371,7 +1371,7 @@ const AdminPortal = () => {
             )}
 
             {viewMode === "all" && (
-              <div className="flex h-full gap-0 w-full relative z-10 overflow-hidden">
+              <div className="flex h-full gap-0 w-full relative z-10">
                 <TicketListPanel
                   tickets={tickets}
                   searchTerm={searchTerm}
@@ -1391,7 +1391,7 @@ const AdminPortal = () => {
                   }}
                   loading={loading}
                 />
-                <div className="flex-1 overflow-y-auto bg-slate-950 h-full">
+                <div className="flex-1 bg-slate-950 h-full">
                   {selectedTicket ? (
                     <TicketDetailsPanel
                       ticket={selectedTicket}
@@ -1429,7 +1429,7 @@ const AdminPortal = () => {
         )}
 
         {activeTab === "users" && (
-          <div className="flex-1 overflow-hidden h-full">
+          <div className="flex-1 h-full">
             <div className="flex h-full gap-0 w-full relative z-10">
               <UserListPanel
                 users={users}
@@ -1445,8 +1445,8 @@ const AdminPortal = () => {
                 onRefresh={fetchUsers}
                 onDelete={openDeleteUserModal}
               />
-              <div className="flex-1 flex flex-col overflow-hidden bg-slate-950/50 backdrop-blur-2xl h-full">
-                <div className="flex-1 overflow-y-auto">
+              <div className="flex-1 flex flex-col bg-slate-950/50 backdrop-blur-2xl h-full">
+                <div className="flex-1">
                   <UserDetailsPanel
                     user={selectedUser}
                     onDelete={openDeleteUserModal}
@@ -1459,7 +1459,7 @@ const AdminPortal = () => {
         )}
 
         {activeTab === "service-requests" && (
-          <div className="flex-1 overflow-hidden h-full">
+          <div className="flex-1 h-full">
             {viewMode === "new-service-requests" && (
               <div className="p-6">
                 <div className="glass-card rounded-2xl border border-slate-700/50 shadow-xl p-6 bg-slate-900/60 backdrop-blur-xl min-h-[500px]">
@@ -1494,7 +1494,7 @@ const AdminPortal = () => {
                       </p>
                     </div>
                   ) : (
-                    <div className="space-y-3 max-h-[400px] overflow-y-auto custom-scrollbar pr-2">
+                    <div className="space-y-3 pr-2">
                       {newServiceRequests.map((request) => (
                         <button
                           key={request._id}
