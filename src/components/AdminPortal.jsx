@@ -837,7 +837,11 @@ const AdminPortal = () => {
         <SuccessState
           title="Update Successful"
           message={successMessage}
-          onComplete={() => setShowSuccess(false)}
+          onComplete={() => {
+            setShowSuccess(false);
+            setViewMode("dashboard");
+            setActiveTab("dashboard");
+          }}
         />
       )}
       {/* Background gradients */}

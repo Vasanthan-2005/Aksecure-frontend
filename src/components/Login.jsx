@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Eye, EyeOff, Shield, User, Mail, Lock, Loader2, CheckCircle2 } from "lucide-react";
+import { Eye, EyeOff, Shield, User, Mail, Lock, Loader2, CheckCircle2, ArrowRight } from "lucide-react";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import LoadingState from "./common/LoadingState";
@@ -24,6 +24,7 @@ const Login = () => {
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [loginSuccess, setLoginSuccess] = useState(false);
+  const [showMobileForm, setShowMobileForm] = useState(false);
 
   useEffect(() => {
     setFormData({ email: "", password: "", username: "" });
@@ -159,11 +160,13 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen lg:h-screen flex flex-col lg:flex-row relative overflow-x-hidden overflow-y-auto lg:overflow-hidden bg-[#020617] text-white">
+    <div className="h-screen w-screen flex flex-col lg:flex-row relative overflow-hidden bg-[#020617] text-white">
       {loading && <LoadingState message={isAdminLogin ? "Verifying Credentials" : "Checking Profile"} fullPage={true} />}
 
-      {/* LEFT PANEL - BRAND SECTION */}
-      <div className="flex lg:w-1/2 relative flex-col justify-between p-8 sm:p-12 lg:p-20 overflow-hidden bg-gradient-to-b from-[#0A192F] to-[#020617] min-h-[40vh] lg:h-screen">
+      {/* LEFT PANEL - BRAND SECTION (Landing Page on Mobile) */}
+      <div className={`absolute inset-0 lg:relative lg:w-1/2 flex flex-col justify-between p-8 sm:p-12 lg:p-20 overflow-hidden bg-gradient-to-b from-[#0A192F] to-[#020617] transition-all duration-700 ease-in-out z-20 ${
+        showMobileForm ? '-translate-x-full lg:translate-x-0 opacity-0 lg:opacity-100' : 'translate-x-0 opacity-100'
+      }`}>
         {/* Subtle Vignette & Glow */}
         <div className="absolute inset-0 pointer-events-none">
           <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-blue-500/10 blur-[120px] rounded-full"></div>
@@ -172,13 +175,16 @@ const Login = () => {
         </div>
 
         {/* Top Section: Logo */}
-        <div className="relative z-10 flex-none">
+        <div className="relative z-10 flex-none flex items-center gap-3">
           <div className="w-12 h-12 lg:w-14 lg:h-14 rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-700 flex items-center justify-center shadow-[0_0_20px_rgba(37,99,235,0.4)]">
             <Shield className="w-7 h-7 lg:w-8 lg:h-8 text-white" />
           </div>
+          <span className="text-2xl font-black tracking-tighter text-white">
+            AK<span className="text-blue-500">SECURE</span>
+          </span>
         </div>
 
-        {/* Middle Section: Headline & Description - Perfectly Centered */}
+        {/* Middle Section: Headline & Description */}
         <div className="relative z-10 flex-1 flex flex-col justify-center py-10">
           <div className="max-w-xl">
             <h1 className="text-2xl sm:text-4xl lg:text-[42px] font-extrabold tracking-tight leading-[1.2] mb-4 lg:mb-6">
@@ -213,11 +219,34 @@ const Login = () => {
               </div>
             ))}
           </div>
+
+          {/* Swipe Indicator (Mobile Only) */}
+          <div className="lg:hidden mt-4">
+            <button 
+              onClick={() => setShowMobileForm(true)}
+              className="px-4 py-2 rounded-full text-[10px] font-extrabold uppercase tracking-wider bg-white/5 border border-white/20 text-slate-300 hover:text-white hover:bg-white/10 transition-all flex items-center gap-2"
+            >
+              Swipe to Login
+              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+            </button>
+          </div>
         </div>
       </div>
 
       {/* RIGHT PANEL - LOGIN SECTION */}
-      <div className="flex-1 flex items-center justify-center p-4 sm:p-8 relative overflow-hidden">
+      <div className={`absolute inset-0 lg:relative lg:flex-1 flex items-center justify-center p-4 sm:p-8 bg-[#020617] transition-all duration-700 ease-in-out z-10 ${
+        showMobileForm ? 'translate-x-0 opacity-100' : 'translate-x-full lg:translate-x-0 opacity-0 lg:opacity-100'
+      }`}>
+        {/* Mobile Back Button */}
+        <div className="lg:hidden absolute top-6 left-6 z-30">
+          <button 
+            onClick={() => setShowMobileForm(false)}
+            className="p-3 rounded-xl bg-white/5 border border-white/10 text-slate-400 active:scale-90 transition-all flex items-center gap-2 font-bold text-xs uppercase tracking-widest"
+          >
+            <ArrowRight className="w-4 h-4 rotate-180" />
+            Back
+          </button>
+        </div>
         {/* Dark Background with subtle shading */}
         <div className="absolute inset-0 bg-[#020617]">
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[60%] h-[60%] bg-indigo-500/5 blur-[150px] rounded-full"></div>

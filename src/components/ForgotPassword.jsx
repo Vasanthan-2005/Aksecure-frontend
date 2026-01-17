@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Shield, Mail, MailCheck, Loader2, CheckCircle2 } from 'lucide-react';
+import { ArrowLeft, Shield, Mail, MailCheck, Loader2, CheckCircle2, ArrowRight } from 'lucide-react';
 import { toast } from 'react-toastify';
 import api from '../services/api';
 import LoadingState from './common/LoadingState';
@@ -63,11 +63,11 @@ const ForgotPassword = () => {
   };
 
   return (
-    <div className="min-h-screen lg:h-screen flex flex-col lg:flex-row relative overflow-x-hidden overflow-y-auto lg:overflow-hidden bg-[#020617] text-white">
+    <div className="h-screen w-screen flex flex-col lg:flex-row relative overflow-hidden bg-[#020617] text-white">
       {loading && <LoadingState message="Verifying Identity" fullPage={true} />}
 
       {/* LEFT PANEL - BRAND SECTION */}
-      <div className="flex lg:w-1/2 relative flex-col justify-between p-8 sm:p-12 lg:p-20 overflow-hidden bg-gradient-to-b from-[#0A192F] to-[#020617] min-h-[35vh] lg:h-screen">
+      <div className="hidden lg:flex lg:w-1/2 relative flex-col justify-between p-8 sm:p-12 lg:p-20 overflow-hidden bg-gradient-to-b from-[#0A192F] to-[#020617] h-screen">
         {/* Subtle Vignette & Glow */}
         <div className="absolute inset-0 pointer-events-none">
           <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-blue-500/10 blur-[120px] rounded-full"></div>
@@ -76,10 +76,13 @@ const ForgotPassword = () => {
         </div>
 
         {/* Top Section: Logo */}
-        <div className="relative z-10 flex-none">
+        <div className="relative z-10 flex-none flex items-center gap-3">
           <div className="w-12 h-12 lg:w-14 lg:h-14 rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-700 flex items-center justify-center shadow-[0_0_20px_rgba(37,99,235,0.4)]">
             <Shield className="w-7 h-7 lg:w-8 lg:h-8 text-white" />
           </div>
+          <span className="text-2xl font-black tracking-tighter text-white">
+            AK<span className="text-blue-500">SECURE</span>
+          </span>
         </div>
 
         {/* Middle Section: Headline & Description */}
@@ -120,12 +123,7 @@ const ForgotPassword = () => {
       </div>
 
       {/* RIGHT PANEL - FORM SECTION */}
-      <div className="flex-1 flex items-center justify-center p-4 sm:p-8 relative overflow-hidden">
-        {/* Dark Background with subtle shading */}
-        <div className="absolute inset-0 bg-[#020617]">
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[60%] h-[60%] bg-indigo-500/5 blur-[150px] rounded-full"></div>
-        </div>
-
+      <div className="flex-1 flex items-center justify-center p-4 sm:p-8 relative overflow-hidden bg-[#020617]">
         <div className="w-full max-w-[480px] relative z-10 flex flex-col items-center">
           {/* Back Button Pin */}
           <div className="absolute -top-12 left-0 lg:left-0">
