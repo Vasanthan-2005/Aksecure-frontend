@@ -214,7 +214,7 @@ const Register = () => {
       {loading && <LoadingState message="Creating Security Profile" fullPage={true} />}
 
       {/* LEFT PANEL - BRAND SECTION */}
-      <div className="flex lg:w-1/2 relative flex-col justify-between p-12 lg:p-20 overflow-hidden bg-gradient-to-b from-[#0A192F] to-[#020617] min-h-[100vh] lg:h-screen">
+      <div className="flex lg:w-1/2 relative flex-col justify-between p-8 sm:p-12 lg:p-20 overflow-hidden bg-gradient-to-b from-[#0A192F] to-[#020617] min-h-[35vh] lg:h-screen">
         {/* Subtle Vignette & Glow */}
         <div className="absolute inset-0 pointer-events-none">
           <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-violet-500/10 blur-[120px] rounded-full"></div>
@@ -232,13 +232,13 @@ const Register = () => {
         {/* Middle Section: Headline & Description - Perfectly Centered */}
         <div className="relative z-10 flex-1 flex flex-col justify-center py-10">
           <div className="max-w-xl">
-            <h1 className="text-3xl sm:text-4xl lg:text-[42px] font-extrabold tracking-tight leading-[1.2] mb-6">
+            <h1 className="text-2xl sm:text-4xl lg:text-[42px] font-extrabold tracking-tight leading-[1.2] mb-4 lg:mb-6">
               <span className="block text-white">Join the future of</span>
               <span className="block text-transparent bg-clip-text bg-gradient-to-r from-violet-400 via-purple-400 to-blue-500 pb-1">
                 enterprise security
               </span>
             </h1>
-            <p className="text-base lg:text-lg text-slate-400/80 max-w-sm leading-relaxed font-medium">
+            <p className="text-xs sm:text-base lg:text-lg text-slate-400/80 max-w-sm leading-relaxed font-medium">
               Create your organization account to access our comprehensive surveillance and safety management platform.
             </p>
           </div>
@@ -247,19 +247,19 @@ const Register = () => {
         {/* Bottom Section: Features */}
         <div className="relative z-10 flex-none bottom-0">
           {/* Feature Points */}
-          <div className="space-y-5 mb-12 lg:mb-16">
+          <div className="space-y-4 lg:space-y-5 mb-8 lg:mb-16">
             {[
-              { icon: <Shield className="w-5 h-5" />, title: "Bank-Grade Security", sub: "Your data is protected with encryption standards", color: "text-emerald-400" },
-              { icon: <CheckCircle2 className="w-5 h-5" />, title: "Instant Activation", sub: "Get access to your dashboard immediately", color: "text-blue-400" },
-              { icon: <Shield className="w-5 h-5" />, title: "Global Compliance", sub: "Meets international safety & security regulations", color: "text-purple-400" }
+              { icon: <Shield className="w-4 h-4 sm:w-5 h-5" />, title: "Bank-Grade Security", sub: "Data protection standards", color: "text-emerald-400" },
+              { icon: <CheckCircle2 className="w-4 h-4 sm:w-5 h-5" />, title: "Instant Activation", sub: "Immediate dashboard access", color: "text-blue-400" },
+              { icon: <Shield className="w-4 h-4 sm:w-5 h-5" />, title: "Global Compliance", sub: "International safety regulations", color: "text-purple-400" }
             ].map((feature, idx) => (
-              <div key={idx} className="flex items-start gap-4">
-                <div className={`w-9 h-9 rounded-full bg-slate-800/60 flex items-center justify-center flex-shrink-0 border border-white/10 ${feature.color}`}>
+              <div key={idx} className="flex items-start gap-3 sm:gap-4">
+                <div className={`w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-slate-800/60 flex items-center justify-center flex-shrink-0 border border-white/10 ${feature.color}`}>
                   {feature.icon}
                 </div>
                 <div>
-                  <h3 className="text-sm lg:text-[15px] font-bold text-slate-200 leading-tight">{feature.title}</h3>
-                  <p className="text-[12px] lg:text-sm text-slate-500 font-medium">{feature.sub}</p>
+                  <h3 className="text-xs sm:text-[15px] font-bold text-slate-200 leading-tight">{feature.title}</h3>
+                  <p className="text-[10px] sm:text-sm text-slate-500 font-medium">{feature.sub}</p>
                 </div>
               </div>
             ))}
@@ -268,7 +268,7 @@ const Register = () => {
       </div>
 
       {/* RIGHT PANEL - REGISTRATION SECTION */}
-      <div className="flex-1 flex items-center justify-center p-8 relative overflow-hidden">
+      <div className="flex-1 flex items-center justify-center p-4 sm:p-8 relative overflow-hidden">
         {/* Dark Background with subtle shading */}
         <div className="absolute inset-0 bg-[#020617]">
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[60%] h-[60%] bg-violet-500/5 blur-[150px] rounded-full"></div>
@@ -276,14 +276,14 @@ const Register = () => {
 
         <div className="w-full max-w-[620px] relative z-10 flex flex-col items-center">
           {/* Glass Registration Card */}
-          <div className="w-full bg-slate-900/30 backdrop-blur-3xl border border-white/10 rounded-[40px] p-6 lg:p-8 shadow-2xl relative flex flex-col">
+          <div className="w-full bg-slate-900/30 backdrop-blur-3xl border border-white/10 rounded-[32px] sm:rounded-[40px] p-5 sm:p-8 shadow-2xl relative flex flex-col">
             
             {/* Header */}
             <div className="flex-shrink-0 pb-6 border-b border-white/5 flex items-center justify-between">
               <div>
-                <h2 className="text-3xl font-bold text-white tracking-tight">Create Account</h2>
-                <p className="text-slate-500 text-sm font-medium mt-1">
-                  {currentStep === 1 ? "Enter your organization details" : "Add company branch locations"}
+                <h2 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">Create Account</h2>
+                <p className="text-slate-500 text-xs sm:text-sm font-medium mt-1">
+                  {currentStep === 1 ? "Enter organization details" : "Add company branch locations"}
                 </p>
               </div>
               <div className="text-right">
@@ -302,9 +302,9 @@ const Register = () => {
             )}
 
             {/* Form Content */}
-            <div className="flex-1 mt-6">
+            <div className="flex-1 mt-4 sm:mt-6">
               {currentStep === 1 && (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-3 sm:gap-y-4">
                   {/* Full Name */}
                   <div className="group md:col-span-2">
                     <label className="block text-[10px] font-bold text-slate-500 mb-2 uppercase tracking-[0.15em] ml-1">Full Name *</label>
@@ -428,7 +428,7 @@ const Register = () => {
                         name="companyName"
                         value={formData.companyName}
                         onChange={handleChange}
-                        className={`w-full bg-black/40 border border-white/5 pl-12 pr-4 py-4 rounded-2xl outline-none text-base font-medium text-white placeholder:text-slate-700 focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/20 transition-all ${fieldErrors.companyName ? 'border-red-500/50' : ''}`}
+                        className={`w-full bg-black/40 border border-white/5 pl-11 pr-4 py-3.5 sm:py-4 rounded-2xl outline-none text-sm sm:text-base font-medium text-white placeholder:text-slate-700 focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/20 transition-all ${fieldErrors.companyName ? 'border-red-500/50' : ''}`}
                         placeholder="Enter organization name"
                       />
                     </div>

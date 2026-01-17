@@ -220,6 +220,22 @@ export const UserTopNav = () => {
                             )}
                         </div>
 
+                        {/* Mobile Replied Icon */}
+                        <div className="md:hidden">
+                            <button
+                                onClick={scrollToReplies}
+                                className={`relative flex items-center justify-center p-2 rounded-2xl transition-all border border-blue-500/20 bg-blue-500/5 text-blue-400 active:scale-95 shadow-lg shadow-blue-500/5`}
+                                title="Admin Replies"
+                            >
+                                <MessageCircle className="w-4.5 h-4.5" />
+                                {unreadReplies > 0 && (
+                                    <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[8px] font-bold text-white shadow-lg shadow-red-500/40 animate-pulse border border-slate-900">
+                                        {unreadReplies}
+                                    </span>
+                                )}
+                            </button>
+                        </div>
+
                         <button
                             onClick={logout}
                             className="inline-flex items-center gap-2 p-2 sm:px-5 sm:py-2.5 rounded-2xl text-xs font-bold uppercase tracking-wider text-red-500 hover:text-white hover:bg-red-500/10 border border-transparent hover:border-red-500/20 transition-all active:scale-95"

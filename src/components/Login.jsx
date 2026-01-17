@@ -163,7 +163,7 @@ const Login = () => {
       {loading && <LoadingState message={isAdminLogin ? "Verifying Credentials" : "Checking Profile"} fullPage={true} />}
 
       {/* LEFT PANEL - BRAND SECTION */}
-      <div className="flex lg:w-1/2 relative flex-col justify-between p-12 lg:p-20 overflow-hidden bg-gradient-to-b from-[#0A192F] to-[#020617] min-h-[100vh] lg:h-screen">
+      <div className="flex lg:w-1/2 relative flex-col justify-between p-8 sm:p-12 lg:p-20 overflow-hidden bg-gradient-to-b from-[#0A192F] to-[#020617] min-h-[40vh] lg:h-screen">
         {/* Subtle Vignette & Glow */}
         <div className="absolute inset-0 pointer-events-none">
           <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-blue-500/10 blur-[120px] rounded-full"></div>
@@ -181,13 +181,13 @@ const Login = () => {
         {/* Middle Section: Headline & Description - Perfectly Centered */}
         <div className="relative z-10 flex-1 flex flex-col justify-center py-10">
           <div className="max-w-xl">
-            <h1 className="text-3xl sm:text-4xl lg:text-[42px] font-extrabold tracking-tight leading-[1.2] mb-6">
+            <h1 className="text-2xl sm:text-4xl lg:text-[42px] font-extrabold tracking-tight leading-[1.2] mb-4 lg:mb-6">
               <span className="block text-white">Secure your world with</span>
               <span className="block text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-blue-400 to-blue-500 pb-1">
                 intelligent protection
               </span>
             </h1>
-            <p className="text-base lg:text-lg text-slate-400/80 max-w-sm leading-relaxed font-medium">
+            <p className="text-xs sm:text-base lg:text-lg text-slate-400/80 max-w-sm leading-relaxed font-medium">
               Advanced surveillance, fire safety integration, and access control systems designed for the modern enterprise.
             </p>
           </div>
@@ -196,19 +196,19 @@ const Login = () => {
         {/* Bottom Section: Features & Footer */}
         <div className="relative z-10 flex-none bottom-0">
           {/* Feature Points */}
-          <div className="space-y-5 mb-12 lg:mb-16">
+          <div className="space-y-4 lg:space-y-5 mb-8 lg:mb-16">
             {[
-              { icon: <Shield className="w-5 h-5" />, title: "Enterprise Grade", sub: "Top-tier security protocols & encryption", color: "text-blue-400" },
-              { icon: <Eye className="w-5 h-5" />, title: "24/7 Monitoring", sub: "Real-time surveillance & instant alerts", color: "text-purple-400" },
-              { icon: <User className="w-5 h-5" />, title: "Centralized Control", sub: "Unified access and system management", color: "text-indigo-400" }
+              { icon: <Shield className="w-4 h-4 sm:w-5 h-5" />, title: "Enterprise Grade", sub: "Top-tier security", color: "text-blue-400" },
+              { icon: <Eye className="w-4 h-4 sm:w-5 h-5" />, title: "24/7 Monitoring", sub: "Real-time alerts", color: "text-purple-400" },
+              { icon: <User className="w-4 h-4 sm:w-5 h-5" />, title: "Centralized Control", sub: "Unified management", color: "text-indigo-400" }
             ].map((feature, idx) => (
-              <div key={idx} className="flex items-start gap-4">
-                <div className={`w-9 h-9 rounded-full bg-slate-800/60 flex items-center justify-center flex-shrink-0 border border-white/10 ${feature.color}`}>
+              <div key={idx} className="flex items-start gap-3 sm:gap-4">
+                <div className={`w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-slate-800/60 flex items-center justify-center flex-shrink-0 border border-white/10 ${feature.color}`}>
                   {feature.icon}
                 </div>
                 <div>
-                  <h3 className="text-sm lg:text-[15px] font-bold text-slate-200 leading-tight">{feature.title}</h3>
-                  <p className="text-[12px] lg:text-sm text-slate-500 font-medium">{feature.sub}</p>
+                  <h3 className="text-xs sm:text-[15px] font-bold text-slate-200 leading-tight">{feature.title}</h3>
+                  <p className="text-[10px] sm:text-sm text-slate-500 font-medium">{feature.sub}</p>
                 </div>
               </div>
             ))}
@@ -217,7 +217,7 @@ const Login = () => {
       </div>
 
       {/* RIGHT PANEL - LOGIN SECTION */}
-      <div className="flex-1 flex items-center justify-center p-8 relative overflow-hidden">
+      <div className="flex-1 flex items-center justify-center p-4 sm:p-8 relative overflow-hidden">
         {/* Dark Background with subtle shading */}
         <div className="absolute inset-0 bg-[#020617]">
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[60%] h-[60%] bg-indigo-500/5 blur-[150px] rounded-full"></div>
@@ -225,7 +225,7 @@ const Login = () => {
 
         <div className="w-full max-w-[480px] relative z-10 flex flex-col items-center">
           {/* Glass Login Card */}
-          <div className="w-full bg-slate-900/30 backdrop-blur-3xl border border-white/10 rounded-[40px] p-8 lg:p-12 shadow-2xl relative">
+          <div className="w-full bg-slate-900/30 backdrop-blur-3xl border border-white/10 rounded-[32px] sm:rounded-[40px] p-6 sm:p-12 shadow-2xl relative">
             
             {/* Switch Toggle Pill */}
             <div className="absolute top-8 right-8">
