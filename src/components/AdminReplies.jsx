@@ -14,6 +14,8 @@ const AdminReplies = ({ refreshKey = 0 }) => {
   useEffect(() => {
     if (user) {
       fetchAdminReplies();
+      const interval = setInterval(fetchAdminReplies, 2000);
+      return () => clearInterval(interval);
     }
   }, [refreshKey, user]);
 

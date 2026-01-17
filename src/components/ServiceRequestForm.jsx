@@ -154,11 +154,6 @@ const ServiceRequestForm = ({ category, onSuccess, onCancel }) => {
       return;
     }
 
-    if (!formData.preferredDate || !formData.preferredTimeSlot) {
-      setError('Preferred visit date and time slot are required.');
-      setLoading(false);
-      return;
-    }
 
     try {
       const payload = new FormData();
@@ -170,8 +165,10 @@ const ServiceRequestForm = ({ category, onSuccess, onCancel }) => {
       payload.append('location[lat]', formData.location.lat);
       payload.append('location[lng]', formData.location.lng);
 
-      const preferredDateTime = `${formData.preferredDate}T${formData.preferredTimeSlot}`;
-      payload.append('preferredVisitAt', new Date(preferredDateTime).toISOString());
+      if (formData.preferredDate && formData.preferredTimeSlot) {
+        const preferredDateTime = `${formData.preferredDate}T${formData.preferredTimeSlot}`;
+        payload.append('preferredVisitAt', new Date(preferredDateTime).toISOString());
+      }
 
       // Compress and append images
       for (const image of images) {
@@ -294,7 +291,7 @@ const ServiceRequestForm = ({ category, onSuccess, onCancel }) => {
                   </div>
 
                   {/* Outlet Selection */}
-                  <div>
+                  <div className='mt-4'>
                     <label className="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-3 ml-1 flex items-center gap-2">
                       <Building className="w-3.5 h-3.5" />
                       Registered Outlet
@@ -382,7 +379,7 @@ const ServiceRequestForm = ({ category, onSuccess, onCancel }) => {
                   <div>
                     <label className="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-3 ml-1 flex items-center gap-2">
                       <Calendar className="w-3.5 h-3.5" />
-                      Visit Date <span className="text-red-500">*</span>
+                      Visit Date <span className="text-500">(optional) </span>
                     </label>
                     <input
                       type="date"
@@ -391,13 +388,12 @@ const ServiceRequestForm = ({ category, onSuccess, onCancel }) => {
                       onChange={handleChange}
                       min={getMinDate()}
                       className="w-full px-5 py-4 bg-slate-900/50 border border-white/10 rounded-2xl text-white focus:outline-none focus:ring-2 focus:ring-violet-500/20 focus:border-violet-500/50 transition-all font-medium [color-scheme:dark]"
-                      required
                     />
                   </div>
                   <div>
                     <label className="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-3 ml-1 flex items-center gap-2">
                       <Clock className="w-3.5 h-3.5" />
-                      Time Slot <span className="text-red-500">*</span>
+                      Time Slot <span className="text-500">(OPTIONAL)</span>
                     </label>
                     <div className="relative group">
                       <select
@@ -405,7 +401,7 @@ const ServiceRequestForm = ({ category, onSuccess, onCancel }) => {
                         value={formData.preferredTimeSlot}
                         onChange={handleChange}
                         className="w-full px-5 py-4 bg-slate-900/50 border border-white/10 rounded-2xl text-white focus:outline-none focus:ring-2 focus:ring-violet-500/20 focus:border-violet-500/50 transition-all appearance-none cursor-pointer font-medium"
-                        required
+
                       >
                         <option value="" className="bg-slate-900">Select Slot</option>
                         {timeSlotOptions.map((slot) => (

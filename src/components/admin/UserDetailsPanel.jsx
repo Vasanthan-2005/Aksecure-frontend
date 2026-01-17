@@ -1,4 +1,4 @@
-import { User, Building, Phone, MapPin, Ticket as TicketIcon, Trash2, Loader2, Users, Mail, Calendar, Clock, X, Navigation, ExternalLink } from 'lucide-react';
+import { User, Building, Phone, MapPin, Ticket as TicketIcon, Trash2, Loader2, Users, Mail, Calendar, Clock, X, Navigation, ExternalLink, Wrench } from 'lucide-react';
 import MapView from '../common/MapView';
 
 const UserDetailsPanel = ({ user, onDelete, deleting, onClose }) => {
@@ -201,64 +201,91 @@ const UserDetailsPanel = ({ user, onDelete, deleting, onClose }) => {
               </div>
             )}
 
-            {/* Registration Date */}
-            {user.createdAt && (
-              <div className="group bg-slate-800/40 rounded-xl p-5 border border-white/5 hover:border-emerald-500/30 hover:bg-slate-800/60">
-                <div className="flex items-center gap-2 mb-3">
-                  <Calendar className="w-4 h-4 text-emerald-400" />
-                  <span className="text-xs text-slate-500 font-bold uppercase tracking-tight group-hover:text-emerald-300/80">Registered</span>
+            {/* Account Metrics Section */}
+            <div className="md:col-span-2 space-y-6">
+              <div className="flex items-center gap-3 pb-4 border-b border-white/5">
+                <div className="w-10 h-10 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center">
+                  <Navigation className="w-5 h-5 text-blue-400" />
                 </div>
-                <p className="text-base font-medium text-slate-200 group-hover:text-white">
-                  {new Date(user.createdAt).toLocaleDateString('en-US', {
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric'
-                  })}
-                </p>
-                <p className="text-sm text-slate-500 mt-1 font-mono">
-                  {new Date(user.createdAt).toLocaleTimeString('en-US', {
-                    hour: '2-digit',
-                    minute: '2-digit'
-                  })}
-                </p>
-              </div>
-            )}
-
-            {/* Last Updated */}
-            {user.updatedAt && (
-              <div className="group bg-slate-800/40 rounded-xl p-5 border border-white/5 hover:border-blue-500/30 hover:bg-slate-800/60">
-                <div className="flex items-center gap-2 mb-3">
-                  <Clock className="w-4 h-4 text-blue-400" />
-                  <span className="text-xs text-slate-500 font-bold uppercase tracking-tight group-hover:text-blue-300/80">Last Updated</span>
-                </div>
-                <p className="text-base font-medium text-slate-200 group-hover:text-white">
-                  {new Date(user.updatedAt).toLocaleDateString('en-US', {
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric'
-                  })}
-                </p>
-                <p className="text-sm text-slate-500 mt-1 font-mono">
-                  {new Date(user.updatedAt).toLocaleTimeString('en-US', {
-                    hour: '2-digit',
-                    minute: '2-digit'
-                  })}
-                </p>
-              </div>
-            )}
-
-            {/* Total Tickets */}
-            <div className="md:col-span-2 relative overflow-hidden rounded-xl p-6 border border-blue-500/30 bg-blue-500/5 group hover:bg-blue-500/10">
-              <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20">
-                <TicketIcon className="w-24 h-24 text-blue-500 rotate-12" />
-              </div>
-              <div className="relative z-10 flex items-center justify-between">
                 <div>
-                  <div className="flex items-center gap-2 mb-2">
-                    <TicketIcon className="w-5 h-5 text-blue-400" />
-                    <span className="text-xs text-blue-300 font-bold uppercase tracking-wider">Total Tickets</span>
+                  <h3 className="text-xl font-bold text-white tracking-tight">Account Metrics</h3>
+                  <p className="text-xs text-slate-400 mt-0.5">Registration and activity summary</p>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Registration Date */}
+                {user.createdAt && (
+                  <div className="group bg-slate-800/40 rounded-xl p-5 border border-white/5 hover:border-emerald-500/30 hover:bg-slate-800/60 transition-all">
+                    <div className="flex items-center gap-2 mb-3">
+                      <Calendar className="w-4 h-4 text-emerald-400" />
+                      <span className="text-xs text-slate-500 font-bold uppercase tracking-tight group-hover:text-emerald-300/80">Registered</span>
+                    </div>
+                    <p className="text-base font-medium text-slate-200 group-hover:text-white">
+                      {new Date(user.createdAt).toLocaleDateString('en-US', {
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric'
+                      })}
+                    </p>
+                    <p className="text-sm text-slate-500 mt-1 font-mono">
+                      {new Date(user.createdAt).toLocaleTimeString('en-US', {
+                        hour: '2-digit',
+                        minute: '2-digit'
+                      })}
+                    </p>
                   </div>
-                  <p className="text-4xl font-bold text-white tracking-tight">{user.ticketCount || 0}</p>
+                )}
+
+                {/* Last Updated */}
+                {user.updatedAt && (
+                  <div className="group bg-slate-800/40 rounded-xl p-5 border border-white/5 hover:border-blue-500/30 hover:bg-slate-800/60 transition-all">
+                    <div className="flex items-center gap-2 mb-3">
+                      <Clock className="w-4 h-4 text-blue-400" />
+                      <span className="text-xs text-slate-500 font-bold uppercase tracking-tight group-hover:text-blue-300/80">Last Updated</span>
+                    </div>
+                    <p className="text-base font-medium text-slate-200 group-hover:text-white">
+                      {new Date(user.updatedAt).toLocaleDateString('en-US', {
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric'
+                      })}
+                    </p>
+                    <p className="text-sm text-slate-500 mt-1 font-mono">
+                      {new Date(user.updatedAt).toLocaleTimeString('en-US', {
+                        hour: '2-digit',
+                        minute: '2-digit'
+                      })}
+                    </p>
+                  </div>
+                )}
+
+                {/* Total Service Requests */}
+                <div className="relative overflow-hidden rounded-xl p-6 border border-emerald-500/30 bg-emerald-500/5 group hover:bg-emerald-500/10 transition-all">
+                  <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-all">
+                    <Wrench className="w-20 h-20 text-emerald-500 rotate-12" />
+                  </div>
+                  <div className="relative z-10">
+                    <div className="flex items-center gap-2 mb-2">
+                      <Wrench className="w-5 h-5 text-emerald-400" />
+                      <span className="text-xs text-emerald-300 font-bold uppercase tracking-wider">Total Services</span>
+                    </div>
+                    <p className="text-4xl font-bold text-white tracking-tight">{user.serviceCount || 0}</p>
+                  </div>
+                </div>
+
+                {/* Total Tickets */}
+                <div className="relative overflow-hidden rounded-xl p-6 border border-blue-500/30 bg-blue-500/5 group hover:bg-blue-500/10 transition-all">
+                  <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-all">
+                    <TicketIcon className="w-20 h-20 text-blue-500 rotate-12" />
+                  </div>
+                  <div className="relative z-10">
+                    <div className="flex items-center gap-2 mb-2">
+                      <TicketIcon className="w-5 h-5 text-blue-400" />
+                      <span className="text-xs text-blue-300 font-bold uppercase tracking-wider">Total Tickets</span>
+                    </div>
+                    <p className="text-4xl font-bold text-white tracking-tight">{user.ticketCount || 0}</p>
+                  </div>
                 </div>
               </div>
             </div>

@@ -58,8 +58,8 @@ const SettingsPanel = ({ onClose }) => {
     }
 
     return (
-        <div className="max-w-4xl mx-auto">
-            <div className="mb-8 flex justify-between items-start">
+        <div className="glass-card p-6 bg-slate-900/40 backdrop-blur-md border border-white/5 h-full overflow-y-auto custom-scrollbar">
+            <div className="mb-6 flex justify-between items-start gap-4 ">
                 <div>
                     <h2 className="text-2xl font-bold text-white flex items-center gap-3">
                         <div className="p-2 rounded-xl bg-blue-500/10 text-blue-400">
@@ -80,15 +80,15 @@ const SettingsPanel = ({ onClose }) => {
                 )}
             </div>
 
-            <form onSubmit={handleSave} className="space-y-6">
+            <form onSubmit={handleSave} className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     {/* Support Phone */}
-                    <div className="bg-slate-900/40 border border-white/5 rounded-3xl p-6 hover:border-blue-500/20 group">
+                    <div className="bg-slate-900/40 border border-white/5 rounded-2xl p-4 hover:border-blue-500/20 group">
                         <div className="flex items-center gap-3 mb-4">
                             <div className="p-2 rounded-lg bg-blue-500/10 text-blue-400">
                                 <Phone className="w-4 h-4" />
                             </div>
-                            <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">Support Phone</label>
+                            <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Support Phone</label>
                         </div>
                         <input
                             type="text"
@@ -101,12 +101,12 @@ const SettingsPanel = ({ onClose }) => {
                     </div>
 
                     {/* Support Email */}
-                    <div className="bg-slate-900/40 border border-white/5 rounded-3xl p-6 hover:border-violet-500/20 group">
+                    <div className="bg-slate-900/40 border border-white/5 rounded-2xl p-4 hover:border-violet-500/20 group">
                         <div className="flex items-center gap-3 mb-4">
                             <div className="p-2 rounded-lg bg-violet-500/10 text-violet-400">
                                 <Mail className="w-4 h-4" />
                             </div>
-                            <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">Support Email</label>
+                            <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Support Email</label>
                         </div>
                         <input
                             type="email"
@@ -119,12 +119,12 @@ const SettingsPanel = ({ onClose }) => {
                     </div>
 
                     {/* WhatsApp Number */}
-                    <div className="bg-slate-900/40 border border-white/5 rounded-3xl p-6 hover:border-emerald-500/20 group md:col-span-2">
+                    <div className="bg-slate-900/40 border border-white/5 rounded-2xl p-4 hover:border-emerald-500/20 group md:col-span-2">
                         <div className="flex items-center gap-3 mb-4">
                             <div className="p-2 rounded-lg bg-emerald-500/10 text-emerald-400">
                                 <Phone className="w-4 h-4" />
                             </div>
-                            <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">WhatsApp Number (Digits only, include country code)</label>
+                            <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">WhatsApp Number</label>
                         </div>
                         <div className="flex gap-4 items-center">
                             <input
@@ -139,7 +139,7 @@ const SettingsPanel = ({ onClose }) => {
                                 wa.me/{settings.supportWhatsApp}
                             </div>
                         </div>
-                        <p className="text-[10px] text-slate-500 mt-2 px-1 italic">Note: Enter country code without '+' or '00'. Example: 91 for India.</p>
+                        <p className="text-[9px] text-slate-500 mt-1 px-1 italic">Digits only, include country code (e.g. 91 for India).</p>
                     </div>
                 </div>
 
@@ -166,7 +166,7 @@ const SettingsPanel = ({ onClose }) => {
                     <button
                         type="submit"
                         disabled={saving}
-                        className="flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-blue-600 to-violet-600 hover:from-blue-500 hover:to-violet-500 text-white font-bold rounded-2xl shadow-xl shadow-blue-500/25 disabled:opacity-50"
+                        className="flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-blue-600 to-violet-600 hover:from-blue-500 hover:to-violet-500 text-white font-bold rounded-2xl disabled:opacity-50"
                     >
                         {saving ? (
                             <>

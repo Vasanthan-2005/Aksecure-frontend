@@ -223,8 +223,8 @@ const Login = () => {
       </div>
 
       {/* RIGHT SIDE - FORM */}
-      <div className="flex-1 flex items-start sm:items-center justify-center p-4 sm:p-6 relative z-10">
-        <div className="w-full max-w-md mt-6 sm:mt-0">
+      <div className="flex-1 flex items-center justify-center p-4 sm:p-6 relative z-10">
+        <div className="w-full max-w-md">
 
           {/* Toggle Auth Type - Positioned above card or inside, let's put it above for clean look or inside top-right */}
           <div className="flex justify-end mb-4">
@@ -321,15 +321,15 @@ const Login = () => {
               </div>
 
               {/* Forgot Password Link */}
-              <div className="flex justify-between items-center">
-                <label className="flex items-center space-x-2 cursor-pointer group">
-                  <input type="checkbox" className="w-4 h-4 rounded border-slate-700 bg-slate-800/50 text-blue-500 focus:ring-0 focus:ring-offset-0" />
-                  <span className="text-xs text-slate-500 group-hover:text-slate-400 transition-colors">Remember me</span>
-                </label>
-                <Link to="/forgot-password" className="text-xs font-medium text-blue-400 hover:text-blue-300 transition-colors hover:underline">
-                  Forgot password?
-                </Link>
-              </div>
+              {!isAdminLogin && (
+                <div className="flex justify-between items-center">
+                  <label className="flex items-center space-x-2 cursor-pointer group">
+                  </label>
+                  <Link to="/forgot-password" university className="text-xs font-medium text-blue-400 hover:text-blue-300 transition-colors hover:underline">
+                    Forgot password?
+                  </Link>
+                </div>
+              )}
 
               <button
                 type="submit"

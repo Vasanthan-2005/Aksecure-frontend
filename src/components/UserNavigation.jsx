@@ -1,7 +1,8 @@
 import { useState, useRef, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { Shield, LogOut, User as UserIcon, Ticket, FileText, Headphones, Phone, Mail, LayoutDashboard } from 'lucide-react';
+import { Shield, LogOut, User as UserIcon, Ticket, FileText, Headphones, Phone, Mail, LayoutDashboard, MessageCircle } from 'lucide-react';
+import api from '../services/api';
 
 const navLinks = [
     { name: 'Dashboard', path: '/', icon: LayoutDashboard, color: 'blue' },
@@ -11,7 +12,7 @@ const navLinks = [
 ];
 
 export const UserTopNav = () => {
-    const { logout } = useAuth();
+    const { logout, user } = useAuth();
     const navigate = useNavigate();
     const location = useLocation();
 
@@ -21,6 +22,7 @@ export const UserTopNav = () => {
         supportEmail: 'support@aksecuretech.com',
         supportWhatsApp: '917550212046'
     });
+    const [unreadReplies, setUnreadReplies] = useState(0);
     const supportRef = useRef(null);
 
     const isActive = (path) => location.pathname === path;
@@ -28,14 +30,68 @@ export const UserTopNav = () => {
     useEffect(() => {
         const fetchSettings = async () => {
             try {
-                const response = await fetch(`${import.meta.env.VITE_API_URL}/settings`);
-                const data = await response.json();
-                if (data) setSettings(data);
+                const response = await api.get('/settings');
+                if (response.data) setSettings(response.data);
             } catch (err) {
                 console.error('Failed to fetch support settings:', err);
+                // Keep default values if API fails
             }
         };
+
+        const fetchUnseenReplies = async () => {
+            if (!user) return;
+            try {
+                const [ticketsResponse, serviceRequestsResponse] = await Promise.all([
+                    api.get('/tickets'),
+                    api.get('/service-requests')
+                ]);
+                const tickets = Array.isArray(ticketsResponse.data) ? ticketsResponse.data : (ticketsResponse.data?.tickets || []);
+                const serviceRequestsData = serviceRequestsResponse.data;
+                const serviceRequests = Array.isArray(serviceRequestsData) ? serviceRequestsData : (serviceRequestsData?.requests || []);
+
+                let unseenCount = 0;
+                const userId = user._id || user.id;
+
+                const countUnseen = (collection) => {
+                    if (!Array.isArray(collection)) return;
+                    collection.forEach(entry => {
+                        if (entry.timeline) {
+                            entry.timeline.forEach(item => {
+                                if (item.addedBy !== user.name) {
+                                    const seenBy = item.seenBy || [];
+                                    const isSeen = seenBy.some(seenUserId => {
+                                        const seenId = seenUserId._id || seenUserId;
+                                        return seenId?.toString() === userId?.toString();
+                                    });
+                                    if (!isSeen) unseenCount++;
+                                }
+                            });
+                        }
+                    });
+                };
+
+                countUnseen(tickets);
+                countUnseen(serviceRequests);
+                setUnreadReplies(unseenCount);
+            } catch (err) {
+                console.error('Failed to fetch unseen replies:', err);
+            }
+        };
+
         fetchSettings();
+        fetchUnseenReplies();
+
+        // Polling for unseen replies every 2 seconds
+        const pollInterval = setInterval(fetchUnseenReplies, 2000);
+
+        // Refresh settings when tab becomes visible (user returns from admin panel)
+        const handleVisibilityChange = () => {
+            if (!document.hidden) {
+                fetchSettings();
+                fetchUnseenReplies();
+            }
+        };
+        document.addEventListener('visibilitychange', handleVisibilityChange);
 
         const handleClickOutside = (event) => {
             if (supportRef.current && !supportRef.current.contains(event.target)) {
@@ -43,8 +99,19 @@ export const UserTopNav = () => {
             }
         };
         document.addEventListener('mousedown', handleClickOutside);
-        return () => document.removeEventListener('mousedown', handleClickOutside);
-    }, []);
+        return () => {
+            clearInterval(pollInterval);
+            document.removeEventListener('mousedown', handleClickOutside);
+            document.removeEventListener('visibilitychange', handleVisibilityChange);
+        };
+    }, [user]);
+
+    const scrollToReplies = () => {
+        const element = document.getElementById('admin-replies-section');
+        if (element) {
+            element.scrollIntoView({ behavior: 'smooth' });
+        }
+    };
 
     return (
         <nav className="relative z-50 bg-slate-900/50 backdrop-blur-xl border-b border-white/5 transition-all duration-300 w-full shrink-0">
@@ -78,6 +145,21 @@ export const UserTopNav = () => {
                                     {link.name}
                                 </button>
                             ))}
+                        </div>
+                        <div className="hidden md:flex items-center gap-3">
+                            <button
+                                onClick={scrollToReplies}
+                                className={`relative flex items-center gap-2 px-4 py-2 rounded-2xl text-xs font-bold uppercase tracking-wider transition-all border border-blue-500/20 bg-blue-500/5 text-blue-400 hover:bg-blue-500/10 hover:border-blue-500/30 active:scale-95 group shadow-lg shadow-blue-500/5`}
+                                title="Admin Replies"
+                            >
+                                <MessageCircle className="w-4 h-4" />
+                                <span className="hidden lg:inline">Replies</span>
+                                {unreadReplies > 0 && (
+                                    <span className="absolute -top-1.5 -right-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white shadow-lg shadow-red-500/40 animate-pulse border-2 border-slate-900">
+                                        {unreadReplies}
+                                    </span>
+                                )}
+                            </button>
                         </div>
 
                         <div className="h-6 w-px bg-white/10 hidden md:block" />

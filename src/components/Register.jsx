@@ -2,10 +2,14 @@ import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import LoadingState from "./common/LoadingState";
-import { Eye, EyeOff, Shield, User, Mail, Lock, Building2, Phone, MapPin, CheckCircle2, ArrowRight, XCircle, Edit2, Trash2 } from "lucide-react";
+import { Eye, EyeOff, Shield, User, Mail, Lock, Building2, Phone, MapPin, CheckCircle2, ArrowRight, XCircle, Edit2, Trash2, ChevronLeft } from "lucide-react";
 import OutletModal from "./common/OutletModal";
+import api from "../services/api";
 
 const Register = () => {
+  // Step management
+  const [currentStep, setCurrentStep] = useState(1);
+  
   const [formData, setFormData] = useState({
     name: "",
     companyName: "",
@@ -77,15 +81,13 @@ const Register = () => {
     setOutlets(outlets.filter((_, i) => i !== index));
   };
 
-  const validateForm = () => {
+  const validateStep1 = () => {
     const errors = {};
 
     if (!formData.name.trim()) {
       errors.name = "Name is required";
     }
-    if (!formData.companyName.trim()) {
-      errors.companyName = "Company Name is required";
-    }
+    // companyName moved to Step 2
     if (!formData.phone.trim()) {
       errors.phone = "Phone number is required";
     } else if (!/^\+?[\d\s-()]+$/.test(formData.phone)) {
@@ -109,12 +111,57 @@ const Register = () => {
     } else if (formData.password !== formData.confirmPassword) {
       errors.confirmPassword = "Passwords do not match";
     }
-    if (outlets.length === 0) {
-      errors.outlets = "Please add at least one company outlet";
-    }
 
     setFieldErrors(errors);
-    return { isValid: Object.keys(errors).length === 0, errors };
+    return Object.keys(errors).length === 0;
+  };
+
+  const handleNextStep = async () => {
+    if (!validateStep1()) return;
+
+    setLoading(true);
+    setError("");
+    setFieldErrors({});
+
+    try {
+      // Check for duplicate email/phone on backend
+      await api.post('/auth/check-availability', {
+        email: formData.email,
+        phone: formData.phone
+      });
+      
+      // Only reach here if successful (200 OK)
+      setCurrentStep(2);
+    } catch (err) {
+      // Any error from backend means we stay on Step 1
+      const errorMessage = err?.response?.data?.message || "Unable to verify availability. Please try again.";
+      setError(errorMessage);
+      
+      // Set field-specific errors if possible
+      const serverFieldErrors = {};
+      const lowerMessage = errorMessage.toLowerCase();
+      
+      if (lowerMessage.includes("email")) {
+        serverFieldErrors.email = errorMessage;
+      }
+      if (lowerMessage.includes("phone")) {
+        serverFieldErrors.phone = errorMessage;
+      }
+      
+      if (Object.keys(serverFieldErrors).length > 0) {
+        setFieldErrors(serverFieldErrors);
+      }
+      
+      console.error('Validation error:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handlePreviousStep = () => {
+    setCurrentStep(1);
+    setError("");
+    setFieldErrors({});
   };
 
   const handleSubmit = async (e) => {
@@ -122,18 +169,14 @@ const Register = () => {
     setError("");
     setFieldErrors({});
 
-    const { isValid, errors } = validateForm();
-    if (!isValid) {
-      setTimeout(() => {
-        const firstErrorKey = Object.keys(errors)[0];
-        if (firstErrorKey) {
-          const errorField = document.querySelector(`[name="${firstErrorKey}"]`);
-          if (errorField) {
-            errorField.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            errorField.focus();
-          }
-        }
-      }, 100);
+    // Validate Company Name in Step 2
+    if (!formData.companyName.trim()) {
+      setFieldErrors({ companyName: "Company Name is required" });
+      return;
+    }
+
+    if (outlets.length === 0) {
+      setFieldErrors({ outlets: "Please add at least one company outlet" });
       return;
     }
 
@@ -141,7 +184,6 @@ const Register = () => {
 
     try {
       const { confirmPassword, ...userData } = formData;
-      // Add outlets to user data
       const registrationData = {
         ...userData,
         outlets: outlets
@@ -157,16 +199,11 @@ const Register = () => {
 
       if (lowerMessage.includes("email") && (lowerMessage.includes("exists") || lowerMessage.includes("already"))) {
         serverFieldErrors.email = errorMessage;
+        setCurrentStep(1); // Go back to step 1 to fix email
       }
       if (lowerMessage.includes("phone") && (lowerMessage.includes("exists") || lowerMessage.includes("already"))) {
         serverFieldErrors.phone = errorMessage;
-      }
-      if (lowerMessage.includes("required fields")) {
-        if (!formData.name.trim()) serverFieldErrors.name = "Name is required";
-        if (!formData.phone.trim()) serverFieldErrors.phone = "Phone number is required";
-        if (!formData.email.trim()) serverFieldErrors.email = "Email is required";
-        if (!formData.password) serverFieldErrors.password = "Password is required";
-        if (outlets.length === 0) serverFieldErrors.outlets = "At least one outlet is required";
+        setCurrentStep(1);
       }
 
       if (Object.keys(serverFieldErrors).length > 0) {
@@ -197,6 +234,15 @@ const Register = () => {
     if (passwordStrength <= 4) return "Strong";
     return "Very Strong";
   };
+
+  // Check if Step 1 is complete
+  const isStep1Complete = formData.name.trim() && 
+                          formData.phone.trim() && 
+                          formData.email.trim() && 
+                          formData.password && 
+                          formData.confirmPassword && 
+                          formData.password === formData.confirmPassword &&
+                          formData.password.length >= 8;
 
   return (
     <div className="h-screen flex relative overflow-hidden bg-slate-950">
@@ -255,26 +301,35 @@ const Register = () => {
       </div>
 
       {/* RIGHT SIDE - REGISTRATION FORM */}
-      <div className="flex-1 flex items-center justify-center p-4 sm:p-6 lg:p-8 relative z-10 h-full">
-        <div className="w-full max-w-2xl px-4 sm:px-8">
+      <div className="flex-1 flex items-center justify-center relative z-10 h-full overflow-hidden">
+        <div className="w-full max-w-2xl h-full flex flex-col py-6 px-4 sm:px-8">
 
-          <div className="glass-card p-5 sm:p-8 w-full animate-fade-in-up max-h-screen">
-
-            <div className="flex items-center justify-between mb-4">
-              <div>
-                <h2 className="text-2xl font-bold text-white">Create Account</h2>
-                <p className="text-slate-400 text-sm mt-1">Enter your organization details</p>
-              </div>
-              <div className="hidden sm:block text-right">
-                <p className="text-xs text-slate-500 mb-1">Step 1 of 1</p>
-                <div className="w-24 h-1 bg-slate-800 rounded-full overflow-hidden">
-                  <div className="w-full h-full bg-gradient-to-r from-violet-500 to-blue-500"></div>
+          <div className="glass-card flex-1 flex flex-col overflow-hidden animate-fade-in-up">
+            
+            {/* Header */}
+            <div className="flex-shrink-0 p-5 sm:p-6 pb-4 border-b border-white/5">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h2 className="text-2xl font-bold text-white">Create Account</h2>
+                  <p className="text-slate-400 text-sm mt-1">
+                    {currentStep === 1 ? "Enter your organization details" : "Add company branch locations"}
+                  </p>
+                </div>
+                <div className="hidden sm:block text-right">
+                  <p className="text-xs text-slate-500 mb-1">Step {currentStep} of 2</p>
+                  <div className="w-24 h-1 bg-slate-800 rounded-full overflow-hidden">
+                    <div 
+                      className="h-full bg-gradient-to-r from-violet-500 to-blue-500 transition-all duration-300" 
+                      style={{ width: `${(currentStep / 2) * 100}%` }}
+                    />
+                  </div>
                 </div>
               </div>
             </div>
 
+            {/* Error Display */}
             {error && Object.keys(fieldErrors).length === 0 && (
-              <div className="mb-4 p-3 bg-red-500/10 border border-red-500/20 rounded-xl flex items-start gap-3">
+              <div className="flex-shrink-0 mx-5 sm:mx-6 mt-4 p-3 bg-red-500/10 border border-red-500/20 rounded-xl flex items-start gap-3">
                 <div className="w-5 h-5 rounded-full bg-red-500/20 flex items-center justify-center flex-shrink-0 mt-0.5">
                   <span className="text-red-400 text-xs font-bold">!</span>
                 </div>
@@ -282,14 +337,15 @@ const Register = () => {
               </div>
             )}
 
-            {/* Scrollable Container */}
-            <div className="max-h-[75vh] overflow-y-auto custom-scrollbar pr-2 -mr-2">
-              <form onSubmit={handleSubmit} className="space-y-6 pb-2">
-
+            {/* Scrollable Form Content */}
+            <div className="flex-1 overflow-y-auto custom-scrollbar px-5 sm:px-6 py-4">
+              
+              {/* STEP 1: User Details */}
+              {currentStep === 1 && (
                 <div className="space-y-5">
-                  {/* 1. Full Name */}
+                  {/* Full Name */}
                   <div className="group">
-                    <label className="block text-xs font-medium text-slate-400 mb-1.5">Full Name</label>
+                    <label className="block text-xs font-medium text-slate-400 mb-1.5">Full Name *</label>
                     <div className="relative">
                       <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 group-focus-within:text-violet-400 transition-colors" />
                       <input
@@ -304,9 +360,9 @@ const Register = () => {
                     {fieldErrors.name && <p className="mt-1 text-xs text-red-400">{fieldErrors.name}</p>}
                   </div>
 
-                  {/* 2. Phone Number */}
+                  {/* Phone Number */}
                   <div className="group">
-                    <label className="block text-xs font-medium text-slate-400 mb-1.5">Phone Number</label>
+                    <label className="block text-xs font-medium text-slate-400 mb-1.5">Phone Number *</label>
                     <div className="relative">
                       <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 group-focus-within:text-blue-400 transition-colors" />
                       <input
@@ -321,9 +377,9 @@ const Register = () => {
                     {fieldErrors.phone && <p className="mt-1 text-xs text-red-400">{fieldErrors.phone}</p>}
                   </div>
 
-                  {/* 3. Mail (Email) */}
+                  {/* Email */}
                   <div className="group">
-                    <label className="block text-xs font-medium text-slate-400 mb-1.5">Mail Address</label>
+                    <label className="block text-xs font-medium text-slate-400 mb-1.5">Mail Address *</label>
                     <div className="relative">
                       <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 group-focus-within:text-blue-400 transition-colors" />
                       <input
@@ -338,10 +394,10 @@ const Register = () => {
                     {fieldErrors.email && <p className="mt-1 text-xs text-red-400">{fieldErrors.email}</p>}
                   </div>
 
-                  {/* 4. Password and Confirm Password (Same Line) */}
+                  {/* Password and Confirm Password */}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                     <div className="group">
-                      <label className="block text-xs font-medium text-slate-400 mb-1.5">Password</label>
+                      <label className="block text-xs font-medium text-slate-400 mb-1.5">Password *</label>
                       <div className="relative">
                         <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 group-focus-within:text-blue-400 transition-colors" />
                         <input
@@ -372,7 +428,7 @@ const Register = () => {
                     </div>
 
                     <div className="group">
-                      <label className="block text-xs font-medium text-slate-400 mb-1.5">Confirm Password</label>
+                      <label className="block text-xs font-medium text-slate-400 mb-1.5">Confirm Password *</label>
                       <div className="relative">
                         <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 group-focus-within:text-blue-400 transition-colors" />
                         <input
@@ -394,10 +450,15 @@ const Register = () => {
                       {fieldErrors.confirmPassword && <p className="mt-1 text-xs text-red-400">{fieldErrors.confirmPassword}</p>}
                     </div>
                   </div>
+                </div>
+              )}
 
-                  {/* 5. Company Name */}
+              {/* STEP 2: Company Outlets */}
+              {currentStep === 2 && (
+                <div className="space-y-5">
+                  {/* Company Name */}
                   <div className="group">
-                    <label className="block text-xs font-medium text-slate-400 mb-1.5">Company Name</label>
+                    <label className="block text-xs font-medium text-slate-400 mb-1.5">Company Name *</label>
                     <div className="relative">
                       <Building2 className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 group-focus-within:text-violet-400 transition-colors" />
                       <input
@@ -412,73 +473,86 @@ const Register = () => {
                     {fieldErrors.companyName && <p className="mt-1 text-xs text-red-400">{fieldErrors.companyName}</p>}
                   </div>
 
-                  {/* 6. Company Outlets */}
-                  <div className="space-y-4">
-                    <div className="flex items-center justify-between">
-                      <label className="block text-xs font-medium text-slate-400 uppercase tracking-wider font-semibold">Company Outlets</label>
-                      <span className="px-2 py-0.5 rounded-md bg-slate-800 text-[10px] text-slate-400 font-bold border border-white/5">{outlets.length} added</span>
-                    </div>
+                  <div className="flex items-center justify-between">
+                    <label className="block text-xs font-medium text-slate-400 uppercase tracking-wider font-semibold">Company Outlets</label>
+                    <span className="px-2 py-0.5 rounded-md bg-slate-800 text-[10px] text-slate-400 font-bold border border-white/5">{outlets.length} added</span>
+                  </div>
 
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setInitialEditIndex(null);
-                        setShowOutletModal(true);
-                      }}
-                      className="w-full py-3 rounded-xl font-bold text-white shadow-lg transition-all transform hover:scale-[1.01] active:scale-[0.99]
-                                bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 flex items-center justify-center gap-2 border border-violet-500/20"
-                    >
-                      <Building2 className="w-4 h-4" />
-                      Add Company Branch Location
-                    </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setInitialEditIndex(null);
+                      setShowOutletModal(true);
+                    }}
+                    className="w-full py-3 rounded-xl font-bold text-white shadow-lg transition-all transform hover:scale-[1.01] active:scale-[0.99]
+                              bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 flex items-center justify-center gap-2 border border-violet-500/20"
+                  >
+                    <Building2 className="w-4 h-4" />
+                    Add Company Branch Location
+                  </button>
 
-                    {outlets.length > 0 && (
-                      <div className="grid grid-cols-1 gap-3">
-                        {outlets.map((outlet, index) => (
-                          <div
-                            key={outlet.id || index}
-                            className="p-4 bg-slate-800/30 rounded-xl border border-white/5 hover:border-violet-500/30 transition-all group"
-                          >
-                            <div className="flex items-start justify-between">
-                              <div className="flex-1 min-w-0">
-                                <p className="font-bold text-white truncate text-sm">{outlet.outletName}</p>
-                                <p className="text-xs text-slate-500 flex items-start gap-1.5 mt-1 leading-relaxed">
-                                  <MapPin className="w-3.5 h-3.5 mt-0.5 flex-shrink-0 text-slate-600" />
-                                  <span className="line-clamp-2">{outlet.address}</span>
-                                </p>
-                              </div>
-                              <div className="flex items-center gap-2 ml-3 opacity-0 group-hover:opacity-100 transition-opacity">
-                                <button
-                                  type="button"
-                                  onClick={() => {
-                                    setInitialEditIndex(index);
-                                    setShowOutletModal(true);
-                                  }}
-                                  className="p-2 rounded-lg bg-blue-500/10 text-blue-400 hover:bg-blue-500/20 transition-colors"
-                                >
-                                  <Edit2 className="w-3.5 h-3.5" />
-                                </button>
-                                <button
-                                  type="button"
-                                  onClick={() => handleRemoveOutlet(index)}
-                                  className="p-2 rounded-lg bg-red-500/10 text-red-400 hover:bg-red-500/20 transition-colors"
-                                >
-                                  <Trash2 className="w-3.5 h-3.5" />
-                                </button>
-                              </div>
+                  {outlets.length > 0 && (
+                    <div className="grid grid-cols-1 gap-3">
+                      {outlets.map((outlet, index) => (
+                        <div
+                          key={outlet.id || index}
+                          className="p-4 bg-slate-800/30 rounded-xl border border-white/5 hover:border-violet-500/30 transition-all group"
+                        >
+                          <div className="flex items-start justify-between">
+                            <div className="flex-1 min-w-0">
+                              <p className="font-bold text-white truncate text-sm">{outlet.outletName}</p>
+                              <p className="text-xs text-slate-500 flex items-start gap-1.5 mt-1 leading-relaxed">
+                                <MapPin className="w-3.5 h-3.5 mt-0.5 flex-shrink-0 text-slate-600" />
+                                <span className="line-clamp-2">{outlet.address}</span>
+                              </p>
+                            </div>
+                            <div className="flex items-center gap-2 ml-3 opacity-0 group-hover:opacity-100 transition-opacity">
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setInitialEditIndex(index);
+                                  setShowOutletModal(true);
+                                }}
+                                className="p-2 rounded-lg bg-blue-500/10 text-blue-400 hover:bg-blue-500/20 transition-colors"
+                              >
+                                <Edit2 className="w-3.5 h-3.5" />
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => handleRemoveOutlet(index)}
+                                className="p-2 rounded-lg bg-red-500/10 text-red-400 hover:bg-red-500/20 transition-colors"
+                              >
+                                <Trash2 className="w-3.5 h-3.5" />
+                              </button>
                             </div>
                           </div>
-                        ))}
-                      </div>
-                    )}
-                    {fieldErrors.outlets && <p className="mt-1 text-xs text-red-400 font-medium">{fieldErrors.outlets}</p>}
-                  </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                  {fieldErrors.outlets && <p className="mt-1 text-xs text-red-400 font-medium">{fieldErrors.outlets}</p>}
                 </div>
+              )}
+            </div>
 
-                {/* Submit Button */}
-                <div className="pt-4">
+            {/* Footer with Actions */}
+            <div className="flex-shrink-0 p-5 sm:p-6 pt-4 border-t border-white/5">
+              {currentStep === 1 ? (
+                <button
+                  type="button"
+                  onClick={handleNextStep}
+                  disabled={!isStep1Complete}
+                  className="w-full py-3.5 rounded-xl font-semibold text-white shadow-lg shadow-blue-500/25 transition-all transform hover:scale-[1.01] active:scale-[0.99] disabled:opacity-50 disabled:cursor-not-allowed
+                                bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-500 hover:to-cyan-500 flex items-center justify-center gap-2"
+                >
+                  <span>Next: Company Outlets</span>
+                  <ArrowRight className="w-4 h-4" />
+                </button>
+              ) : (
+                <div className="space-y-3">
                   <button
-                    type="submit"
+                    type="button"
+                    onClick={handleSubmit}
                     disabled={loading}
                     className="w-full py-3.5 rounded-xl font-semibold text-white shadow-lg shadow-blue-500/25 transition-all transform hover:scale-[1.01] active:scale-[0.99] disabled:opacity-50 disabled:cursor-not-allowed
                                   bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-500 hover:to-cyan-500 flex items-center justify-center gap-2"
@@ -495,22 +569,30 @@ const Register = () => {
                       </>
                     )}
                   </button>
+                  <button
+                    type="button"
+                    onClick={handlePreviousStep}
+                    className="w-full py-2.5 rounded-xl font-medium text-slate-400 hover:text-white transition-all flex items-center justify-center gap-2"
+                  >
+                    <ChevronLeft className="w-4 h-4" />
+                    <span>Back to User Details</span>
+                  </button>
                 </div>
-              </form>
+              )}
             </div>
-          </div>
 
-          {/* Footer */}
-          <div className="mt-4 pt-4 border-t border-white/5 text-center">
-            <p className="text-sm text-slate-400">
-              Already have an account?{" "}
-              <button
-                onClick={handleLoginClick}
-                className="font-medium text-blue-400 hover:text-blue-300 hover:underline transition-all"
-              >
-                Sign in here
-              </button>
-            </p>
+            {/* Login Link */}
+            <div className="flex-shrink-0 px-5 sm:px-6 pb-5 text-center border-t border-white/5 pt-4">
+              <p className="text-sm text-slate-400">
+                Already have an account?{" "}
+                <button
+                  onClick={handleLoginClick}
+                  className="font-medium text-blue-400 hover:text-blue-300 hover:underline transition-all"
+                >
+                  Sign in here
+                </button>
+              </p>
+            </div>
           </div>
         </div>
       </div>

@@ -1,39 +1,33 @@
 import { AlertCircle, Loader2, CheckCircle2 } from 'lucide-react';
 
-const StatItem = ({ label, count, color, Icon, total, showPercentage = true, delay = "0.1s" }) => {
+const StatItem = ({ label, count, color, Icon, total, showPercentage = true, showIcon = true, delay = "0.1s" }) => {
     const percentage = total > 0 ? Math.round((count / total) * 100) : 0;
 
     return (
         <div
-            className={`group relative overflow-hidden rounded-2xl border ${color.border} bg-slate-950/40 p-3.5 backdrop-blur-xl ${color.glowShadow}`}
+            className={`group relative overflow-hidden rounded-2xl border ${color.border} bg-slate-950/40 p-3.5 backdrop-blur-xl h-18 ${color.glowShadow}`}
         >
             {/* Dynamic Glow Aura */}
             <div className={`absolute inset-0 opacity-0 bg-[radial-gradient(circle_at_center,${color.glowColor}_0%,transparent_70%)]`} />
 
             <div className="relative z-10">
-                <div className="flex items-center gap-2.5 mb-3">
-                    <div className={`flex h-9 w-9 items-center justify-center rounded-xl ${color.iconBg} border border-white/10 shadow-lg`}>
-                        <Icon className={`h-4.5 w-4.5 ${color.text}`} />
-                    </div>
-                    <div className="flex flex-col">
-                        <span className={`text-[10px] font-black uppercase tracking-[0.2em] ${color.text} opacity-80 group-hover:opacity-100`}>
+                <div className="flex items-center justify-between gap-3 h-full">
+                    <div className="flex items-center gap-2">
+                        {showIcon && (
+                            <div className={`flex h-7 w-7 items-center justify-center rounded-lg ${color.iconBg} border border-white/10 shadow-lg`}>
+                                <Icon className={`h-3.5 w-3.5 ${color.text}`} />
+                            </div>
+                        )}
+                        <span className={`text-[8px] font-black uppercase tracking-wider ${color.text} opacity-80 group-hover:opacity-100`}>
                             {label}
                         </span>
                     </div>
-                    {showPercentage && (
-                        <span className="ml-auto text-[9px] font-black bg-white/10 px-1.5 py-0.5 rounded-full text-white/50 group-hover:text-white group-hover:bg-white/20 border border-white/5">
-                            {percentage}%
-                        </span>
-                    )}
-                </div>
 
-                <div className="flex items-end justify-between">
-                    <div className="space-y-1">
-                        <p className="text-3xl font-black tracking-tighter text-white">
+                    <div className="flex items-center">
+                        <p className="text-2xl font-black tracking-tighter text-white">
                             {count}
                         </p>
                     </div>
-
                 </div>
             </div>
 
@@ -43,7 +37,7 @@ const StatItem = ({ label, count, color, Icon, total, showPercentage = true, del
     );
 };
 
-const ServiceRequestStats = ({ stats, showPercentage = true }) => {
+const ServiceRequestStats = ({ stats, showPercentage = true, showIcon = true }) => {
     return (
         <div className="grid grid-cols-3 gap-2">
             <StatItem
@@ -53,6 +47,7 @@ const ServiceRequestStats = ({ stats, showPercentage = true }) => {
                 Icon={AlertCircle}
                 delay="0s"
                 showPercentage={showPercentage}
+                showIcon={showIcon}
                 color={{
                     border: "border-amber-500/20",
                     iconBg: "bg-amber-500/10",
@@ -70,6 +65,7 @@ const ServiceRequestStats = ({ stats, showPercentage = true }) => {
                 Icon={Loader2}
                 delay="0.1s"
                 showPercentage={showPercentage}
+                showIcon={showIcon}
                 color={{
                     border: "border-blue-500/20",
                     iconBg: "bg-blue-500/10",
@@ -87,6 +83,7 @@ const ServiceRequestStats = ({ stats, showPercentage = true }) => {
                 Icon={CheckCircle2}
                 delay="0.15s"
                 showPercentage={showPercentage}
+                showIcon={showIcon}
                 color={{
                     border: "border-green-500/20",
                     iconBg: "bg-green-500/10",

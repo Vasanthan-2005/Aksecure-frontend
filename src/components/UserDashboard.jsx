@@ -145,7 +145,7 @@ const UserDashboard = () => {
                 <Shield className="w-40 h-40 lg:w-64 lg:h-64 text-white stroke-[0.5px]" />
               </div>
 
-              <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+              <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 ">
                 <div className="max-w-xl">
 
 
@@ -233,7 +233,7 @@ const UserDashboard = () => {
           </section>
 
           {/* Admin Replies */}
-          <section className="animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
+          <section id="admin-replies-section" className="animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-sm font-bold text-slate-400 tracking-wider uppercase flex items-center gap-2">
                 <span className="w-2 h-2 rounded-full bg-violet-500"></span>
@@ -242,7 +242,9 @@ const UserDashboard = () => {
             </div>
             <div className="glass-card rounded-[32px] overflow-hidden p-1 border border-white/5">
               <div className="bg-slate-950/40 rounded-[28px] p-2 lg:p-4">
-                <AdminReplies key={refreshKey} refreshKey={refreshKey} />
+                <AdminReplies key={refreshKey} refreshKey={refreshKey} onRepliesFetched={(count) => {
+                  // This is a placeholder for the count sync if needed
+                }} />
               </div>
             </div>
           </section>

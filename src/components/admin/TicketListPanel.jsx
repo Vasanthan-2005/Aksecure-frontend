@@ -68,7 +68,7 @@ const TicketListPanel = ({
             <div className="w-1 h-3 rounded-full bg-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.5)]"></div>
             <h3 className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Overview</h3>
           </div>
-          <TicketStats stats={stats} showPercentage={false} />
+          <TicketStats stats={stats} showPercentage={false} showIcon={false} />
         </div>
 
         <div className="mt-4">

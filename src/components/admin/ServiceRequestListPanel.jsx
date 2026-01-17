@@ -83,7 +83,7 @@ const ServiceRequestListPanel = ({
             <div className="w-1 h-3 rounded-full bg-violet-500 shadow-[0_0_8px_rgba(139,92,246,0.5)]"></div>
             <h3 className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Overview</h3>
           </div>
-          <ServiceRequestStats stats={stats} showPercentage={false} />
+          <ServiceRequestStats stats={stats} showPercentage={false} showIcon={false} />
         </div>
 
         <div className="mt-4">

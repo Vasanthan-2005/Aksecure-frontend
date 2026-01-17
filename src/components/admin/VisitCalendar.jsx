@@ -165,9 +165,9 @@ const VisitCalendar = ({ tickets, serviceRequests, onEventSelect }) => {
               onClick={() => handleDateClick(date)}
               disabled={past}
               className={`
-                w-[90%] aspect-square rounded-md mx-auto my-auto flex flex-col items-center justify-center text-[11px] relative group
+                w-[80%] aspect-square rounded-md mx-auto my-auto flex flex-col items-center justify-center text-[11px] relative group
                 ${past ? "opacity-40 cursor-not-allowed text-slate-500 bg-slate-800/10" : "cursor-pointer"}
-                ${isTodayDate && !selected ? "bg-gradient-to-br from-cyan-500/30 to-blue-500/30 text-cyan-200 border border-cyan-400/60 font-bold shadow-[0_0_15px_rgba(6,182,212,0.3)]" : ""}
+                ${isTodayDate && !selected ? "bg-gradient-to-br from-green-500/30 to-green-500/30 text-cyan-200 border border-cyan-400/60 font-bold shadow-[0_0_15px_rgba(6,182,212,0.3)]" : ""}
                 ${selected ? "bg-gradient-to-br from-cyan-500 to-blue-600 text-white border border-cyan-400 shadow-[0_0_20px_rgba(6,182,212,0.4)] z-10 font-bold" : ""}
                 ${!past && !selected && !isTodayDate && !hasVisits ? "text-slate-400 hover:bg-slate-800/60 hover:border-slate-600 hover:text-white border border-transparent bg-slate-800/5" : ""}
                 ${!past && !selected && !isTodayDate && hasVisits ? `border ${visitBgClass}` : ""}

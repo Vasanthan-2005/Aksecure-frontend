@@ -192,19 +192,8 @@ const LocationPicker = ({ onLocationSelect, onAddressFetched, initialLocation, t
                 {error}
             </p>}
 
-            {position && (
-                <div className="flex items-center gap-4 p-3 bg-white/5 rounded-xl border border-white/5 animate-fade-in-up">
-                    <div className="p-2 rounded-lg bg-emerald-500/10 text-emerald-400">
-                        <MapPin className="w-4 h-4" />
-                    </div>
-                    <div>
-                        <p className="text-[10px] text-slate-500 uppercase font-semibold">Coordinates Selected</p>
-                        <p className="text-xs text-slate-300 font-mono">
-                            {position.lat.toFixed(6)}, {position.lng.toFixed(6)}
-                        </p>
-                    </div>
-                </div>
-            )}
+            {/* Coordinates display removed as requested - not needed for UI */}
+            {/* {position && ( */}
         </div>
     );
 };

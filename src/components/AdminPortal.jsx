@@ -19,6 +19,8 @@ import {
   LayoutDashboard,
   Settings as SettingsIcon,
   Navigation,
+  Zap,
+  Info,
 } from "lucide-react";
 import LoadingState from "./common/LoadingState";
 import SuccessState from "./common/SuccessState";
@@ -868,7 +870,7 @@ const AdminPortal = () => {
           viewMode !== "all-service-requests" &&
           activeTab !== "users" &&
           activeTab !== "settings" && (
-            <div className="px-6 pt-4 pb-0 relative z-10 flex justify-center">
+            <div className="px-6 pt-4 relative z-10 flex justify-center">
               <div className="inline-flex bg-slate-900/60 p-1.5 rounded-2xl border border-white/10 backdrop-blur-2xl shadow-2xl items-center">
                 <button
                   onClick={() => {
@@ -1072,9 +1074,9 @@ const AdminPortal = () => {
             )}
 
             {viewMode === "dashboard" && (
-              <div className="flex-1 overflow-hidden p-5 pt-1 space-y-3 relative z-10">
+              <div className="flex-1 overflow-hidden p-5 pt-0 space-y-3 relative z-10">
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                  <div className="glass-card p-4 h-52 rounded-3xl border border-white/5 shadow-2xl bg-slate-900/40 backdrop-blur-2xl flex flex-col group hover:border-blue-500/20">
+                  <div className="glass-card p-4 h-45 rounded-3xl border border-white/5 shadow-2xl bg-slate-900/40 backdrop-blur-2xl flex flex-col group hover:border-blue-500/20">
                     <h2 className="flex items-center gap-3 mb-3">
                       <div className="p-2 rounded-xl bg-blue-500/10 border border-blue-500/20 group-hover:bg-blue-500/20">
                         <TicketIcon className="w-4.5 h-4.5 text-blue-400" />
@@ -1083,7 +1085,7 @@ const AdminPortal = () => {
                     </h2>
                     <TicketStats stats={stats} />
                     <div className="mt-auto">
-                      <div className="flex items-baseline gap-3 px-1">
+                      <div className="flex items-baseline gap-3 px-1 mt-3 ">
                         <span className="text-sm font-bold tracking-tight text-white/50">
                           Total Tickets
                         </span>
@@ -1094,7 +1096,7 @@ const AdminPortal = () => {
                     </div>
                   </div>
 
-                  <div className="glass-card p-4 h-52 rounded-3xl border border-white/5 shadow-2xl bg-slate-900/40 backdrop-blur-2xl flex flex-col group hover:border-emerald-500/20">
+                  <div className="glass-card p-4 h-45 rounded-3xl border border-white/5 shadow-2xl bg-slate-900/40 backdrop-blur-2xl flex flex-col group hover:border-emerald-500/20">
                     <h2 className="flex items-center gap-3 mb-3">
                       <div className="p-2 rounded-xl bg-emerald-500/10 border border-emerald-500/20 group-hover:bg-emerald-500/20">
                         <FileText className="w-4.5 h-4.5 text-emerald-400" />
@@ -1103,7 +1105,7 @@ const AdminPortal = () => {
                     </h2>
                     <ServiceRequestStats stats={serviceRequestStats} />
                     <div className="mt-auto">
-                      <div className="flex items-baseline gap-3 px-1">
+                      <div className="flex items-baseline gap-3 px-1 mt-3">
                         <span className="text-sm font-bold tracking-tight text-white/50">
                           Total Services
                         </span>
@@ -1119,7 +1121,7 @@ const AdminPortal = () => {
                   <div className="lg:col-span-1">
                     <div className="glass-card p-5 rounded-3xl h-[400px] flex flex-col border border-white/5 shadow-2xl bg-slate-900/40 backdrop-blur-2xl group hover:border-blue-500/10">
                       <h2 className="text-base font-bold text-white tracking-tight mb-4 flex-shrink-0 flex items-center gap-2">
-                        <div className="w-1.5 h-1.5 rounded-full bg-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.5)]"></div>
+                        <Zap className="w-5 h-5 text-blue-400" />
                         Quick Actions
                       </h2>
                       <div className="flex flex-col gap-2 flex-1 min-h-0">
@@ -1204,7 +1206,7 @@ const AdminPortal = () => {
                     <div className="glass-card p-5 rounded-3xl h-[400px] flex flex-col border border-white/5 shadow-2xl bg-slate-900/40 backdrop-blur-2xl group hover:border-cyan-500/10">
                       <div className="flex items-start justify-between mb-4">
                         <h2 className="text-base font-bold text-white tracking-tight flex items-center gap-2">
-                          <div className="w-1.5 h-1.5 rounded-full bg-cyan-500 shadow-[0_0_8px_rgba(6,182,212,0.5)]"></div>
+                          <Info className="w-5 h-5 text-cyan-400" />
                           Visit Details
                         </h2>
                         {selectedVisit && selectedVisit.visits && selectedVisit.visits.length > 0 && (
@@ -1324,7 +1326,7 @@ const AdminPortal = () => {
                               ))}
                             </div>
                           ) : (
-                            <div className="text-center py-8">
+                            <div className="text-center py-30">
                               <Calendar className="w-10 h-10 text-slate-700 mx-auto mb-3" />
                               <p className="text-sm text-slate-500">
                                 No visits scheduled
