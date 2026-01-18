@@ -2,7 +2,7 @@ import React from 'react';
 import { IndianRupee, Tags } from 'lucide-react';
 
 const PriceTableRenderer = ({ items, totalPrice }) => {
-    if (!items || items.length === 0) return null;
+    if (!items || !Array.isArray(items) || items.length === 0) return null;
 
     return (
         <div className="mt-4 space-y-3">

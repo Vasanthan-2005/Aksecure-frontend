@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react';
-import { X, Send, Clock, MessageSquare, Loader2, Image as ImageIcon, XCircle, Star, IndianRupee } from 'lucide-react';
+import { X, Send, Clock, MessageSquare, Loader2, Image as ImageIcon, XCircle, Star, IndianRupee, Plus } from 'lucide-react';
 import DatePicker from './DatePicker';
 import PriceTableEditor from './PriceTableEditor';
 
@@ -17,6 +17,7 @@ const ReplyModal = ({ isOpen, onClose, ticket, onReply, updating }) => {
   const [selectedImages, setSelectedImages] = useState([]);
   const [imagePreviews, setImagePreviews] = useState([]);
   const [priceItems, setPriceItems] = useState([]);
+  const [showQuoteModal, setShowQuoteModal] = useState(false);
   const fileInputRef = useRef(null);
 
   // Get today's date in YYYY-MM-DD format for min attribute
@@ -253,6 +254,48 @@ const ReplyModal = ({ isOpen, onClose, ticket, onReply, updating }) => {
                   ))}
                 </div>
               )}
+
+              {/* Quote Bill Action */}
+              <div className="mt-4 pt-4 border-t border-white/5">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <IndianRupee className="w-4 h-4 text-emerald-400" />
+                    <span className="text-sm font-bold text-slate-300">Quotation / Bill</span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setShowQuoteModal(true)}
+                    className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/20 rounded-xl text-sm font-bold transition-all"
+                  >
+                    <Plus className="w-4 h-4" />
+                    {priceItems.length > 0 ? 'Edit Quote' : 'Quote Bill'}
+                  </button>
+                </div>
+
+                {priceItems.length > 0 && (
+                  <div className="mt-3 p-3 bg-slate-950/30 rounded-xl border border-white/5">
+                    <div className="flex items-center justify-between text-xs text-slate-400 mb-2">
+                      <span>{priceItems.length} items added</span>
+                      <span className="font-bold text-emerald-400">
+                        Total: ₹{priceItems.reduce((sum, item) => sum + (parseFloat(item.price) || 0), 0).toLocaleString('en-IN')}
+                      </span>
+                    </div>
+                    <div className="space-y-1">
+                      {priceItems.slice(0, 2).map((item, i) => (
+                        <div key={i} className="flex items-center justify-between text-[11px] text-slate-500">
+                          <span className="truncate max-w-[150px]">{item.description || 'No description'}</span>
+                          <span>₹{(parseFloat(item.price) || 0).toLocaleString('en-IN')}</span>
+                        </div>
+                      ))}
+                      {priceItems.length > 2 && (
+                        <p className="text-[10px] text-slate-600 text-center mt-1">
+                          + {priceItems.length - 2} more items
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
 
             {/* Scheduling Date & Time Slot */}
@@ -324,10 +367,6 @@ const ReplyModal = ({ isOpen, onClose, ticket, onReply, updating }) => {
               )
             }
 
-            {/* Price Table Editor */}
-            <div className="pt-4 border-t border-white/5">
-              <PriceTableEditor items={priceItems} setItems={setPriceItems} />
-            </div>
 
           </form>
         </div>
@@ -362,6 +401,45 @@ const ReplyModal = ({ isOpen, onClose, ticket, onReply, updating }) => {
           </button>
         </div>
       </div>
+
+      {/* Quote Modal Overlay */}
+      {showQuoteModal && (
+        <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+          <div className="bg-slate-900 w-full max-w-2xl max-h-[90dvh] flex flex-col shadow-2xl border border-slate-700/50 ring-1 ring-white/10 rounded-2xl animate-in fade-in zoom-in duration-200">
+            <div className="flex-shrink-0 bg-slate-900 border-b border-white/5 px-6 py-4 flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center ring-1 ring-emerald-500/20">
+                  <IndianRupee className="w-5 h-5 text-emerald-400" />
+                </div>
+                <div>
+                  <h2 className="text-xl font-bold text-white tracking-tight">Quote Bill</h2>
+                  <p className="text-sm text-slate-400">Add items and prices for the estimate</p>
+                </div>
+              </div>
+              <button
+                onClick={() => setShowQuoteModal(false)}
+                className="p-2 hover:bg-white/5 rounded-lg text-slate-400 hover:text-white transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="flex-1 overflow-y-auto p-6 custom-scrollbar">
+              <PriceTableEditor items={priceItems} setItems={setPriceItems} />
+            </div>
+
+            <div className="flex-shrink-0 bg-slate-900 border-t border-white/5 p-6 md:flex md:justify-end gap-3">
+              <button
+                type="button"
+                onClick={() => setShowQuoteModal(false)}
+                className="w-full md:w-auto px-6 py-2.5 bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-bold shadow-lg shadow-blue-500/20 transition-all"
+              >
+                Done
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

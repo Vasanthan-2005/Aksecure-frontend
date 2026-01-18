@@ -88,41 +88,61 @@ const TicketForm = ({ category, onSuccess, onCancel }) => {
   };
 
   const handleFileChange = (e) => {
-    const files = Array.from(e.target.files || []);
-    if (files.length > MAX_IMAGES) {
-      setError(`You can upload up to ${MAX_IMAGES} images.`);
-      const limitedFiles = files.slice(0, MAX_IMAGES);
-      setImages(limitedFiles);
-      createPreviews(limitedFiles);
-      return;
+    const newFiles = Array.from(e.target.files || []);
+    const totalPotentialImages = images.length + newFiles.length;
+
+    if (totalPotentialImages > MAX_IMAGES) {
+      setError(`You can only have up to ${MAX_IMAGES} images in total.`);
+      const remainingSlots = MAX_IMAGES - images.length;
+      if (remainingSlots <= 0) return;
+
+      const limitedNewFiles = newFiles.slice(0, remainingSlots);
+      const updatedImages = [...images, ...limitedNewFiles];
+      setImages(updatedImages);
+      createPreviews(limitedNewFiles, true);
+    } else {
+      const updatedImages = [...images, ...newFiles];
+      setImages(updatedImages);
+      createPreviews(newFiles, true);
+      setError('');
     }
-    setImages(files);
-    createPreviews(files);
-    setError('');
+
+    // Reset input value to allow re-selection of same files if needed
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
   };
 
-  const createPreviews = (files) => {
-    if (files.length === 0) {
-      setImagePreviews([]);
+  const createPreviews = (newFiles, append = false) => {
+    if (newFiles.length === 0) {
+      if (!append) setImagePreviews([]);
       return;
     }
 
-    const previews = [];
+    const newPreviews = [];
     let loadedCount = 0;
 
-    files.forEach((file, index) => {
+    newFiles.forEach((file, index) => {
       const reader = new FileReader();
       reader.onloadend = () => {
-        previews[index] = { file, preview: reader.result };
+        newPreviews[index] = { file, preview: reader.result };
         loadedCount++;
-        if (loadedCount === files.length) {
-          setImagePreviews(previews);
+        if (loadedCount === newFiles.length) {
+          if (append) {
+            setImagePreviews(prev => [...prev, ...newPreviews.filter(Boolean)]);
+          } else {
+            setImagePreviews(newPreviews.filter(Boolean));
+          }
         }
       };
       reader.onerror = () => {
         loadedCount++;
-        if (loadedCount === files.length) {
-          setImagePreviews(previews);
+        if (loadedCount === newFiles.length) {
+          if (append) {
+            setImagePreviews(prev => [...prev, ...newPreviews.filter(Boolean)]);
+          } else {
+            setImagePreviews(newPreviews.filter(Boolean));
+          }
         }
       };
       reader.readAsDataURL(file);

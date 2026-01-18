@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
 import api from '../services/api';
 import { useAuth } from '../context/AuthContext';
-import { MessageSquare, Clock, Check, Calendar, Laptop } from 'lucide-react';
+import { MessageSquare, Clock, Check, Calendar, Laptop, IndianRupee } from 'lucide-react';
 import LoadingState from './common/LoadingState';
-import PriceTableRenderer from './common/PriceTableRenderer';
+import PriceTableModal from './common/PriceTableModal';
 
 const AdminReplies = ({ refreshKey = 0 }) => {
   const { user } = useAuth();
@@ -11,6 +11,7 @@ const AdminReplies = ({ refreshKey = 0 }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [markingAsSeen, setMarkingAsSeen] = useState({});
+  const [selectedQuote, setSelectedQuote] = useState(null);
 
   useEffect(() => {
     if (user) {
@@ -144,10 +145,10 @@ const AdminReplies = ({ refreshKey = 0 }) => {
         return (
           <div
             key={index}
-            className="group relative overflow-hidden rounded-2xl border border-white/5 bg-slate-900/40 p-6 hover:bg-slate-800/60 transition-all duration-300 hover:shadow-2xl hover:border-blue-500/30"
+            className="group relative overflow-hidden rounded-2xl border border-white/5 bg-slate-900/40 p-4 sm:p-6 hover:bg-slate-800/60 transition-all duration-300 hover:shadow-2xl hover:border-blue-500/30"
           >
-            <div className="absolute top-0 right-0 p-8 opacity-[0.03] pointer-events-none group-hover:opacity-[0.05] transition-opacity">
-              <MessageSquare className="w-24 h-24 text-white" />
+            <div className="absolute top-0 right-0 p-4 md:p-8 opacity-[0.03] pointer-events-none group-hover:opacity-[0.05] transition-opacity">
+              <MessageSquare className="w-16 h-16 md:w-24 md:h-24 text-white" />
             </div>
             <div className="flex items-start gap-4 relative z-10">
               <div className="flex-shrink-0">
@@ -158,11 +159,11 @@ const AdminReplies = ({ refreshKey = 0 }) => {
               <div className="flex-1 min-w-0">
                 <div className="flex items-start justify-between gap-3 mb-4">
                   <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-2">
-                      <span className="font-bold text-white group-hover:text-blue-400 transition-colors">
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-2 mb-2">
+                      <span className="font-bold text-white group-hover:text-blue-400 transition-colors truncate">
                         {reply.addedBy || 'Support Specialist'}
                       </span>
-                      <span className="px-2 py-0.5 bg-blue-500/10 text-blue-400 border border-blue-500/20 rounded-full text-[10px] font-bold uppercase tracking-wider">
+                      <span className="inline-block w-fit px-2 py-0.5 bg-blue-500/10 text-blue-400 border border-blue-500/20 rounded-full text-[10px] font-bold uppercase tracking-wider">
                         Official Team
                       </span>
                     </div>
@@ -187,9 +188,9 @@ const AdminReplies = ({ refreshKey = 0 }) => {
                       )}
                     </div>
                   </div>
-                  <div className="flex items-center gap-1.5 text-[10px] text-slate-500 font-medium whitespace-nowrap bg-slate-950/40 px-2 py-1 rounded-lg border border-white/5">
+                  <div className="flex items-center gap-1.5 text-[9px] sm:text-[10px] text-slate-500 font-medium whitespace-nowrap bg-slate-950/40 px-2 py-1 rounded-lg border border-white/5 h-fit">
                     <Clock className="w-3 h-3" />
-                    <span>{new Date(reply.addedAt).toLocaleString()}</span>
+                    <span>{new Date(reply.addedAt).toLocaleString([], { dateStyle: 'short', timeStyle: 'short' })}</span>
                   </div>
                 </div>
                 <div className="bg-slate-950/40 rounded-2xl p-5 border border-white/5 mb-4 group-hover:border-blue-500/10 transition-colors">
@@ -197,13 +198,28 @@ const AdminReplies = ({ refreshKey = 0 }) => {
                     {reply.note}
                   </p>
                   {reply.priceList && reply.priceList.length > 0 && (
-                    <PriceTableRenderer items={reply.priceList} totalPrice={reply.totalPrice} />
+                    <div className="mt-4 pt-4 border-t border-white/5">
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                        <div className="flex items-center gap-2">
+                          <IndianRupee className="w-4 h-4 text-emerald-400" />
+                          <span className="text-[10px] sm:text-xs font-bold text-slate-400 uppercase tracking-wider">Quotation Available</span>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => setSelectedQuote({ items: reply.priceList, total: reply.totalPrice })}
+                          className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-2.5 sm:py-2 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/20 rounded-xl text-xs font-bold transition-all"
+                        >
+                          <IndianRupee className="w-3.5 h-3.5" />
+                          View Estimated Bill
+                        </button>
+                      </div>
+                    </div>
                   )}
                 </div>
                 <button
                   onClick={() => handleMarkAsSeen(reply, index)}
                   disabled={isMarking}
-                  className="inline-flex items-center gap-2 px-5 py-2.5 bg-white/5 hover:bg-white/10 text-slate-300 hover:text-white rounded-xl border border-white/10 transition-all disabled:opacity-50 disabled:cursor-not-allowed text-xs font-bold uppercase tracking-wider"
+                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-3 sm:py-2.5 bg-white/5 hover:bg-white/10 text-slate-300 hover:text-white rounded-xl border border-white/10 transition-all disabled:opacity-50 disabled:cursor-not-allowed text-xs font-bold uppercase tracking-wider"
                 >
                   <Check className="w-4 h-4" />
                   {isMarking ? 'Acknowledging...' : 'Acknowledge Update'}
@@ -213,6 +229,12 @@ const AdminReplies = ({ refreshKey = 0 }) => {
           </div>
         );
       })}
+      <PriceTableModal
+        isOpen={!!selectedQuote}
+        onClose={() => setSelectedQuote(null)}
+        items={selectedQuote?.items}
+        totalPrice={selectedQuote?.total}
+      />
     </div>
   );
 };

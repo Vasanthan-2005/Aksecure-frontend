@@ -2,12 +2,13 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import api from '../services/api';
 import { useAuth } from '../context/AuthContext';
-import { X, Eye, Loader2, ChevronLeft, ChevronRight, Trash2, Calendar, Clock, MessageSquare, Tag } from 'lucide-react';
+import { X, Eye, Loader2, ChevronLeft, ChevronRight, Trash2, Calendar, Clock, MessageSquare, Tag, IndianRupee } from 'lucide-react';
 import { getStatusColor, getStatusBorderColor, getCategoryColor, getStatusIcon } from './admin/utils';
 import { useInView } from 'react-intersection-observer';
 import { toast } from 'react-toastify';
 import LoadingState from './common/LoadingState';
 import ImageViewer from './common/ImageViewer';
+import PriceTableModal from './common/PriceTableModal';
 
 // use imported getStatusColor instead
 
@@ -23,6 +24,7 @@ const ServiceRequestListUser = ({ onRefresh }) => {
   const [requestToDelete, setRequestToDelete] = useState(null);
   const [isDeleting, setIsDeleting] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [selectedQuote, setSelectedQuote] = useState(null);
   const observer = useRef();
   const lastRequestRef = useCallback(node => {
     if (loading) return;
@@ -360,6 +362,24 @@ const ServiceRequestListUser = ({ onRefresh }) => {
                                     })}
                                   </div>
                                 )}
+                                {item.priceList && item.priceList.length > 0 && (
+                                  <div className="mt-4 pt-4 border-t border-white/5">
+                                    <div className="flex items-center justify-between">
+                                      <div className="flex items-center gap-2">
+                                        <IndianRupee className="w-4 h-4 text-emerald-400" />
+                                        <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">Quotation Available</span>
+                                      </div>
+                                      <button
+                                        type="button"
+                                        onClick={() => setSelectedQuote({ items: item.priceList, total: item.totalPrice })}
+                                        className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/20 rounded-xl text-xs font-bold transition-all"
+                                      >
+                                        <IndianRupee className="w-3.5 h-3.5" />
+                                        View Estimated Bill
+                                      </button>
+                                    </div>
+                                  </div>
+                                )}
                               </div>
                             </div>
                           </div>
@@ -373,6 +393,14 @@ const ServiceRequestListUser = ({ onRefresh }) => {
           </div>
         );
       })}
+
+      {/* Quote Modal */}
+      <PriceTableModal
+        isOpen={!!selectedQuote}
+        onClose={() => setSelectedQuote(null)}
+        items={selectedQuote?.items}
+        totalPrice={selectedQuote?.total}
+      />
 
       {selectedImage && (
         <ImageViewer
