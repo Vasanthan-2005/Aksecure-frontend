@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
 import api from '../services/api';
 import { useAuth } from '../context/AuthContext';
-import { MessageSquare, Clock, Check, Calendar } from 'lucide-react';
+import { MessageSquare, Clock, Check, Calendar, Laptop } from 'lucide-react';
 import LoadingState from './common/LoadingState';
+import PriceTableRenderer from './common/PriceTableRenderer';
 
 const AdminReplies = ({ refreshKey = 0 }) => {
   const { user } = useAuth();
@@ -195,6 +196,9 @@ const AdminReplies = ({ refreshKey = 0 }) => {
                   <p className="text-slate-400 text-sm whitespace-pre-wrap leading-relaxed">
                     {reply.note}
                   </p>
+                  {reply.priceList && reply.priceList.length > 0 && (
+                    <PriceTableRenderer items={reply.priceList} totalPrice={reply.totalPrice} />
+                  )}
                 </div>
                 <button
                   onClick={() => handleMarkAsSeen(reply, index)}

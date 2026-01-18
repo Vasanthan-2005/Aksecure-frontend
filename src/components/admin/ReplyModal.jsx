@@ -1,6 +1,7 @@
 import { useState, useRef } from 'react';
-import { X, Send, Clock, MessageSquare, Loader2, Image as ImageIcon, XCircle, Star } from 'lucide-react';
+import { X, Send, Clock, MessageSquare, Loader2, Image as ImageIcon, XCircle, Star, IndianRupee } from 'lucide-react';
 import DatePicker from './DatePicker';
+import PriceTableEditor from './PriceTableEditor';
 
 const timeSlotOptions = [
   { value: '09:00', label: 'Morning (9 AM – 12 PM)' },
@@ -15,6 +16,7 @@ const ReplyModal = ({ isOpen, onClose, ticket, onReply, updating }) => {
   const [errors, setErrors] = useState({ message: '', schedule: '' });
   const [selectedImages, setSelectedImages] = useState([]);
   const [imagePreviews, setImagePreviews] = useState([]);
+  const [priceItems, setPriceItems] = useState([]);
   const fileInputRef = useRef(null);
 
   // Get today's date in YYYY-MM-DD format for min attribute
@@ -90,7 +92,8 @@ const ReplyModal = ({ isOpen, onClose, ticket, onReply, updating }) => {
 
     // Call the parent handler and wait for result
     try {
-      const success = await onReply(replyMessage.trim(), visitDateTimeIso, selectedImages);
+      const totalPrice = priceItems.reduce((sum, item) => sum + (parseFloat(item.price) || 0), 0);
+      const success = await onReply(replyMessage.trim(), visitDateTimeIso, selectedImages, priceItems, totalPrice);
 
       if (success !== false) {
         // Clean up preview URLs
@@ -101,6 +104,7 @@ const ReplyModal = ({ isOpen, onClose, ticket, onReply, updating }) => {
         setPreferredSlot('');
         setSelectedImages([]);
         setImagePreviews([]);
+        setPriceItems([]);
         setErrors({ message: '', schedule: '' });
         onClose();
       }
@@ -117,8 +121,10 @@ const ReplyModal = ({ isOpen, onClose, ticket, onReply, updating }) => {
       setReplyMessage('');
       setPreferredDate('');
       setPreferredSlot('');
+      setPreferredSlot('');
       setSelectedImages([]);
       setImagePreviews([]);
+      setPriceItems([]);
       setErrors({ message: '', schedule: '' });
       onClose();
     }
@@ -317,6 +323,11 @@ const ReplyModal = ({ isOpen, onClose, ticket, onReply, updating }) => {
                 <p className="mt-1 text-xs text-red-400 font-medium">{errors.schedule}</p>
               )
             }
+
+            {/* Price Table Editor */}
+            <div className="pt-4 border-t border-white/5">
+              <PriceTableEditor items={priceItems} setItems={setPriceItems} />
+            </div>
 
           </form>
         </div>

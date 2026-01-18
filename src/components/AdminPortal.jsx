@@ -554,7 +554,7 @@ const AdminPortal = () => {
     }
   };
 
-  const handleReply = async (replyMessage, visitDateTime, images = []) => {
+  const handleReply = async (replyMessage, visitDateTime, images = [], priceList = [], totalPrice = 0) => {
     if (!selectedTicket) return false;
 
     try {
@@ -574,6 +574,10 @@ const AdminPortal = () => {
       // Create FormData for comment with images
       const formData = new FormData();
       formData.append('note', replyMessage);
+      if (priceList && priceList.length > 0) {
+        formData.append('priceList', JSON.stringify(priceList));
+        formData.append('totalPrice', totalPrice);
+      }
       if (images && images.length > 0) {
         images.forEach((image) => {
           formData.append('images', image);
@@ -748,7 +752,7 @@ const AdminPortal = () => {
     }
   };
 
-  const handleServiceRequestReply = async (replyMessage, visitDateTime, images = []) => {
+  const handleServiceRequestReply = async (replyMessage, visitDateTime, images = [], priceList = [], totalPrice = 0) => {
     if (!selectedServiceRequest) return false;
 
     try {
@@ -770,6 +774,10 @@ const AdminPortal = () => {
       // Create FormData for comment with images
       const formData = new FormData();
       formData.append('note', replyMessage);
+      if (priceList && priceList.length > 0) {
+        formData.append('priceList', JSON.stringify(priceList));
+        formData.append('totalPrice', totalPrice);
+      }
       if (images && images.length > 0) {
         images.forEach((image) => {
           formData.append('images', image);

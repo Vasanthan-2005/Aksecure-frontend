@@ -1,5 +1,6 @@
-import { Clock, Image as ImageIcon, X, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Clock, Image as ImageIcon, X, ChevronLeft, ChevronRight, Tags } from 'lucide-react';
 import { useState, useEffect } from 'react';
+import PriceTableRenderer from '../common/PriceTableRenderer';
 
 const Timeline = ({ timeline, currentUserName }) => {
   const [selectedImageIndex, setSelectedImageIndex] = useState(null);
@@ -98,6 +99,13 @@ const Timeline = ({ timeline, currentUserName }) => {
                   >
                     {item.note}
                   </p>
+
+                  {/* Price Table */}
+                  {item.priceList && item.priceList.length > 0 && (
+                    <div className="mb-4">
+                      <PriceTableRenderer items={item.priceList} totalPrice={item.totalPrice} />
+                    </div>
+                  )}
 
                   {/* Images */}
                   {images.length > 0 && (
