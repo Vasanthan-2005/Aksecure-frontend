@@ -164,7 +164,7 @@ const UserProfile = () => {
       <UserTopNav />
 
       <main className="flex-1 overflow-y-auto relative z-10 page-transition scrollbar-hide">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pt-4 pb-8 relative z-10">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pt-4 pb-24 sm:pb-8 relative z-10">
           <div className="flex items-center justify-between mb-6 sm:mb-8">
             <div className="flex items-center gap-3 sm:gap-4">
               <button

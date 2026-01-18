@@ -265,6 +265,17 @@ const Register = () => {
                 </div>
               ))}
             </div>
+
+            {/* Swipe Indicator (Mobile Only) - Moved to middle section bottom */}
+            <div className="lg:hidden mt-12 pb-2">
+              <button
+                onClick={() => setShowMobileForm(true)}
+                className="w-full px-4 py-3 rounded-full text-[11px] font-extrabold uppercase tracking-wider bg-white/5 border border-white/20 text-slate-300 hover:text-white hover:bg-white/10 transition-all flex justify-center items-center gap-2 active:scale-95"
+              >
+                Swipe to Register
+                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+              </button>
+            </div>
           </div>
         </div>
 
@@ -289,16 +300,7 @@ const Register = () => {
             ))}
           </div>
 
-          {/* Swipe Indicator (Mobile Only) */}
-          <div className="lg:hidden mt-10">
-            <button
-              onClick={() => setShowMobileForm(true)}
-              className="w-full px-4 py-2 rounded-full text-[10px] font-extrabold uppercase tracking-wider bg-white/5 border border-white/20 text-slate-300 hover:text-white hover:bg-white/10 transition-all flex justify-center items-center gap-2"
-            >
-              Swipe to Register
-              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-            </button>
-          </div>
+          {/* Swipe Indicator (Mobile Only) - REMOVED from bottom */}
         </div>
       </div>
 

@@ -88,7 +88,7 @@ const UserDashboard = () => {
       <div className="h-screen bg-slate-950 flex flex-col overflow-hidden">
         <UserTopNav />
         <main className="flex-1 relative overflow-y-auto scrollbar-hide">
-          <div className="flex items-start sm:items-center justify-center p-4 sm:p-6 lg:p-8 pt-4 pb-8 sm:pt-6 min-h-full">
+          <div className="flex items-start sm:items-center justify-center p-4 sm:p-6 lg:p-8 pt-4 pb-24 sm:pb-8 sm:pt-6 min-h-full">
             <TicketForm
               category={selectedCategory}
               onSuccess={handleTicketCreated}
@@ -106,7 +106,7 @@ const UserDashboard = () => {
       <div className="h-screen bg-slate-950 flex flex-col overflow-hidden">
         <UserTopNav />
         <main className="flex-1 relative overflow-y-auto scrollbar-hide">
-          <div className="flex items-start sm:items-center justify-center p-4 sm:p-6 lg:p-8 pt-4 pb-8 sm:pt-6 min-h-full">
+          <div className="flex items-start sm:items-center justify-center p-4 sm:p-6 lg:p-8 pt-4 pb-24 sm:pb-8 sm:pt-6 min-h-full">
             <ServiceRequestForm
               category={selectedCategory}
               onSuccess={handleServiceRequestCreated}
@@ -130,7 +130,7 @@ const UserDashboard = () => {
       <UserTopNav />
 
       <main className="flex-1 overflow-y-auto relative z-10 page-transition scrollbar-hide">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4 pb-8 space-y-6 sm:space-y-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4 pb-24 sm:pb-8 space-y-6 sm:space-y-8">
           {/* Header Hero Section */}
           <header className="relative group p-0.5 rounded-[24px] overflow-hidden transition-all duration-500 hover:shadow-[0_0_50px_rgba(59,130,246,0.12)] accelerate-gpu">
             {/* Animated gradient border */}
