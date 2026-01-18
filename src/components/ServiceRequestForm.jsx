@@ -7,17 +7,10 @@ import SuccessState from './common/SuccessState';
 import { compressImage } from '../utils/imageUtils';
 
 const categories = ['CCTV', 'Fire Alarm', 'Security Alarm', 'Electrical', 'Plumbing', 'Air Conditioning'];
-const timeSlotOptions = [
-  { value: '09:00', label: 'Morning (9 AM – 12 PM)' },
-  { value: '12:00', label: 'Afternoon (12 PM – 3 PM)' },
-  { value: '15:00', label: 'Evening (3 PM – 6 PM)' },
-];
 const MAX_IMAGES = 5;
 
 const ServiceRequestForm = ({ category, onSuccess, onCancel }) => {
   const [formData, setFormData] = useState({
-    preferredDate: '',
-    preferredTimeSlot: '',
     address: '',
     outletName: '',
     location: { lat: 0, lng: 0 }
@@ -165,10 +158,7 @@ const ServiceRequestForm = ({ category, onSuccess, onCancel }) => {
       payload.append('location[lat]', formData.location.lat);
       payload.append('location[lng]', formData.location.lng);
 
-      if (formData.preferredDate && formData.preferredTimeSlot) {
-        const preferredDateTime = `${formData.preferredDate}T${formData.preferredTimeSlot}`;
-        payload.append('preferredVisitAt', new Date(preferredDateTime).toISOString());
-      }
+
 
       // Compress and append images
       for (const image of images) {
@@ -191,8 +181,6 @@ const ServiceRequestForm = ({ category, onSuccess, onCancel }) => {
       setFormData({
         category: category || '',
         description: '',
-        preferredDate: '',
-        preferredTimeSlot: '',
         address: '',
         outletName: '',
         location: { lat: 0, lng: 0 }
@@ -211,11 +199,7 @@ const ServiceRequestForm = ({ category, onSuccess, onCancel }) => {
     }
   };
 
-  const getMinDate = () => {
-    const now = new Date();
-    now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
-    return now.toISOString().slice(0, 10);
-  };
+
 
   return (
     <div className="w-full relative overflow-hidden page-transition">
@@ -285,9 +269,7 @@ const ServiceRequestForm = ({ category, onSuccess, onCancel }) => {
                         </option>
                       ))}
                     </select>
-                    <div className="absolute right-5 top-1/2 -translate-y-1/2 pointer-events-none text-slate-600">
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" /></svg>
-                    </div>
+
                   </div>
 
                   {/* Outlet Selection */}
@@ -375,47 +357,7 @@ const ServiceRequestForm = ({ category, onSuccess, onCancel }) => {
                   />
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div>
-                    <label className="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-3 ml-1 flex items-center gap-2">
-                      <Calendar className="w-3.5 h-3.5" />
-                      Visit Date <span className="text-500">(optional) </span>
-                    </label>
-                    <input
-                      type="date"
-                      name="preferredDate"
-                      value={formData.preferredDate}
-                      onChange={handleChange}
-                      min={getMinDate()}
-                      className="w-full px-5 py-4 bg-slate-900/50 border border-white/10 rounded-2xl text-white focus:outline-none focus:ring-2 focus:ring-violet-500/20 focus:border-violet-500/50 transition-all font-medium [color-scheme:dark]"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-3 ml-1 flex items-center gap-2">
-                      <Clock className="w-3.5 h-3.5" />
-                      Time Slot <span className="text-500">(OPTIONAL)</span>
-                    </label>
-                    <div className="relative group">
-                      <select
-                        name="preferredTimeSlot"
-                        value={formData.preferredTimeSlot}
-                        onChange={handleChange}
-                        className="w-full px-5 py-4 bg-slate-900/50 border border-white/10 rounded-2xl text-white focus:outline-none focus:ring-2 focus:ring-violet-500/20 focus:border-violet-500/50 transition-all appearance-none cursor-pointer font-medium"
 
-                      >
-                        <option value="" className="bg-slate-900">Select Slot</option>
-                        {timeSlotOptions.map((slot) => (
-                          <option key={slot.value} value={slot.value} className="bg-slate-900">
-                            {slot.label}
-                          </option>
-                        ))}
-                      </select>
-                      <div className="absolute right-5 top-1/2 -translate-y-1/2 pointer-events-none text-slate-500 group-hover:text-violet-400 transition-colors">
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" /></svg>
-                      </div>
-                    </div>
-                  </div>
-                </div>
 
                 <div>
                   <label className="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-3 ml-1 flex items-center gap-2">

@@ -47,8 +47,8 @@ const ServiceRequestListPanel = ({
   };
 
   return (
-    <div className="flex flex-col w-96 border-r border-white/5 bg-slate-900/50 backdrop-blur-sm relative z-20">
-      <div className="p-4 border-b border-white/5 bg-slate-900/50 backdrop-blur-md sticky top-0 z-10 w-full">
+    <div className={`flex flex-col w-full lg:w-96 border-r border-white/5 bg-slate-900/50 backdrop-blur-sm relative z-20 ${selectedServiceRequest ? 'hidden lg:flex' : 'flex'}`}>
+      <div className="p-3 lg:p-4 border-b border-white/5 bg-slate-900/50 backdrop-blur-md sticky top-0 z-10 w-full">
         {onBackToDashboard && (
           <div className="mb-4">
             <button
@@ -60,8 +60,8 @@ const ServiceRequestListPanel = ({
             </button>
           </div>
         )}
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-2xl font-bold text-white tracking-tight">Service Requests</h2>
+        <div className="flex items-center justify-between mb-2 lg:mb-4">
+          <h2 className="text-xl xl:text-2xl font-bold text-white tracking-tight">Service Requests</h2>
           <div className="flex items-center gap-2">
             {onRefresh && (
               <button
@@ -161,7 +161,7 @@ const ServiceRequestListPanel = ({
             <button
               key={request._id}
               onClick={() => onServiceRequestClick(request)}
-              className={`w-full text-left p-4 rounded-xl border group relative overflow-hidden ${getStatusBorderColor(request.status)} ${selectedServiceRequest?._id === request._id
+              className={`w-full text-left p-3 xl:p-4 rounded-xl border group relative overflow-hidden ${getStatusBorderColor(request.status)} ${selectedServiceRequest?._id === request._id
                 ? 'ring-2 ring-blue-500 ring-offset-2 ring-offset-slate-900 border-blue-500 shadow-[0_0_20px_rgba(59,130,246,0.2)]'
                 : 'hover:border-white/20 hover:bg-white/5'
                 }`}

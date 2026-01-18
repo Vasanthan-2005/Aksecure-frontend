@@ -9,7 +9,7 @@ const SuccessState = ({
     useEffect(() => {
         const timer = setTimeout(() => {
             if (onComplete) onComplete();
-        }, 2500);
+        }, 800);
         return () => clearTimeout(timer);
     }, [onComplete]);
 
@@ -36,7 +36,7 @@ const SuccessState = ({
 
                         {/* Progress bar indication */}
                         <div className="w-full h-1 bg-slate-800 rounded-full mt-10 overflow-hidden">
-                            <div className="h-full bg-emerald-500 animate-[progress_2.5s_linear] w-full origin-left" />
+                            <div className="h-full bg-emerald-500 animate-[progress_0.8s_linear] w-full origin-left" />
                         </div>
                         <p className="text-[10px] font-bold text-slate-500 uppercase tracking-[0.2em] mt-3">
                             Redirecting to Dashboard

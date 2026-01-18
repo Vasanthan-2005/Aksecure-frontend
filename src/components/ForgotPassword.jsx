@@ -138,7 +138,7 @@ const ForgotPassword = () => {
 
           {/* Glass Card */}
           <div className="w-full bg-slate-900/30 backdrop-blur-3xl border border-white/10 rounded-[32px] sm:rounded-[40px] p-6 sm:p-12 shadow-2xl relative">
-            
+
             {/* Header */}
             <div className="mb-10">
               <div className={`w-14 h-14 rounded-2xl flex items-center justify-center mb-6 shadow-lg transition-transform duration-300 ${isSuccess ? 'bg-emerald-500/10 text-emerald-400' : 'bg-blue-500/10 text-blue-400'}`}>
@@ -148,8 +148,8 @@ const ForgotPassword = () => {
                 {isSuccess ? "Check Your Email" : "Forgot Password?"}
               </h2>
               <p className="text-slate-500 text-sm font-medium">
-                {isSuccess 
-                  ? "A recovery link has been sent to your registered email address." 
+                {isSuccess
+                  ? "A recovery link has been sent to your registered email address."
                   : "Enter your registered email and we'll send you a link to reset your password."}
               </p>
             </div>
@@ -198,7 +198,7 @@ const ForgotPassword = () => {
                     We've sent an email to <span className="text-white font-bold">{email}</span> with instructions to reset your password. Please check your inbox and spam folder.
                   </p>
                 </div>
-                
+
                 <button
                   onClick={() => {
                     setIsSuccess(false);

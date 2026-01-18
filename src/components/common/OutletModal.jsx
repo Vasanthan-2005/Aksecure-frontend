@@ -222,12 +222,12 @@ const OutletModal = ({ isOpen, onClose, onSave, existingOutlets = [], initialEdi
     if (!isOpen) return null;
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-6 bg-black/40 backdrop-blur-sm">
-            <div className="bg-slate-900 rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto border border-white/10">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-black/40 backdrop-blur-sm transition-all">
+            <div className="bg-slate-900 rounded-2xl shadow-2xl w-full max-w-3xl max-h-[90vh] overflow-y-auto border border-white/10 flex flex-col">
 
                 {/* Header - Fixed */}
-                <div className="flex items-center justify-between p-6 border-b border-white/10">
-                    <h2 className="text-xl sm:text-2xl font-bold text-white">Add Outlets</h2>
+                <div className="flex items-center justify-between p-4 sm:p-6 border-b border-white/10 shrink-0">
+                    <h2 className="text-lg sm:text-2xl font-bold text-white">Add Outlets</h2>
                     <button
                         onClick={onClose}
                         className="p-2 rounded-lg hover:bg-slate-800 transition-colors text-slate-400 hover:text-white"
@@ -237,13 +237,13 @@ const OutletModal = ({ isOpen, onClose, onSave, existingOutlets = [], initialEdi
                 </div>
 
                 {/* Content - Scrollable */}
-                <div className="p-6">
+                <div className="p-4 sm:p-6 overflow-y-auto custom-scrollbar">
 
                     {/* Saved Outlets List */}
                     {outlets.length > 0 && (
                         <div className="mb-6">
                             <div className="flex items-center justify-between mb-3">
-                                <h3 className="text-sm font-semibold text-slate-400 uppercase tracking-wider">
+                                <h3 className="text-xs sm:text-sm font-semibold text-slate-400 uppercase tracking-wider">
                                     Added Outlets ({outlets.length})
                                 </h3>
                             </div>
@@ -251,38 +251,38 @@ const OutletModal = ({ isOpen, onClose, onSave, existingOutlets = [], initialEdi
                                 {outlets.map((outlet, index) => (
                                     <div
                                         key={outlet.id}
-                                        className={`p-4 bg-slate-800/50 rounded-xl border flex items-start justify-between group transition-all duration-300 ${lastAddedId === outlet.id
+                                        className={`p-3 sm:p-4 bg-slate-800/50 rounded-xl border flex items-start justify-between group transition-all duration-300 ${lastAddedId === outlet.id
                                             ? 'border-emerald-500/50 bg-emerald-500/5 shadow-lg shadow-emerald-500/10'
                                             : 'border-white/5 hover:border-blue-500/30'
                                             }`}
                                     >
-                                        <div className="flex-1">
+                                        <div className="flex-1 min-w-0">
                                             <div className="flex items-center gap-2 mb-1">
                                                 <div className="w-5 h-5 rounded-full bg-emerald-500/20 flex items-center justify-center flex-shrink-0">
                                                     <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
                                                 </div>
-                                                <p className="font-semibold text-white">{outlet.outletName}</p>
+                                                <p className="font-semibold text-white truncate">{outlet.outletName}</p>
                                                 {lastAddedId === outlet.id && (
-                                                    <span className="text-[10px] font-bold text-emerald-400 uppercase tracking-widest animate-pulse ml-1">Just Added</span>
+                                                    <span className="text-[10px] font-bold text-emerald-400 uppercase tracking-widest animate-pulse ml-1 shrink-0">Just Added</span>
                                                 )}
                                             </div>
                                             <p className="text-sm text-slate-400 flex items-start gap-2">
                                                 <MapPin className="w-4 h-4 mt-0.5 flex-shrink-0" />
-                                                <span className="line-clamp-2">{outlet.address}</span>
+                                                <span className="line-clamp-2 text-xs sm:text-sm">{outlet.address}</span>
                                             </p>
                                         </div>
-                                        <div className="flex items-center gap-2 ml-4">
+                                        <div className="flex items-center gap-1 sm:gap-2 ml-2 sm:ml-4 shrink-0">
                                             <button
                                                 onClick={() => handleEditOutlet(index)}
                                                 className="p-2 rounded-lg bg-blue-500/10 text-blue-400 hover:bg-blue-500/20 transition-colors"
                                             >
-                                                <Edit2 className="w-4 h-4" />
+                                                <Edit2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                                             </button>
                                             <button
                                                 onClick={() => handleRemoveOutlet(index)}
                                                 className="p-2 rounded-lg bg-red-500/10 text-red-400 hover:bg-red-500/20 transition-colors"
                                             >
-                                                <Trash2 className="w-4 h-4" />
+                                                <Trash2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                                             </button>
                                         </div>
                                     </div>
@@ -292,15 +292,15 @@ const OutletModal = ({ isOpen, onClose, onSave, existingOutlets = [], initialEdi
                     )}
 
                     {/* Add/Edit Outlet Form */}
-                    <div className="bg-slate-800/30 rounded-xl p-6 border border-white/5">
-                        <h3 className="text-lg font-semibold text-white mb-4">
+                    <div className="bg-slate-800/30 rounded-xl p-4 sm:p-6 border border-white/5">
+                        <h3 className="text-base sm:text-lg font-semibold text-white mb-4">
                             {editingIndex !== null ? "Edit Outlet" : "Add New Outlet"}
                         </h3>
 
                         <div className="space-y-4">
                             {/* Outlet Name */}
                             <div className="group">
-                                <label className="block text-xs font-medium text-slate-400 mb-1.5">Outlet Name</label>
+                                <label className="block text-xs font-medium text-slate-400 mb-1.5 focus-within:text-blue-400 transition-colors">Outlet Name</label>
                                 <input
                                     type="text"
                                     value={currentOutlet.outletName}
@@ -316,7 +316,7 @@ const OutletModal = ({ isOpen, onClose, onSave, existingOutlets = [], initialEdi
 
                             {/* Address Search */}
                             <div className="group relative">
-                                <label className="block text-xs font-medium text-slate-400 mb-1.5">Address</label>
+                                <label className="block text-xs font-medium text-slate-400 mb-1.5 focus-within:text-blue-400 transition-colors">Address</label>
                                 <div className="relative">
                                     <MapPin className="absolute left-3 top-3 w-4 h-4 text-slate-500 group-focus-within:text-violet-400 transition-colors" />
                                     <textarea
@@ -342,7 +342,7 @@ const OutletModal = ({ isOpen, onClose, onSave, existingOutlets = [], initialEdi
                                             <div className="px-3 py-2 bg-white/5 flex items-center justify-between">
                                                 <p className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Suggestions</p>
                                             </div>
-                                            <div className="max-h-60 overflow-y-auto custom-scrollbar">
+                                            <div className="max-h-52 overflow-y-auto custom-scrollbar">
                                                 {searchResults.map((result, index) => (
                                                     <button
                                                         key={index}
@@ -390,16 +390,16 @@ const OutletModal = ({ isOpen, onClose, onSave, existingOutlets = [], initialEdi
                                 type="button"
                                 onClick={handleAddOutlet}
                                 className="w-full py-3 rounded-xl font-semibold text-white shadow-lg transition-all transform hover:scale-[1.01] active:scale-[0.99]
-                          bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-500 hover:to-cyan-500 flex items-center justify-center gap-2"
+                          bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-500 hover:to-cyan-500 flex items-center justify-center gap-2 text-sm sm:text-base"
                             >
                                 {editingIndex !== null ? (
                                     <>
-                                        <CheckCircle2 className="w-4 h-4" />
+                                        <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5" />
                                         Save Outlet Change
                                     </>
                                 ) : (
                                     <>
-                                        <Plus className="w-4 h-4" />
+                                        <Plus className="w-4 h-4 sm:w-5 sm:h-5" />
                                         Save Outlet
                                     </>
                                 )}
@@ -409,7 +409,7 @@ const OutletModal = ({ isOpen, onClose, onSave, existingOutlets = [], initialEdi
                                 <button
                                     type="button"
                                     onClick={resetCurrentOutlet}
-                                    className="w-full py-2.5 rounded-xl font-medium text-slate-400 hover:text-white transition-colors flex items-center justify-center gap-2"
+                                    className="w-full py-2.5 rounded-xl font-medium text-slate-400 hover:text-white transition-colors flex items-center justify-center gap-2 text-sm"
                                 >
                                     <XCircle className="w-4 h-4" />
                                     Cancel Edit
@@ -429,16 +429,16 @@ const OutletModal = ({ isOpen, onClose, onSave, existingOutlets = [], initialEdi
                 </div>
 
                 {/* Footer - Fixed */}
-                <div className="flex items-center justify-end gap-3 p-6 border-t border-white/10 bg-slate-900/50">
+                <div className="flex items-center justify-end gap-3 p-4 sm:p-6 border-t border-white/10 bg-slate-900/50 shrink-0">
                     <button
                         onClick={onClose}
-                        className="px-6 py-2.5 rounded-xl font-medium text-slate-400 hover:text-white hover:bg-slate-800 transition-colors text-sm"
+                        className="px-4 sm:px-6 py-2.5 rounded-xl font-medium text-slate-400 hover:text-white hover:bg-slate-800 transition-colors text-xs sm:text-sm"
                     >
                         Cancel
                     </button>
                     <button
                         onClick={handleSave}
-                        className="px-6 py-2.5 rounded-xl font-semibold text-white bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-500 hover:to-cyan-500 transition-all text-sm"
+                        className="px-4 sm:px-6 py-2.5 rounded-xl font-semibold text-white bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-500 hover:to-cyan-500 transition-all text-xs sm:text-sm shadow-lg shadow-blue-500/20"
                     >
                         Save Outlets
                     </button>

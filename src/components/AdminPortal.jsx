@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import api from "../services/api";
@@ -26,6 +26,7 @@ import LoadingState from "./common/LoadingState";
 import SuccessState from "./common/SuccessState";
 
 import AdminNavigation from "./admin/AdminNavigation";
+import AdminBottomNav from "./admin/AdminBottomNav";
 import SettingsPanel from "./admin/SettingsPanel";
 import TicketListPanel from "./admin/TicketListPanel";
 import TicketDetailsPanel from "./admin/TicketDetailsPanel";
@@ -36,6 +37,7 @@ import UserDetailsPanel from "./admin/UserDetailsPanel";
 import TicketStats from "./admin/TicketStats";
 import ServiceRequestStats from "./admin/ServiceRequestStats";
 import VisitCalendar from "./admin/VisitCalendar";
+import ReplyModal from "./admin/ReplyModal";
 import {
   getTicketStats,
   getServiceRequestStats,
@@ -109,6 +111,7 @@ const AdminPortal = () => {
     useState(false);
   const [serviceRequestNewComment, setServiceRequestNewComment] = useState("");
   const [selectedVisit, setSelectedVisit] = useState(null);
+  const dashboardCalendarRef = useRef(null);
 
   useEffect(() => {
     if (user && user.role !== "admin") {
@@ -131,12 +134,15 @@ const AdminPortal = () => {
       fetchUsers();
       setSelectedTicket(null);
       setSelectedServiceRequest(null);
+      setSelectedUser(null);
     } else if (activeTab === "service-requests") {
       fetchServiceRequests();
       setSelectedTicket(null);
+      setSelectedServiceRequest(null);
     } else if (activeTab === "tickets") {
       fetchTickets();
       setSelectedServiceRequest(null);
+      setSelectedTicket(null);
     } else if (activeTab === "dashboard") {
       fetchTickets();
       fetchServiceRequests();
@@ -149,7 +155,7 @@ const AdminPortal = () => {
 
   useEffect(() => {
     if (selectedTicket) {
-      setUpdateStatus(selectedTicket.status);
+      setUpdateStatus('Closed');
       setVisitDateTime(
         selectedTicket.assignedVisitAt
           ? (() => {
@@ -171,7 +177,7 @@ const AdminPortal = () => {
 
   useEffect(() => {
     if (selectedServiceRequest) {
-      setServiceRequestUpdateStatus(selectedServiceRequest.status);
+      setServiceRequestUpdateStatus('Completed');
       setServiceRequestVisitDateTime(
         selectedServiceRequest.assignedVisitAt
           ? (() => {
@@ -354,20 +360,18 @@ const AdminPortal = () => {
   };
 
   const handleTicketClick = async (ticket) => {
-    if (viewMode === "dashboard" || viewMode === "new-tickets") {
-      setSelectedTicket(ticket);
-      setViewMode("all");
-      setActiveTab("tickets");
-      if (ticket.status === "New" || ticket.status === "Open") {
-        try {
-          await api.put(`/tickets/${ticket._id}`, { status: "In Progress" });
-          await fetchTickets();
-          await fetchTicketDetails(ticket._id);
-        } catch (err) {
-          console.error("Failed to update ticket status:", err);
-          await fetchTicketDetails(ticket._id);
-        }
-      } else {
+    setSelectedTicket(ticket);
+    if (viewMode !== "all") setViewMode("all");
+    if (activeTab !== "tickets") setActiveTab("tickets");
+
+    if (ticket.status === "New" || ticket.status === "Open") {
+      try {
+        await api.put(`/tickets/${ticket._id}`, { status: "In Progress" });
+        // Only fetch the specific ticket details to update the state efficienty
+        // This avoids race conditions with full list fetches and ensures stats update
+        await fetchTicketDetails(ticket._id);
+      } catch (err) {
+        console.error("Failed to update ticket status:", err);
         await fetchTicketDetails(ticket._id);
       }
     } else {
@@ -388,22 +392,19 @@ const AdminPortal = () => {
   };
 
   const handleServiceRequestClick = async (request) => {
-    if (viewMode === "dashboard" || viewMode === "new-service-requests") {
-      setSelectedServiceRequest(request);
-      setViewMode("all-service-requests");
-      setActiveTab("service-requests");
-      if (request.status === "New") {
-        try {
-          await api.put(`/service-requests/${request._id}`, {
-            status: "In Progress",
-          });
-          await fetchServiceRequests();
-          await fetchServiceRequestDetails(request._id);
-        } catch (err) {
-          console.error("Failed to update service request status:", err);
-          await fetchServiceRequestDetails(request._id);
-        }
-      } else {
+    setSelectedServiceRequest(request);
+    if (viewMode !== "all-service-requests") setViewMode("all-service-requests");
+    if (activeTab !== "service-requests") setActiveTab("service-requests");
+
+    if (request.status === "New") {
+      try {
+        await api.put(`/service-requests/${request._id}`, {
+          status: "In Progress",
+        });
+        // Only fetch the specific request details to update the state efficienty
+        await fetchServiceRequestDetails(request._id);
+      } catch (err) {
+        console.error("Failed to update service request status:", err);
         await fetchServiceRequestDetails(request._id);
       }
     } else {
@@ -587,12 +588,9 @@ const AdminPortal = () => {
         })
       );
 
-      const results = await Promise.all([
-        Promise.all(promises),
-        new Promise((resolve) => setTimeout(resolve, 2000)),
-      ]);
+      const results = await Promise.all(promises);
 
-      const response = results[0][promises.length - 1];
+      const response = results[results.length - 1];
       setSelectedTicket(response.data);
       setTickets((prev) =>
         prev.map((t) => (t._id === selectedTicket._id ? response.data : t))
@@ -786,12 +784,9 @@ const AdminPortal = () => {
         })
       );
 
-      const results = await Promise.all([
-        Promise.all(promises),
-        new Promise((resolve) => setTimeout(resolve, 2000)),
-      ]);
+      const results = await Promise.all(promises);
 
-      const response = results[0][promises.length - 1];
+      const response = results[results.length - 1];
       setSelectedServiceRequest(response.data);
       setServiceRequests((prev) =>
         prev.map((r) =>
@@ -832,7 +827,7 @@ const AdminPortal = () => {
 
 
   return (
-    <div className="relative min-h-screen w-full flex flex-col bg-slate-950">
+    <div className="relative h-screen w-full flex flex-col bg-slate-950 overflow-hidden">
       {showSuccess && (
         <SuccessState
           title="Update Successful"
@@ -868,17 +863,40 @@ const AdminPortal = () => {
         onSettingsClick={() => {
           setActiveTab("settings");
         }}
+        onCalendarClick={() => {
+          setActiveTab("dashboard");
+          setViewMode("dashboard");
+          setTimeout(() => {
+            dashboardCalendarRef.current?.scrollIntoView({ behavior: 'smooth' });
+          }, 100);
+        }}
+      />
+
+      {/* Reply Modals - Rendered at root Level for correct stacking (above header) */}
+      <ReplyModal
+        isOpen={showReplyModal}
+        onClose={() => setShowReplyModal(false)}
+        ticket={selectedTicket}
+        onReply={handleReply}
+        updating={updating}
+      />
+      <ReplyModal
+        isOpen={showServiceRequestReplyModal}
+        onClose={() => setShowServiceRequestReplyModal(false)}
+        ticket={selectedServiceRequest}
+        onReply={handleServiceRequestReply}
+        updating={updating}
       />
 
       {/* Main Content Area - Scrollable */}
-      <div className="flex-1 flex flex-col relative z-10">
+      <div className="flex-1 flex flex-col relative z-10 overflow-y-auto pb-20 md:pb-0 md:mt-0 mt-20">
 
         {/* Tab Selector - Hidden when viewing all tickets, all service requests, or users */}
         {viewMode !== "all" &&
           viewMode !== "all-service-requests" &&
           activeTab !== "users" &&
           activeTab !== "settings" && (
-            <div className="px-6 pt-4 relative z-10 flex justify-center">
+            <div className="hidden md:flex px-6 pt-4 relative z-10 justify-center">
               <div className="inline-flex bg-slate-900/60 p-1.5 rounded-2xl border border-white/10 backdrop-blur-2xl shadow-2xl items-center">
                 <button
                   onClick={() => {
@@ -965,7 +983,7 @@ const AdminPortal = () => {
           )}
 
         {activeTab === "settings" && (
-          <div className="flex-1 flex items-center justify-center p-6">
+          <div className="flex-1 flex items-center justify-center p-3 md:p-6">
             <SettingsPanel onClose={() => {
               setActiveTab("dashboard");
               setViewMode("dashboard");
@@ -976,15 +994,15 @@ const AdminPortal = () => {
         {(activeTab === "tickets" || activeTab === "dashboard") && (
           <div className="flex-1">
             {viewMode === "new-tickets" && (
-              <div className="p-6">
-                <div className="glass-card rounded-2xl border border-slate-700/50 shadow-xl p-6 bg-slate-900/60 backdrop-blur-xl min-h-[500px]">
+              <div className="p-3 md:p-6">
+                <div className="glass-card rounded-2xl border border-slate-700/50 shadow-xl p-4 md:p-6 bg-slate-900/60 backdrop-blur-xl min-h-[500px]">
                   <div className="flex items-center justify-between mb-5">
                     <div className="flex items-center gap-3">
-                      <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-500 to-emerald-600 flex items-center justify-center shadow-lg shadow-emerald-500/20">
-                        <AlertCircle className="w-6 h-6 text-white" />
+                      <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-gradient-to-br from-emerald-500 to-emerald-600 flex items-center justify-center shadow-lg shadow-emerald-500/20">
+                        <AlertCircle className="w-5 h-5 md:w-6 md:h-6 text-white" />
                       </div>
                       <div>
-                        <h2 className="text-2xl font-bold text-white tracking-tight">
+                        <h2 className="text-lg md:text-2xl font-bold text-white tracking-tight">
                           New Tickets
                         </h2>
                         <p className="text-sm text-slate-400">
@@ -1080,42 +1098,42 @@ const AdminPortal = () => {
             )}
 
             {viewMode === "dashboard" && (
-              <div className="flex-1 overflow-y-auto p-6 space-y-3 relative z-10">
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                  <div className="glass-card p-4 h-45 rounded-3xl border border-white/5 shadow-2xl bg-slate-900/40 backdrop-blur-2xl flex flex-col group hover:border-blue-500/20">
-                    <h2 className="flex items-center gap-3 mb-3">
-                      <div className="p-2 rounded-xl bg-blue-500/10 border border-blue-500/20 group-hover:bg-blue-500/20">
-                        <TicketIcon className="w-4.5 h-4.5 text-blue-400" />
+              <div className="flex-1 overflow-y-auto p-4 md:p-6 space-y-3 relative z-10">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-6">
+                  <div className="glass-card p-3 md:p-4 h-auto md:h-45 rounded-2xl md:rounded-3xl border border-white/5 shadow-2xl bg-slate-900/40 backdrop-blur-2xl flex flex-col group hover:border-blue-500/20">
+                    <h2 className="flex items-center gap-2 md:gap-3 mb-2 md:mb-3">
+                      <div className="p-1.5 md:p-2 rounded-lg md:rounded-xl bg-blue-500/10 border border-blue-500/20 group-hover:bg-blue-500/20">
+                        <TicketIcon className="w-3.5 h-3.5 md:w-4.5 md:h-4.5 text-blue-400" />
                       </div>
-                      <span className="text-sm font-bold text-white tracking-tight">Ticket Statistics</span>
+                      <span className="text-xs md:text-sm font-bold text-white tracking-tight">Ticket Statistics</span>
                     </h2>
                     <TicketStats stats={stats} />
-                    <div className="mt-auto">
-                      <div className="flex items-baseline gap-3 px-1 mt-3 ">
-                        <span className="text-sm font-bold tracking-tight text-white/50">
+                    <div className="mt-3 md:mt-auto">
+                      <div className="flex items-baseline gap-2 md:gap-3 px-1 mt-2 md:mt-3 ">
+                        <span className="text-xs md:text-sm font-bold tracking-tight text-white/50">
                           Total Tickets
                         </span>
-                        <span className="text-sm font-bold tracking-tight text-white">
+                        <span className="text-xs md:text-sm font-bold tracking-tight text-white">
                           {stats.total}
                         </span>
                       </div>
                     </div>
                   </div>
 
-                  <div className="glass-card p-4 h-45 rounded-3xl border border-white/5 shadow-2xl bg-slate-900/40 backdrop-blur-2xl flex flex-col group hover:border-emerald-500/20">
-                    <h2 className="flex items-center gap-3 mb-3">
-                      <div className="p-2 rounded-xl bg-emerald-500/10 border border-emerald-500/20 group-hover:bg-emerald-500/20">
-                        <FileText className="w-4.5 h-4.5 text-emerald-400" />
+                  <div className="glass-card p-3 md:p-4 h-auto md:h-45 rounded-2xl md:rounded-3xl border border-white/5 shadow-2xl bg-slate-900/40 backdrop-blur-2xl flex flex-col group hover:border-emerald-500/20">
+                    <h2 className="flex items-center gap-2 md:gap-3 mb-2 md:mb-3">
+                      <div className="p-1.5 md:p-2 rounded-lg md:rounded-xl bg-emerald-500/10 border border-emerald-500/20 group-hover:bg-emerald-500/20">
+                        <FileText className="w-3.5 h-3.5 md:w-4.5 md:h-4.5 text-emerald-400" />
                       </div>
-                      <span className="text-sm font-bold text-white tracking-tight">Service Request Statistics</span>
+                      <span className="text-xs md:text-sm font-bold text-white tracking-tight">Service Request Statistics</span>
                     </h2>
                     <ServiceRequestStats stats={serviceRequestStats} />
-                    <div className="mt-auto">
-                      <div className="flex items-baseline gap-3 px-1 mt-3">
-                        <span className="text-sm font-bold tracking-tight text-white/50">
+                    <div className="mt-3 md:mt-auto">
+                      <div className="flex items-baseline gap-2 md:gap-3 px-1 mt-2 md:mt-3">
+                        <span className="text-xs md:text-sm font-bold tracking-tight text-white/50">
                           Total Services
                         </span>
-                        <span className="text-sm font-bold tracking-tight text-white">
+                        <span className="text-xs md:text-sm font-bold tracking-tight text-white">
                           {serviceRequestStats.total}
                         </span>
                       </div>
@@ -1123,10 +1141,10 @@ const AdminPortal = () => {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
                   <div className="lg:col-span-1">
-                    <div className="glass-card p-5 rounded-3xl h-[400px] flex flex-col border border-white/5 shadow-2xl bg-slate-900/40 backdrop-blur-2xl group hover:border-blue-500/10">
-                      <h2 className="text-base font-bold text-white tracking-tight mb-4 flex-shrink-0 flex items-center gap-2">
+                    <div className="glass-card p-3 md:p-5 rounded-2xl md:rounded-3xl h-[340px] md:h-[400px] flex flex-col border border-white/5 shadow-2xl bg-slate-900/40 backdrop-blur-2xl group hover:border-blue-500/10">
+                      <h2 className="text-base font-bold text-white tracking-tight mb-2 md:mb-4 flex-shrink-0 flex items-center gap-2">
                         <Zap className="w-5 h-5 text-blue-400" />
                         Quick Actions
                       </h2>
@@ -1136,14 +1154,14 @@ const AdminPortal = () => {
                             setViewMode("all");
                             setActiveTab("tickets");
                           }}
-                          className="flex-1 flex items-center gap-4 px-5 bg-slate-800/40 hover:bg-blue-600/10 text-white rounded-2xl border border-white/5 hover:border-blue-500/30 group shadow-lg hover:shadow-blue-500/5"
+                          className="flex-1 flex items-center gap-3 md:gap-4 px-3 md:px-5 bg-slate-800/40 hover:bg-blue-600/10 text-white rounded-xl md:rounded-2xl border border-white/5 hover:border-blue-500/30 group shadow-lg hover:shadow-blue-500/5"
                         >
-                          <div className="w-12 h-12 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center group-hover:bg-blue-500/20">
-                            <List className="w-6 h-6 text-blue-400" />
+                          <div className="w-9 h-9 md:w-12 md:h-12 rounded-lg md:rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center group-hover:bg-blue-500/20">
+                            <List className="w-4.5 h-4.5 md:w-6 md:h-6 text-blue-400" />
                           </div>
                           <div className="text-left">
-                            <p className="font-bold text-sm tracking-tight text-slate-300 group-hover:text-white">All Tickets</p>
-                            <p className="text-[11px] text-slate-500 group-hover:text-blue-400">Manage all issues</p>
+                            <p className="font-bold text-xs md:text-sm tracking-tight text-slate-300 group-hover:text-white">All Tickets</p>
+                            <p className="text-[10px] md:text-[11px] text-slate-500 group-hover:text-blue-400">Manage all issues</p>
                           </div>
                         </button>
 
@@ -1153,14 +1171,14 @@ const AdminPortal = () => {
                             setViewMode("all-service-requests");
                             fetchServiceRequests();
                           }}
-                          className="flex-1 flex items-center gap-4 px-5 bg-slate-800/40 hover:bg-emerald-600/10 text-white rounded-2xl border border-white/5 hover:border-emerald-500/30 group shadow-lg hover:shadow-emerald-500/5"
+                          className="flex-1 flex items-center gap-3 md:gap-4 px-3 md:px-5 bg-slate-800/40 hover:bg-emerald-600/10 text-white rounded-xl md:rounded-2xl border border-white/5 hover:border-emerald-500/30 group shadow-lg hover:shadow-emerald-500/5"
                         >
-                          <div className="w-12 h-12 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center group-hover:bg-emerald-500/20">
-                            <FileText className="w-6 h-6 text-emerald-400" />
+                          <div className="w-9 h-9 md:w-12 md:h-12 rounded-lg md:rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center group-hover:bg-emerald-500/20">
+                            <FileText className="w-4.5 h-4.5 md:w-6 md:h-6 text-emerald-400" />
                           </div>
                           <div className="text-left">
-                            <p className="font-bold text-sm tracking-tight text-slate-300 group-hover:text-white">Service Requests</p>
-                            <p className="text-[11px] text-slate-500 group-hover:text-emerald-400">Track status</p>
+                            <p className="font-bold text-xs md:text-sm tracking-tight text-slate-300 group-hover:text-white">Service Requests</p>
+                            <p className="text-[10px] md:text-[11px] text-slate-500 group-hover:text-emerald-400">Track status</p>
                           </div>
                         </button>
 
@@ -1169,14 +1187,14 @@ const AdminPortal = () => {
                             setActiveTab("users");
                             fetchUsers();
                           }}
-                          className="flex-1 flex items-center gap-4 px-5 bg-slate-800/40 hover:bg-violet-600/10 text-white rounded-2xl border border-white/5 hover:border-violet-500/30 group shadow-lg hover:shadow-violet-500/5"
+                          className="flex-1 flex items-center gap-3 md:gap-4 px-3 md:px-5 bg-slate-800/40 hover:bg-violet-600/10 text-white rounded-xl md:rounded-2xl border border-white/5 hover:border-violet-500/30 group shadow-lg hover:shadow-violet-500/5"
                         >
-                          <div className="w-12 h-12 rounded-xl bg-violet-500/10 border border-violet-500/20 flex items-center justify-center group-hover:bg-violet-500/20">
-                            <Users className="w-6 h-6 text-violet-400" />
+                          <div className="w-9 h-9 md:w-12 md:h-12 rounded-lg md:rounded-xl bg-violet-500/10 border border-violet-500/20 flex items-center justify-center group-hover:bg-violet-500/20">
+                            <Users className="w-4.5 h-4.5 md:w-6 md:h-6 text-violet-400" />
                           </div>
                           <div className="text-left">
-                            <p className="font-bold text-sm tracking-tight text-slate-300 group-hover:text-white">Manage Users</p>
-                            <p className="text-[11px] text-slate-500 group-hover:text-violet-400">Access control</p>
+                            <p className="font-bold text-xs md:text-sm tracking-tight text-slate-300 group-hover:text-white">Manage Users</p>
+                            <p className="text-[10px] md:text-[11px] text-slate-500 group-hover:text-violet-400">Access control</p>
                           </div>
                         </button>
 
@@ -1185,21 +1203,21 @@ const AdminPortal = () => {
                             fetchTickets();
                             fetchServiceRequests();
                           }}
-                          className="flex-1 flex items-center gap-4 px-5 bg-slate-800/40 hover:bg-amber-600/10 text-white rounded-2xl border border-white/5 hover:border-amber-500/30 group shadow-lg hover:shadow-amber-500/5"
+                          className="flex-1 flex items-center gap-3 md:gap-4 px-3 md:px-5 bg-slate-800/40 hover:bg-amber-600/10 text-white rounded-xl md:rounded-2xl border border-white/5 hover:border-amber-500/30 group shadow-lg hover:shadow-amber-500/5"
                         >
-                          <div className="w-12 h-12 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center group-hover:bg-amber-500/20">
-                            <AlertCircle className="w-6 h-6 text-amber-400" />
+                          <div className="w-9 h-9 md:w-12 md:h-12 rounded-lg md:rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center group-hover:bg-amber-500/20">
+                            <AlertCircle className="w-4.5 h-4.5 md:w-6 md:h-6 text-amber-400" />
                           </div>
                           <div className="text-left">
-                            <p className="font-bold text-sm tracking-tight text-slate-300 group-hover:text-white">Refresh Data</p>
-                            <p className="text-[11px] text-slate-500 group-hover:text-amber-400">Sync dashboard</p>
+                            <p className="font-bold text-xs md:text-sm tracking-tight text-slate-300 group-hover:text-white">Refresh Data</p>
+                            <p className="text-[10px] md:text-[11px] text-slate-500 group-hover:text-amber-400">Sync dashboard</p>
                           </div>
                         </button>
                       </div>
                     </div>
                   </div>
 
-                  <div className="h-[400px] flex flex-col">
+                  <div ref={dashboardCalendarRef} className="h-[400px] flex flex-col">
                     <VisitCalendar
                       tickets={tickets}
                       serviceRequests={serviceRequests}
@@ -1371,7 +1389,7 @@ const AdminPortal = () => {
             )}
 
             {viewMode === "all" && (
-              <div className="flex min-h-[calc(100vh-4rem)] gap-0 w-full relative z-10">
+              <div className="flex h-[calc(100vh-5rem)] gap-0 w-full relative z-10 overflow-hidden">
                 <TicketListPanel
                   tickets={tickets}
                   searchTerm={searchTerm}
@@ -1391,7 +1409,10 @@ const AdminPortal = () => {
                   }}
                   loading={loading}
                 />
-                <div className="flex-1 bg-slate-950">
+                <div className={`
+                    bg-slate-950 flex-1
+                    ${selectedTicket ? 'flex h-full w-full' : 'hidden lg:block'}
+                  `}>
                   {selectedTicket ? (
                     <TicketDetailsPanel
                       ticket={selectedTicket}
@@ -1410,6 +1431,7 @@ const AdminPortal = () => {
                       showReplyModal={showReplyModal}
                       setShowReplyModal={setShowReplyModal}
                       onReply={handleReply}
+                      onClose={() => setSelectedTicket(null)}
                     />
                   ) : (
                     <div className="glass-card rounded-2xl border border-slate-700/50 shadow-xl p-8 m-6 flex items-center justify-center h-full bg-slate-900/60 backdrop-blur-xl">
@@ -1428,9 +1450,168 @@ const AdminPortal = () => {
           </div>
         )}
 
+        {activeTab === "calendar" && (
+          <div className="flex-1 h-full overflow-hidden flex flex-col lg:flex-row p-2 lg:p-6 gap-3 lg:gap-6 relative z-10">
+            <div className="flex-1 flex flex-col h-full bg-slate-900/40 backdrop-blur-2xl rounded-2xl md:rounded-3xl border border-white/5 shadow-2xl overflow-hidden p-3 md:p-4">
+              <h2 className="flex-shrink-0 text-base md:text-xl font-bold text-white tracking-tight mb-2 md:mb-4 flex items-center gap-2">
+                <Calendar className="w-4 h-4 md:w-5 md:h-5 text-cyan-400" />
+                Visit Calendar
+              </h2>
+              <div className="flex-1 h-full">
+                <VisitCalendar
+                  tickets={tickets}
+                  serviceRequests={serviceRequests}
+                  onEventSelect={setSelectedVisit}
+                />
+              </div>
+            </div>
+
+            <div className={`
+              ${selectedVisit ? 'flex' : 'hidden md:flex'} 
+              fixed inset-0 md:static z-50 md:z-auto bg-slate-950/90 md:bg-transparent md:w-[400px] flex-col
+              md:h-full transition-all duration-300
+            `}>
+              <div className="flex-1 flex flex-col bg-slate-900/40 backdrop-blur-2xl rounded-2xl md:rounded-3xl border border-white/5 shadow-2xl overflow-hidden p-3 md:p-5 m-2 md:m-0 h-full">
+                <div className="flex items-start justify-between mb-3 md:mb-4 flex-shrink-0">
+                  <h2 className="text-sm md:text-base font-bold text-white tracking-tight flex items-center gap-2">
+                    <Info className="w-4 h-4 md:w-5 md:h-5 text-cyan-400" />
+                    Visit Details
+                  </h2>
+                  {(selectedVisit || window.innerWidth < 768) && (
+                    <button
+                      type="button"
+                      onClick={() => setSelectedVisit(null)}
+                      className="inline-flex items-center gap-1 text-xs text-slate-400 hover:text-white hover:bg-white/10 px-2.5 py-1 rounded-lg border border-transparent hover:border-white/10"
+                      aria-label="Close visit details"
+                    >
+                      <XCircle className="w-4 h-4" />
+                      <span className="md:hidden">Close</span>
+                      <span className="hidden md:inline">Clear</span>
+                    </button>
+                  )}
+                </div>
+
+                {selectedVisit ? (
+                  <div className="flex-1 flex flex-col min-h-0">
+                    {selectedVisit.visits && selectedVisit.visits.length > 0 ? (
+                      <div className="flex-1 overflow-y-auto space-y-3 pr-1 min-h-0 custom-scrollbar">
+                        {selectedVisit.visits.map((visit, index) => (
+                          <div
+                            key={index}
+                            onClick={() => {
+                              if (visit.type === 'ticket') {
+                                handleTicketClick({ _id: visit._id, ...visit });
+                              } else {
+                                handleServiceRequestClick({ _id: visit._id, ...visit });
+                              }
+                            }}
+                            className={`p-3 md:p-4 rounded-xl border cursor-pointer group ${visit.type === "ticket"
+                              ? "bg-blue-500/5 border-blue-500/20 hover:border-blue-500/40 hover:bg-blue-500/10"
+                              : "bg-fuchsia-500/5 border-fuchsia-500/20 hover:border-fuchsia-500/40 hover:bg-fuchsia-500/10"
+                              }`}
+                          >
+                            <div className="flex justify-between items-start mb-2">
+                              <h3 className="font-bold text-slate-200 group-hover:text-white tracking-tight">
+                                {visit.category}
+                              </h3>
+                              <span
+                                className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider ${visit.type === "ticket"
+                                  ? "bg-blue-500/20 text-blue-300"
+                                  : "bg-fuchsia-500/20 text-fuchsia-300"
+                                  }`}
+                              >
+                                {visit.type === "ticket" ? "Ticket" : "Request"}
+                              </span>
+                            </div>
+                            <p className="text-[10px] text-slate-500 mt-0.5 font-mono mb-3">
+                              {visit.type === "ticket" ? `ID: ${visit.ticketId}` : `ID: ${visit.requestId}`}
+                            </p>
+                            <div className="space-y-2">
+                              <div className="flex items-center gap-2 text-sm">
+                                <Building2 className="w-3.5 h-3.5 text-slate-400 flex-shrink-0" />
+                                <span className="font-bold text-slate-300 tracking-tight">
+                                  {visit.userId?.companyName || visit.companyName || "Company N/A"}
+                                </span>
+                              </div>
+                              <div className="flex items-center justify-between ml-0">
+                                <div className="flex items-center gap-2 text-xs text-slate-400">
+                                  <User className="w-3 h-3 text-slate-500 flex-shrink-0" />
+                                  <span className="font-bold">
+                                    {visit.userId?.name || visit.userName || "User N/A"}
+                                  </span>
+                                </div>
+                                {(visit.userId?.address || visit.address) && (
+                                  <a
+                                    href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(visit.userId?.address || visit.address)}`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    onClick={(e) => e.stopPropagation()}
+                                    className="p-1 px-2 rounded-lg bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 hover:text-blue-300 border border-blue-500/20 hover:border-blue-500/30 transition-colors group/nav flex items-center gap-1.5"
+                                    title="View Location"
+                                  >
+                                    <Navigation className="w-3.5 h-3.5" />
+                                    <span className="text-[10px] font-bold uppercase tracking-wider">Map</span>
+                                  </a>
+                                )}
+                              </div>
+                              <div className="flex items-start gap-2 text-xs text-slate-400 ml-0">
+                                <FileText className="w-3 h-3 text-slate-500 flex-shrink-0 mt-0.5" />
+                                <span className="line-clamp-1">{visit.title || "No Title"}</span>
+                              </div>
+                              <div className="flex items-center gap-2 text-xs font-bold text-slate-300 ml-0 pt-2 border-t border-white/5 mt-2 tracking-tight">
+                                <Clock className="w-3 h-3 text-emerald-400 flex-shrink-0" />
+                                {visit.visitTime && !isNaN(new Date(visit.visitTime).getTime()) ? (
+                                  <span>
+                                    {new Date(visit.visitTime).toLocaleTimeString([], {
+                                      hour: "2-digit",
+                                      minute: "2-digit",
+                                    })}
+                                    {getSlotLabel(visit.visitTime) ? ` • ${getSlotLabel(visit.visitTime)}` : ""}
+                                  </span>
+                                ) : (
+                                  <span>Time TBD</span>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="text-center py-30 flex-1 flex flex-col justify-center">
+                        <Calendar className="w-10 h-10 text-slate-700 mx-auto mb-3" />
+                        <p className="text-sm text-slate-500">No visits scheduled</p>
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <div className="text-center py-10 flex flex-col items-center justify-center h-full">
+                    <div className="w-16 h-16 rounded-full bg-slate-800/50 flex items-center justify-center mb-4 border border-white/5">
+                      <Calendar className="w-8 h-8 text-slate-600" />
+                    </div>
+                    <p className="text-lg font-semibold text-slate-400">Select a Date</p>
+                    <p className="text-xs text-slate-500 mt-1 max-w-[200px]">
+                      Click on a date in the calendar to view scheduled visits
+                    </p>
+                    <div className="mt-8 flex items-center gap-4 text-xs text-slate-500">
+                      <div className="flex items-center gap-1.5">
+                        <span className="w-2 h-2 rounded-full bg-blue-500 inline-block shadow-sm"></span>
+                        <span>Ticket</span>
+                      </div>
+                      <div className="flex items-center gap-1.5">
+                        <span className="w-2 h-2 rounded-full bg-fuchsia-500 inline-block shadow-sm"></span>
+                        <span>Request</span>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+
         {activeTab === "users" && (
           <div className="flex-1 h-full">
-            <div className="flex min-h-[calc(100vh-4rem)] gap-0 w-full relative z-10">
+            <div className="flex h-[calc(100vh-5rem)] gap-0 w-full relative z-10 overflow-hidden">
               <UserListPanel
                 users={users}
                 userSearchTerm={userSearchTerm}
@@ -1445,12 +1626,16 @@ const AdminPortal = () => {
                 onRefresh={fetchUsers}
                 onDelete={openDeleteUserModal}
               />
-              <div className="flex-1 flex flex-col bg-slate-950/50 backdrop-blur-2xl">
+              <div className={`
+                  bg-slate-950/50 backdrop-blur-2xl flex-1
+                  ${selectedUser ? 'flex h-full w-full' : 'hidden lg:flex lg:flex-col'}
+                `}>
                 <div className="flex-1 overflow-y-auto">
                   <UserDetailsPanel
                     user={selectedUser}
                     onDelete={openDeleteUserModal}
                     deleting={deletingUserId}
+                    onClose={() => setSelectedUser(null)}
                   />
                 </div>
               </div>
@@ -1461,15 +1646,15 @@ const AdminPortal = () => {
         {activeTab === "service-requests" && (
           <div className="flex-1">
             {viewMode === "new-service-requests" && (
-              <div className="p-6">
-                <div className="glass-card rounded-2xl border border-slate-700/50 shadow-xl p-6 bg-slate-900/60 backdrop-blur-xl min-h-[500px]">
+              <div className="p-3 md:p-6">
+                <div className="glass-card rounded-2xl border border-slate-700/50 shadow-xl p-4 md:p-6 bg-slate-900/60 backdrop-blur-xl min-h-[500px]">
                   <div className="flex items-center justify-between mb-5">
                     <div className="flex items-center gap-3">
-                      <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-amber-500 to-amber-600 flex items-center justify-center shadow-lg shadow-amber-500/20">
-                        <AlertCircle className="w-6 h-6 text-white" />
+                      <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-gradient-to-br from-amber-500 to-amber-600 flex items-center justify-center shadow-lg shadow-amber-500/20">
+                        <AlertCircle className="w-5 h-5 md:w-6 md:h-6 text-white" />
                       </div>
                       <div>
-                        <h2 className="text-2xl font-bold text-white tracking-tight">
+                        <h2 className="text-lg md:text-2xl font-bold text-white tracking-tight">
                           New Service Requests
                         </h2>
                         <p className="text-sm text-slate-400">
@@ -1661,7 +1846,7 @@ const AdminPortal = () => {
             )}
 
             {viewMode === "all-service-requests" && (
-              <div className="flex min-h-[calc(100vh-4rem)] gap-0 w-full relative z-10">
+              <div className="flex h-[calc(100vh-5rem)] gap-0 w-full relative z-10 overflow-hidden">
                 <ServiceRequestListPanel
                   serviceRequests={serviceRequests}
                   searchTerm={serviceRequestSearchTerm}
@@ -1681,7 +1866,10 @@ const AdminPortal = () => {
                   }}
                   loading={serviceRequestsLoading}
                 />
-                <div className="flex-1 bg-slate-950">
+                <div className={`
+                    bg-slate-950 flex-1
+                    ${selectedServiceRequest ? 'flex h-full w-full' : 'hidden lg:block'}
+                  `}>
                   {selectedServiceRequest ? (
                     <ServiceRequestDetailsPanel
                       serviceRequest={selectedServiceRequest}
@@ -1704,11 +1892,12 @@ const AdminPortal = () => {
                         setServiceRequestToDelete(selectedServiceRequest);
                         setDeleteServiceRequestModalOpen(true);
                       }}
+                      onClose={() => setSelectedServiceRequest(null)}
                     />
                   ) : (
                     <div className="glass-card rounded-2xl border border-slate-700/50 shadow-xl p-8 m-6 flex items-center justify-center h-full bg-slate-900/60 backdrop-blur-xl">
                       <div className="text-center">
-                        <TicketIcon className="w-16 h-16 text-slate-600 mx-auto mb-4" />
+                        <FileText className="w-16 h-16 text-slate-600 mx-auto mb-4" />
                         <p className="text-lg font-bold text-slate-400">
                           Select a service request to view details
                         </p>
@@ -1872,6 +2061,47 @@ const AdminPortal = () => {
           </div>
         )}
       </div>
+
+      {/* Admin Bottom Navigation - Mobile Only */}
+      <AdminBottomNav
+        activeTab={activeTab}
+        setActiveTab={setActiveTab}
+        viewMode={viewMode}
+        setViewMode={setViewMode}
+        newTicketsCount={newTickets.length}
+        newServiceRequestsCount={newServiceRequests.length}
+        onDashboardClick={() => {
+          setViewMode("dashboard");
+          setActiveTab("dashboard");
+        }}
+        onTicketsClick={() => {
+          setViewMode("all");
+          setActiveTab("tickets");
+          setSelectedTicket(null);
+          fetchTickets();
+        }}
+        onServiceRequestsClick={() => {
+          setActiveTab("service-requests");
+          setViewMode("all-service-requests");
+          setSelectedServiceRequest(null);
+          fetchServiceRequests();
+        }}
+        onUsersClick={() => {
+          setActiveTab("users");
+          setSelectedUser(null);
+          fetchUsers();
+        }}
+        onSettingsClick={() => {
+          setActiveTab("settings");
+        }}
+        onCalendarClick={() => {
+          setActiveTab("dashboard");
+          setViewMode("dashboard");
+          setTimeout(() => {
+            dashboardCalendarRef.current?.scrollIntoView({ behavior: 'smooth' });
+          }, 100);
+        }}
+      />
     </div >
   );
 };

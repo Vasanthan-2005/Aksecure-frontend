@@ -1,4 +1,4 @@
-import { User, Building, Phone, MapPin, Ticket as TicketIcon, Trash2, Loader2, Users } from 'lucide-react';
+import { User, Building, Phone, MapPin, Ticket as TicketIcon, Trash2, Loader2, Users, Mail, Calendar, Clock, Wrench, Navigation, ExternalLink, ArrowLeft } from 'lucide-react';
 import MapView from '../common/MapView';
 
 const UserDetailsPanel = ({ user, onDelete, deleting, onClose }) => {
@@ -27,22 +27,32 @@ const UserDetailsPanel = ({ user, onDelete, deleting, onClose }) => {
         <div className="absolute bottom-0 left-0 w-[30%] h-[30%] rounded-full bg-blue-600/5 blur-[100px]" />
       </div>
 
-      <div className="p-8 max-w-5xl mx-auto space-y-6 relative z-10">
+      <div className="p-4 md:p-8 max-w-5xl mx-auto space-y-6 relative z-10">
+        {/* Action Row */}
+        <div className="flex items-center justify-between gap-2 mb-2">
+          <button
+            onClick={onClose}
+            className="flex items-center gap-1.5 text-slate-400 hover:text-white transition-colors"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            <span className="text-sm font-medium">Back</span>
+          </button>
+        </div>
         {/* User Header */}
-        <div className="glass-card p-8 rounded-2xl border border-slate-700/50 shadow-xl bg-slate-900/60 backdrop-blur-xl">
-          <div className="flex items-start justify-between mb-6">
-            <div className="flex items-center gap-6">
-              <div className="w-24 h-24 rounded-2xl bg-gradient-to-br from-violet-600 to-indigo-600 flex items-center justify-center ring-4 ring-violet-500/20 shadow-lg shadow-violet-500/20">
-                <User className="w-10 h-10 text-white" />
+        <div className="glass-card p-4 md:p-8 rounded-2xl border border-slate-700/50 shadow-xl bg-slate-900/60 backdrop-blur-xl">
+          <div className="flex items-start justify-between mb-4 md:mb-6">
+            <div className="flex items-center gap-4 md:gap-6">
+              <div className="w-16 h-16 md:w-24 md:h-24 rounded-2xl bg-gradient-to-br from-violet-600 to-indigo-600 flex items-center justify-center ring-4 ring-violet-500/20 shadow-lg shadow-violet-500/20">
+                <User className="w-6 h-6 md:w-10 md:h-10 text-white" />
               </div>
               <div>
-                <h2 className="text-3xl font-bold text-white tracking-tight mb-2">
+                <h2 className="text-xl md:text-3xl font-bold text-white tracking-tight mb-1 md:mb-2 line-clamp-1">
                   {user.name}
                 </h2>
-                <p className="text-base text-violet-300 font-medium mb-1">{user.email}</p>
+                <p className="text-sm md:text-base text-violet-300 font-medium mb-1 line-clamp-1">{user.email}</p>
                 {user.companyName && (
-                  <div className="flex items-center gap-2 mt-2">
-                    <span className="px-3 py-1 rounded-full bg-slate-800 text-slate-300 border border-slate-700 text-xs font-semibold">
+                  <div className="flex items-center gap-2 mt-1 md:mt-2">
+                    <span className="px-2 md:px-3 py-0.5 md:py-1 rounded-full bg-slate-800 text-slate-300 border border-slate-700 text-[10px] md:text-xs font-semibold">
                       {user.companyName}
                     </span>
                   </div>
@@ -53,14 +63,14 @@ const UserDetailsPanel = ({ user, onDelete, deleting, onClose }) => {
         </div>
 
         {/* User Information */}
-        <div className="glass-card p-8 rounded-2xl border border-slate-700/50 shadow-xl bg-slate-900/60 backdrop-blur-xl">
-          <div className="flex items-center gap-3 mb-8 pb-4 border-b border-white/5">
-            <div className="w-10 h-10 rounded-xl bg-violet-500/10 border border-violet-500/20 flex items-center justify-center">
-              <User className="w-5 h-5 text-violet-400" />
+        <div className="glass-card p-4 md:p-8 rounded-2xl border border-slate-700/50 shadow-xl bg-slate-900/60 backdrop-blur-xl">
+          <div className="flex items-center gap-3 mb-6 md:mb-8 pb-4 border-b border-white/5">
+            <div className="w-8 h-8 md:w-10 md:h-10 rounded-xl bg-violet-500/10 border border-violet-500/20 flex items-center justify-center">
+              <User className="w-4 h-4 md:w-5 md:h-5 text-violet-400" />
             </div>
             <div>
-              <h3 className="text-xl font-bold text-white tracking-tight">User Information</h3>
-              <p className="text-xs text-slate-400 mt-0.5">Account and contact details</p>
+              <h3 className="text-lg md:text-xl font-bold text-white tracking-tight">User Information</h3>
+              <p className="text-[10px] md:text-xs text-slate-400 mt-0.5">Account and contact details</p>
             </div>
           </div>
 
@@ -118,12 +128,12 @@ const UserDetailsPanel = ({ user, onDelete, deleting, onClose }) => {
             {(user.outlets?.length > 0 || user.address) && (
               <div className="md:col-span-2 space-y-6">
                 <div className="flex items-center gap-3 pb-4 border-b border-white/5">
-                  <div className="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center">
-                    <Building className="w-5 h-5 text-emerald-400" />
+                  <div className="w-8 h-8 md:w-10 md:h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center">
+                    <Building className="w-4 h-4 md:w-5 md:h-5 text-emerald-400" />
                   </div>
                   <div>
-                    <h3 className="text-xl font-bold text-white tracking-tight">Branch Locations</h3>
-                    <p className="text-xs text-slate-400 mt-0.5">Registered outlets and physical addresses</p>
+                    <h3 className="text-lg md:text-xl font-bold text-white tracking-tight">Branch Locations</h3>
+                    <p className="text-[10px] md:text-xs text-slate-400 mt-0.5">Registered outlets and physical addresses</p>
                   </div>
                 </div>
 
@@ -204,12 +214,12 @@ const UserDetailsPanel = ({ user, onDelete, deleting, onClose }) => {
             {/* Account Metrics Section */}
             <div className="md:col-span-2 space-y-6">
               <div className="flex items-center gap-3 pb-4 border-b border-white/5">
-                <div className="w-10 h-10 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center">
-                  <Navigation className="w-5 h-5 text-blue-400" />
+                <div className="w-8 h-8 md:w-10 md:h-10 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center">
+                  <Navigation className="w-4 h-4 md:w-5 md:h-5 text-blue-400" />
                 </div>
                 <div>
-                  <h3 className="text-xl font-bold text-white tracking-tight">Account Metrics</h3>
-                  <p className="text-xs text-slate-400 mt-0.5">Registration and activity summary</p>
+                  <h3 className="text-lg md:text-xl font-bold text-white tracking-tight">Account Metrics</h3>
+                  <p className="text-[10px] md:text-xs text-slate-400 mt-0.5">Registration and activity summary</p>
                 </div>
               </div>
 

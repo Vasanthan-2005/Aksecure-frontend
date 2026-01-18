@@ -55,8 +55,6 @@ const AdminReplies = ({ refreshKey = 0 }) => {
                     status: entry.status,
                     createdAt: entry.createdAt,
                     assignedVisitAt: entry.assignedVisitAt,
-                    preferredVisitAt: entry.preferredVisitAt,
-                    preferredTimeSlot: entry.preferredTimeSlot,
                     timelineIndex: index
                   });
                 }
@@ -129,7 +127,7 @@ const AdminReplies = ({ refreshKey = 0 }) => {
       {adminReplies.map((reply, index) => {
         const key = `${reply.sourceType}-${reply.sourceId}-${reply.timelineIndex}`;
         const isMarking = markingAsSeen[key];
-        const scheduledAt = reply.assignedVisitAt || reply.preferredVisitAt;
+        const scheduledAt = reply.assignedVisitAt;
 
         const getSlotLabel = (isoString, fallbackSlot) => {
           if (fallbackSlot) return fallbackSlot;
@@ -140,7 +138,7 @@ const AdminReplies = ({ refreshKey = 0 }) => {
           if (hours >= 15 && hours < 18) return 'Evening (3 PM – 6 PM)';
           return null;
         };
-        const slotLabel = getSlotLabel(scheduledAt, reply.preferredTimeSlot);
+        const slotLabel = getSlotLabel(scheduledAt, null);
 
         return (
           <div

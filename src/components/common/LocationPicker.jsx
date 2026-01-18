@@ -161,7 +161,7 @@ const LocationPicker = ({ onLocationSelect, onAddressFetched, initialLocation, t
                 </button>
             </div>
 
-            <div className="relative h-64 w-full rounded-2xl overflow-hidden border border-white/10 glass-card">
+            <div className="relative h-52 sm:h-64 w-full rounded-2xl overflow-hidden border border-white/10 glass-card">
                 <MapContainer
                     center={position || [20.5937, 78.9629]} // Starting point
                     zoom={position ? 13 : 2}

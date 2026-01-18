@@ -251,14 +251,7 @@ const ServiceRequestListUser = ({ onRefresh }) => {
                     {new Date(request.createdAt).toLocaleDateString()}
                   </p>
                 </div>
-                {request.preferredVisitAt && (
-                  <div className="space-y-1">
-                    <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Preferred Visit</p>
-                    <p className="text-xs font-semibold text-amber-400/80">
-                      {new Date(request.preferredVisitAt).toLocaleDateString()}
-                    </p>
-                  </div>
-                )}
+
                 {request.assignedVisitAt && (
                   <div className="space-y-1">
                     <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Scheduled Visit</p>

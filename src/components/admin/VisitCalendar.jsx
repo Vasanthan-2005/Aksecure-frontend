@@ -86,16 +86,16 @@ const VisitCalendar = ({ tickets, serviceRequests, onEventSelect }) => {
   };
 
   return (
-    <div className="glass-card flex-1 flex flex-col bg-gradient-to-br from-slate-900/60 to-slate-950/60 backdrop-blur-md border border-white/5 rounded-2xl p-3 shadow-xl overflow-hidden h-full relative group">
+    <div className="glass-card flex-1 flex flex-col bg-gradient-to-br from-slate-900/60 to-slate-950/60 backdrop-blur-md border border-white/5 rounded-2xl p-2 md:p-3 shadow-xl overflow-hidden h-full relative group">
       <div className="absolute inset-0 bg-grid-white-pattern opacity-10 pointer-events-none" />
 
       {/* HEADER */}
       <div className="flex items-center justify-between mb-2">
         <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-cyan-500/20 to-blue-500/20 flex items-center justify-center border border-cyan-500/30 shadow-lg shadow-cyan-500/10">
-            <CalendarIcon className="w-4 h-4 text-cyan-400" />
+          <div className="w-7 h-7 md:w-8 md:h-8 rounded-lg bg-gradient-to-br from-cyan-500/20 to-blue-500/20 flex items-center justify-center border border-cyan-500/30 shadow-lg shadow-cyan-500/10">
+            <CalendarIcon className="w-3.5 h-3.5 md:w-4 md:h-4 text-cyan-400" />
           </div>
-          <h2 className="text-base font-bold text-white tracking-tight">Visit Calendar</h2>
+          <h2 className="text-sm md:text-base font-bold text-white tracking-tight">Visit Calendar</h2>
         </div>
 
         <div className="flex items-center gap-1 bg-slate-800/60 rounded-xl p-1 border border-white/10">
@@ -134,7 +134,7 @@ const VisitCalendar = ({ tickets, serviceRequests, onEventSelect }) => {
       </div>
 
       {/* CALENDAR GRID */}
-      <div className="grid grid-cols-7 grid-rows-6 gap-x-2 gap-y-2.5 w-full flex-1 min-h-0 px-1 items-center">
+      <div className="grid grid-cols-7 grid-rows-6 gap-x-1 gap-y-1 md:gap-x-2 md:gap-y-2.5 w-full flex-1 min-h-0 px-1 items-center">
         {days.map((date, i) => {
           // EMPTY CELLS
           if (!date)
@@ -165,7 +165,7 @@ const VisitCalendar = ({ tickets, serviceRequests, onEventSelect }) => {
               onClick={() => handleDateClick(date)}
               disabled={past}
               className={`
-                w-[80%] aspect-square rounded-md mx-auto my-auto flex flex-col items-center justify-center text-[11px] relative group
+                w-[90%] md:w-[80%] aspect-square rounded-md mx-auto my-auto flex flex-col items-center justify-center text-[10px] md:text-[11px] relative group
                 ${past ? "opacity-40 cursor-not-allowed text-slate-500 bg-slate-800/10" : "cursor-pointer"}
                 ${isTodayDate && !selected ? "bg-gradient-to-br from-green-500/30 to-green-500/30 text-cyan-200 border border-cyan-400/60 font-bold shadow-[0_0_15px_rgba(6,182,212,0.3)]" : ""}
                 ${selected ? "bg-gradient-to-br from-cyan-500 to-blue-600 text-white border border-cyan-400 shadow-[0_0_20px_rgba(6,182,212,0.4)] z-10 font-bold" : ""}

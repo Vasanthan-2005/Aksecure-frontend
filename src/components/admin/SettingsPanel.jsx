@@ -58,16 +58,16 @@ const SettingsPanel = ({ onClose }) => {
     }
 
     return (
-        <div className="glass-card p-8 bg-slate-900/60 backdrop-blur-2xl border border-slate-700/50 rounded-3xl shadow-2xl w-full max-w-2xl max-h-[85vh] overflow-y-auto custom-scrollbar relative">
+        <div className="glass-card p-4 md:p-8 bg-slate-900/60 backdrop-blur-2xl border border-slate-700/50 rounded-3xl shadow-2xl w-full max-w-2xl max-h-[85vh] overflow-y-auto custom-scrollbar relative">
             <div className="mb-6 flex justify-between items-start gap-4 ">
                 <div>
-                    <h2 className="text-2xl font-bold text-white flex items-center gap-3">
+                    <h2 className="text-xl md:text-2xl font-bold text-white flex items-center gap-3">
                         <div className="p-2 rounded-xl bg-blue-500/10 text-blue-400">
-                            <Headphones className="w-6 h-6" />
+                            <Headphones className="w-5 h-5 md:w-6 md:h-6" />
                         </div>
                         Support Configuration
                     </h2>
-                    <p className="text-slate-400 mt-2">Manage the contact information displayed to users in their portal.</p>
+                    <p className="text-xs md:text-slate-400 mt-2">Manage the contact information displayed to users in their portal.</p>
                 </div>
                 {onClose && (
                     <button
@@ -81,9 +81,9 @@ const SettingsPanel = ({ onClose }) => {
             </div>
 
             <form onSubmit={handleSave} className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
                     {/* Support Phone */}
-                    <div className="bg-slate-900/40 border border-white/5 rounded-2xl p-4 hover:border-blue-500/20 group">
+                    <div className="bg-slate-900/40 border border-white/5 rounded-2xl p-3 md:p-4 hover:border-blue-500/20 group">
                         <div className="flex items-center gap-3 mb-4">
                             <div className="p-2 rounded-lg bg-blue-500/10 text-blue-400">
                                 <Phone className="w-4 h-4" />
@@ -101,7 +101,7 @@ const SettingsPanel = ({ onClose }) => {
                     </div>
 
                     {/* Support Email */}
-                    <div className="bg-slate-900/40 border border-white/5 rounded-2xl p-4 hover:border-violet-500/20 group">
+                    <div className="bg-slate-900/40 border border-white/5 rounded-2xl p-3 md:p-4 hover:border-violet-500/20 group">
                         <div className="flex items-center gap-3 mb-4">
                             <div className="p-2 rounded-lg bg-violet-500/10 text-violet-400">
                                 <Mail className="w-4 h-4" />
@@ -119,14 +119,14 @@ const SettingsPanel = ({ onClose }) => {
                     </div>
 
                     {/* WhatsApp Number */}
-                    <div className="bg-slate-900/40 border border-white/5 rounded-2xl p-4 hover:border-emerald-500/20 group md:col-span-2">
+                    <div className="bg-slate-900/40 border border-white/5 rounded-2xl p-3 md:p-4 hover:border-emerald-500/20 group md:col-span-2">
                         <div className="flex items-center gap-3 mb-4">
                             <div className="p-2 rounded-lg bg-emerald-500/10 text-emerald-400">
                                 <Phone className="w-4 h-4" />
                             </div>
                             <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">WhatsApp Number</label>
                         </div>
-                        <div className="flex gap-4 items-center">
+                        <div className="flex flex-col md:flex-row gap-3 md:gap-4 items-stretch md:items-center">
                             <input
                                 type="text"
                                 value={settings.supportWhatsApp}
@@ -135,7 +135,7 @@ const SettingsPanel = ({ onClose }) => {
                                 placeholder="917550212046"
                                 required
                             />
-                            <div className="px-4 py-2 bg-emerald-500/10 text-emerald-400 text-xs font-bold rounded-lg border border-emerald-500/20">
+                            <div className="px-4 py-2 bg-emerald-500/10 text-emerald-400 text-xs font-bold rounded-lg border border-emerald-500/20 text-center">
                                 wa.me/{settings.supportWhatsApp}
                             </div>
                         </div>
@@ -153,12 +153,12 @@ const SettingsPanel = ({ onClose }) => {
                     </div>
                 )}
 
-                <div className="pt-4 flex justify-end gap-4">
+                <div className="pt-4 flex flex-col md:flex-row justify-end gap-3 md:gap-4">
                     {onClose && (
                         <button
                             type="button"
                             onClick={onClose}
-                            className="px-8 py-4 bg-slate-800/50 hover:bg-slate-800 text-slate-300 font-bold rounded-2xl border border-white/5"
+                            className="w-full md:w-auto px-8 py-3 md:py-4 bg-slate-800/50 hover:bg-slate-800 text-slate-300 font-bold rounded-2xl border border-white/5 order-2 md:order-1"
                         >
                             Exit Settings
                         </button>
@@ -166,7 +166,7 @@ const SettingsPanel = ({ onClose }) => {
                     <button
                         type="submit"
                         disabled={saving}
-                        className="flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-blue-600 to-violet-600 hover:from-blue-500 hover:to-violet-500 text-white font-bold rounded-2xl disabled:opacity-50"
+                        className="w-full md:w-auto flex items-center justify-center gap-2 px-8 py-3 md:py-4 bg-gradient-to-r from-blue-600 to-violet-600 hover:from-blue-500 hover:to-violet-500 text-white font-bold rounded-2xl disabled:opacity-50 order-1 md:order-2"
                     >
                         {saving ? (
                             <>

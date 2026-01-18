@@ -23,8 +23,8 @@ const UserListPanel = ({
   });
 
   return (
-    <div className="w-96 border-r border-white/5 bg-slate-900/50 backdrop-blur-sm flex flex-col relative z-20">
-      <div className="p-6 border-b border-white/5 bg-slate-900/50 backdrop-blur-md sticky top-0 z-10 w-full">
+    <div className={`w-full lg:w-96 border-r border-white/5 bg-slate-900/50 backdrop-blur-sm flex flex-col relative z-20 ${selectedUser ? 'hidden lg:flex' : 'flex'}`}>
+      <div className="p-3 lg:p-4 border-b border-white/5 bg-slate-900/50 backdrop-blur-md sticky top-0 z-10 w-full">
         {onBackToDashboard && (
           <div className="mb-4">
             <button
@@ -36,14 +36,14 @@ const UserListPanel = ({
             </button>
           </div>
         )}
-        <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center justify-between mb-4 lg:mb-6">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-violet-500/10 border border-violet-500/20 flex items-center justify-center">
-              <Users className="w-5 h-5 text-violet-400" />
+            <div className="w-8 h-8 lg:w-10 lg:h-10 rounded-xl bg-violet-500/10 border border-violet-500/20 flex items-center justify-center">
+              <Users className="w-4 h-4 lg:w-5 lg:h-5 text-violet-400" />
             </div>
             <div>
-              <h2 className="text-2xl font-bold text-white tracking-tight">All Users</h2>
-              <p className="text-xs text-slate-400 mt-0.5 font-medium">Manage registered users</p>
+              <h2 className="text-xl lg:text-2xl font-bold text-white tracking-tight">All Users</h2>
+              <p className="text-[10px] lg:text-xs text-slate-400 mt-0.5 font-medium">Manage registered users</p>
             </div>
           </div>
           <div className="flex items-center gap-2">
@@ -70,7 +70,7 @@ const UserListPanel = ({
             placeholder="Search by name, email, company..."
             value={userSearchTerm}
             onChange={(e) => setUserSearchTerm(e.target.value)}
-            className="w-full pl-10 pr-4 py-3 bg-slate-800/50 border border-slate-700 rounded-xl focus:ring-2 focus:ring-violet-500/20 focus:border-violet-500/50 text-sm text-slate-200 placeholder-slate-500 outline-none"
+            className="w-full pl-10 pr-4 py-2 lg:py-3 bg-slate-800/50 border border-slate-700 rounded-xl focus:ring-2 focus:ring-violet-500/20 focus:border-violet-500/50 text-sm text-slate-200 placeholder-slate-500 outline-none"
           />
         </div>
 
@@ -124,7 +124,7 @@ const UserListPanel = ({
             <button
               key={userItem._id}
               onClick={() => onUserClick(userItem)}
-              className={`w-full text-left p-4 rounded-xl border group relative overflow-hidden ${selectedUser?._id === userItem._id
+              className={`w-full text-left p-2.5 lg:p-4 rounded-xl border group relative overflow-hidden ${selectedUser?._id === userItem._id
                 ? 'bg-violet-500/10 border-violet-500/50 shadow-[0_0_20px_rgba(139,92,246,0.1)]'
                 : 'bg-slate-800/30 border-white/5 hover:border-violet-500/30 hover:bg-slate-800/60'
                 }`}
@@ -172,7 +172,7 @@ const UserListPanel = ({
                     <p className={`text-sm px-19 font-bold ${selectedUser?._id === userItem._id ? 'text-emerald-400' : 'text-slate-400 group-hover:text-emerald-400'
                       }`}>{userItem.outlets?.length || 0}</p>
                   </div>
-  
+
                 </div>
                 {onDelete && (
                   <button

@@ -1,9 +1,8 @@
-import { Shield, MessageSquare, Trash2 } from 'lucide-react';
+import { Shield, MessageSquare, Trash2, ArrowLeft } from 'lucide-react';
 import TicketHeader from './TicketHeader';
 import UserInfo from './UserInfo';
 import ImageGallery from './ImageGallery';
 import Timeline from './Timeline';
-import ReplyModal from './ReplyModal';
 import OutletInfo from './OutletInfo';
 
 const TicketDetailsPanel = ({
@@ -23,7 +22,8 @@ const TicketDetailsPanel = ({
   showReplyModal,
   setShowReplyModal,
   onReply,
-  onDelete
+  onDelete,
+  onClose
 }) => {
   if (!ticket) {
     return (
@@ -51,25 +51,35 @@ const TicketDetailsPanel = ({
           <div className="absolute bottom-0 left-0 w-[30%] h-[30%] rounded-full bg-violet-600/5 blur-[100px]" />
         </div>
 
-        <div className="p-4 space-y-4 relative z-10 w-full max-w-full">
-          {/* Reply and Delete Buttons */}
-          <div className="flex justify-end gap-3 mb-2">
+        <div className="p-3 md:p-4 space-y-2 md:space-y-4 relative z-10 w-full max-w-full">
+          {/* Action Row */}
+          <div className="flex items-center justify-between gap-2 mb-2">
             <button
-              onClick={() => setShowReplyModal(true)}
-              className="inline-flex items-center gap-2 px-5 py-2.5 bg-blue-500 hover:bg-blue-600 text-white rounded-xl font-semibold border border-blue-400"
+              onClick={onClose}
+              className="flex items-center gap-1.5 text-slate-400 hover:text-white transition-colors"
             >
-              <MessageSquare className="w-4 h-4" />
-              Reply to User
+              <ArrowLeft className="w-4 h-4 md:w-5 md:h-5" />
+              <span className="font-bold text-xs md:text-sm">Back to Tickets</span>
             </button>
-            {onDelete && (
+            <div className="flex gap-2">
               <button
-                onClick={onDelete}
-                className="inline-flex items-center gap-2 px-5 py-2.5 bg-red-500/10 text-red-400 border border-red-500/20 rounded-xl hover:bg-red-500/20 hover:text-white hover:border-red-500/40 font-semibold shadow-sm hover:shadow-red-500/10"
+                onClick={() => setShowReplyModal(true)}
+                className="inline-flex items-center gap-1.5 px-3 md:px-5 py-1.5 md:py-2.5 bg-blue-500 hover:bg-blue-600 text-white rounded-lg md:rounded-xl text-[10px] md:text-sm font-semibold border border-blue-400 shadow-lg"
               >
-                <Trash2 className="w-4 h-4" />
-                Delete Ticket
+                <MessageSquare className="w-3.5 h-3.5 md:w-4 md:h-4" />
+                <span className="md:inline">Reply</span>
               </button>
-            )}
+              {onDelete && (
+                <button
+                  onClick={onDelete}
+                  className="inline-flex items-center justify-center p-1.5 md:px-5 md:py-2.5 bg-red-500/10 text-red-400 border border-red-500/20 rounded-lg md:rounded-xl hover:bg-red-500/20 hover:text-white transition-colors"
+                  title="Delete Ticket"
+                >
+                  <Trash2 className="w-3.5 h-3.5 md:w-4 md:h-4" />
+                  <span className="hidden md:inline ml-2 text-sm font-semibold">Delete</span>
+                </button>
+              )}
+            </div>
           </div>
 
           <div>
@@ -112,14 +122,6 @@ const TicketDetailsPanel = ({
         </div>
       </div>
 
-      {/* Reply Modal */}
-      <ReplyModal
-        isOpen={showReplyModal}
-        onClose={() => setShowReplyModal(false)}
-        ticket={ticket}
-        onReply={onReply}
-        updating={updating}
-      />
     </>
   );
 };

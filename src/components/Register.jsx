@@ -149,7 +149,7 @@ const Register = () => {
 
   const handleSubmit = async (e) => {
     if (e) e.preventDefault();
-    
+
     if (!formData.companyName.trim()) {
       setFieldErrors({ companyName: "Required" });
       return;
@@ -215,9 +215,8 @@ const Register = () => {
       {loading && <LoadingState message="Creating Security Profile" fullPage={true} />}
 
       {/* LEFT PANEL - BRAND SECTION (Landing Page on Mobile) */}
-      <div className={`absolute inset-0 lg:relative lg:w-1/2 flex flex-col justify-between p-8 sm:p-12 lg:p-20 overflow-hidden bg-gradient-to-b from-[#0A192F] to-[#020617] transition-all duration-700 ease-in-out z-20 ${
-        showMobileForm ? '-translate-x-full lg:translate-x-0 opacity-0 lg:opacity-100' : 'translate-x-0 opacity-100'
-      }`}>
+      <div className={`absolute inset-0 lg:relative lg:w-1/2 flex flex-col justify-between p-8 sm:p-12 lg:p-20 overflow-hidden bg-gradient-to-b from-[#0A192F] to-[#020617] transition-all duration-700 ease-in-out z-20 ${showMobileForm ? '-translate-x-full lg:translate-x-0 opacity-0 lg:opacity-100' : 'translate-x-0 opacity-100'
+        }`}>
         {/* Subtle Vignette & Glow */}
         <div className="absolute inset-0 pointer-events-none">
           <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-violet-500/10 blur-[120px] rounded-full"></div>
@@ -292,7 +291,7 @@ const Register = () => {
 
           {/* Swipe Indicator (Mobile Only) */}
           <div className="lg:hidden mt-10">
-            <button 
+            <button
               onClick={() => setShowMobileForm(true)}
               className="w-full px-4 py-2 rounded-full text-[10px] font-extrabold uppercase tracking-wider bg-white/5 border border-white/20 text-slate-300 hover:text-white hover:bg-white/10 transition-all flex justify-center items-center gap-2"
             >
@@ -304,19 +303,8 @@ const Register = () => {
       </div>
 
       {/* RIGHT PANEL - REGISTRATION SECTION */}
-      <div className={`absolute inset-0 lg:relative lg:flex-1 flex items-center justify-center p-4 sm:p-8 bg-[#020617] transition-all duration-700 ease-in-out z-10 ${
-        showMobileForm ? 'translate-x-0 opacity-100' : 'translate-x-full lg:translate-x-0 opacity-0 lg:opacity-100'
-      }`}>
-        {/* Mobile Back Button */}
-        <div className="lg:hidden absolute top-6 left-6 z-30">
-          <button 
-            onClick={() => setShowMobileForm(false)}
-            className="p-3 rounded-xl bg-white/5 border border-white/10 text-slate-400 active:scale-90 transition-all flex items-center gap-2 font-bold text-xs uppercase tracking-widest"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            Back
-          </button>
-        </div>
+      <div className={`absolute inset-0 lg:relative lg:flex-1 flex items-center justify-center p-4 sm:p-8 bg-[#020617] transition-all duration-700 ease-in-out z-10 ${showMobileForm ? 'translate-x-0 opacity-100' : 'translate-x-full lg:translate-x-0 opacity-0 lg:opacity-100'
+        }`}>
         {/* Dark Background with subtle shading */}
         <div className="absolute inset-0 bg-[#020617]">
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[60%] h-[60%] bg-violet-500/5 blur-[150px] rounded-full"></div>
@@ -325,14 +313,23 @@ const Register = () => {
         <div className="w-full max-w-[620px] relative z-10 flex flex-col items-center">
           {/* Glass Registration Card */}
           <div className="w-full bg-slate-900/30 backdrop-blur-3xl border border-white/10 rounded-[32px] sm:rounded-[40px] p-5 sm:p-8 shadow-2xl relative flex flex-col">
-            
+
             {/* Header */}
-            <div className="flex-shrink-0 pb-6 border-b border-white/5 flex items-center justify-between">
-              <div>
-                <h2 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">Create Account</h2>
-                <p className="text-slate-500 text-xs sm:text-sm font-medium mt-1">
-                  {currentStep === 1 ? "Enter organization details" : "Add company branch locations"}
-                </p>
+            <div className="flex-shrink-0 pb-6 border-b border-white/5 flex items-center justify-between gap-4">
+              <div className="flex items-center gap-4">
+                {/* Mobile Back Button inside header */}
+                <button
+                  onClick={() => setShowMobileForm(false)}
+                  className="lg:hidden p-2.5 rounded-xl bg-white/5 border border-white/10 text-slate-400 active:scale-95 transition-all"
+                >
+                  <ArrowLeft className="w-5 h-5" />
+                </button>
+                <div>
+                  <h2 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">Create Account</h2>
+                  <p className="text-slate-500 text-xs sm:text-sm font-medium mt-1">
+                    {currentStep === 1 ? "Enter organization details" : "Add company branch locations"}
+                  </p>
+                </div>
               </div>
               <div className="text-right">
                 <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest mb-1.5">Step {currentStep}/2</p>

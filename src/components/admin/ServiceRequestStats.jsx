@@ -5,16 +5,16 @@ const StatItem = ({ label, count, color, Icon, total, showPercentage = true, sho
 
     return (
         <div
-            className={`group relative overflow-hidden rounded-2xl border ${color.border} bg-slate-950/40 p-3.5 backdrop-blur-xl h-18 ${color.glowShadow}`}
+            className={`group relative overflow-hidden rounded-xl md:rounded-2xl border ${color.border} bg-slate-950/40 p-2 md:p-4 backdrop-blur-xl h-14 md:h-18 ${color.glowShadow}`}
         >
             {/* Dynamic Glow Aura */}
             <div className={`absolute inset-0 opacity-0 bg-[radial-gradient(circle_at_center,${color.glowColor}_0%,transparent_70%)]`} />
 
             <div className="relative z-10">
-                <div className="flex items-center justify-between gap-3 h-full">
-                    <div className="flex items-center gap-2">
+                <div className="flex items-center justify-between gap-1 md:gap-3 h-full">
+                    <div className="flex items-center gap-1.5 md:gap-2">
                         {showIcon && (
-                            <div className={`flex h-7 w-7 items-center justify-center rounded-lg ${color.iconBg} border border-white/10 shadow-lg`}>
+                            <div className={`hidden md:flex h-7 w-7 items-center justify-center rounded-lg ${color.iconBg} border border-white/10 shadow-lg`}>
                                 <Icon className={`h-3.5 w-3.5 ${color.text}`} />
                             </div>
                         )}
@@ -24,7 +24,7 @@ const StatItem = ({ label, count, color, Icon, total, showPercentage = true, sho
                     </div>
 
                     <div className="flex items-center">
-                        <p className="text-2xl font-black tracking-tighter text-white">
+                        <p className="text-lg md:text-2xl font-black tracking-tighter text-white">
                             {count}
                         </p>
                     </div>

@@ -1,17 +1,15 @@
 import { useState, useMemo, useEffect } from 'react';
 import { Calendar as CalendarIcon, ChevronLeft, ChevronRight, Star } from 'lucide-react';
 
-const DatePicker = ({ selectedDate, onChange, preferredDate, minDate }) => {
+const DatePicker = ({ selectedDate, onChange, minDate }) => {
     const [currentDate, setCurrentDate] = useState(new Date());
 
-    // Initialize calendar month to selectedDate or preferredDate or today
+    // Initialize calendar month to selectedDate or today
     useEffect(() => {
         if (selectedDate) {
             setCurrentDate(new Date(selectedDate));
-        } else if (preferredDate) {
-            setCurrentDate(new Date(preferredDate));
         }
-    }, []); // Run once on mount if we want to sync initially, avoiding loops if props change often
+    }, [selectedDate]); // Run whenever selectedDate changes
 
     const monthNames = [
         "January", "February", "March", "April", "May", "June",
@@ -53,16 +51,6 @@ const DatePicker = ({ selectedDate, onChange, preferredDate, minDate }) => {
     const isSelected = (date) => {
         if (!date || !selectedDate) return false;
         return formatDate(date) === selectedDate;
-    };
-
-    const isPreferred = (date) => {
-        if (!date || !preferredDate) return false;
-        // Check if preferredDate (string) matches this date
-        // Note: preferredDate from prop is likely ISO string or YYYY-MM-DD
-        const pDate = new Date(preferredDate);
-        return date.getDate() === pDate.getDate() &&
-            date.getMonth() === pDate.getMonth() &&
-            date.getFullYear() === pDate.getFullYear();
     };
 
     const isDisabled = (date) => {
@@ -129,7 +117,6 @@ const DatePicker = ({ selectedDate, onChange, preferredDate, minDate }) => {
                     if (!date) return <div key={i} className="aspect-square"></div>;
 
                     const selected = isSelected(date);
-                    const preferred = isPreferred(date);
                     const disabled = isDisabled(date);
 
                     return (
@@ -139,32 +126,17 @@ const DatePicker = ({ selectedDate, onChange, preferredDate, minDate }) => {
                             onClick={() => handleDateClick(date)}
                             disabled={disabled}
                             className={`
-                aspect-square rounded-lg flex flex-col items-center justify-center relative group transition-all duration-200
-                ${disabled ? "opacity-30 cursor-not-allowed text-slate-600" : "cursor-pointer hover:bg-white/5"}
-                ${selected
-                                    ? "bg-blue-600/90 text-white shadow-lg shadow-blue-500/20 font-bold border border-blue-500/50"
-                                    : "text-slate-300"}
-                ${preferred && !selected ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-400 font-medium" : ""}
-                ${preferred && selected ? "bg-gradient-to-br from-blue-600 to-emerald-600 border-white/20" : ""}
-              `}
-                            title={preferred ? "Preferred Date" : ""}
+                                aspect-square rounded-lg flex flex-col items-center justify-center relative group transition-all duration-200
+                                ${disabled ? "opacity-30 cursor-not-allowed text-slate-600" : "cursor-pointer hover:bg-white/5"}
+                                ${selected ? "bg-blue-600/90 text-white shadow-lg shadow-blue-500/20 font-bold border border-blue-500/50" : "text-slate-300"}
+                            `}
+                            title=""
                         >
                             <span className="text-xs">{date.getDate()}</span>
-                            {preferred && (
-                                <div className="absolute -top-1 -right-1">
-                                    <Star className={`w-2.5 h-2.5 ${selected ? 'text-yellow-300 fill-yellow-300' : 'text-emerald-500 fill-emerald-500'}`} />
-                                </div>
-                            )}
                         </button>
                     );
                 })}
             </div>
-            {preferredDate && (
-                <div className="mt-3 flex items-center gap-2 text-[10px] text-slate-400 bg-slate-800/30 p-2 rounded-lg border border-white/5">
-                    <Star className="w-3 h-3 text-emerald-500 fill-emerald-500" />
-                    <span>Preferred Date: <span className="text-emerald-400 font-bold ml-1">{new Date(preferredDate).toLocaleDateString()}</span></span>
-                </div>
-            )}
         </div>
     );
 };

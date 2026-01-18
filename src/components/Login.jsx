@@ -164,9 +164,8 @@ const Login = () => {
       {loading && <LoadingState message={isAdminLogin ? "Verifying Credentials" : "Checking Profile"} fullPage={true} />}
 
       {/* LEFT PANEL - BRAND SECTION (Landing Page on Mobile) */}
-      <div className={`absolute inset-0 lg:relative lg:w-1/2 flex flex-col justify-between p-8 sm:p-12 lg:p-20 overflow-hidden bg-gradient-to-b from-[#0A192F] to-[#020617] transition-all duration-700 ease-in-out z-20 ${
-        showMobileForm ? '-translate-x-full lg:translate-x-0 opacity-0 lg:opacity-100' : 'translate-x-0 opacity-100'
-      }`}>
+      <div className={`absolute inset-0 lg:relative lg:w-1/2 flex flex-col justify-between p-8 sm:p-12 lg:p-20 overflow-hidden bg-gradient-to-b from-[#0A192F] to-[#020617] transition-all duration-700 ease-in-out z-20 ${showMobileForm ? '-translate-x-full lg:translate-x-0 opacity-0 lg:opacity-100' : 'translate-x-0 opacity-100'
+        }`}>
         {/* Subtle Vignette & Glow */}
         <div className="absolute inset-0 pointer-events-none">
           <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-blue-500/10 blur-[120px] rounded-full"></div>
@@ -241,7 +240,7 @@ const Login = () => {
 
           {/* Swipe Indicator (Mobile Only) */}
           <div className="lg:hidden mt-10">
-            <button 
+            <button
               onClick={() => setShowMobileForm(true)}
               className="w-full px-4 py-2 rounded-full text-[10px] font-extrabold uppercase tracking-wider bg-white/5 border border-white/20 text-slate-300 hover:text-white hover:bg-white/10 transition-all flex justify-center items-center gap-2"
             >
@@ -253,12 +252,11 @@ const Login = () => {
       </div>
 
       {/* RIGHT PANEL - LOGIN SECTION */}
-      <div className={`absolute inset-0 lg:relative lg:flex-1 flex items-center justify-center p-4 sm:p-8 bg-[#020617] transition-all duration-700 ease-in-out z-10 ${
-        showMobileForm ? 'translate-x-0 opacity-100' : 'translate-x-full lg:translate-x-0 opacity-0 lg:opacity-100'
-      }`}>
+      <div className={`absolute inset-0 lg:relative lg:flex-1 flex items-center justify-center p-4 sm:p-8 bg-[#020617] transition-all duration-700 ease-in-out z-10 ${showMobileForm ? 'translate-x-0 opacity-100' : 'translate-x-full lg:translate-x-0 opacity-0 lg:opacity-100'
+        }`}>
         {/* Mobile Back Button */}
         <div className="lg:hidden absolute top-6 left-6 z-30">
-          <button 
+          <button
             onClick={() => setShowMobileForm(false)}
             className="p-3 rounded-xl bg-white/5 border border-white/10 text-slate-400 active:scale-90 transition-all flex items-center gap-2 font-bold text-xs uppercase tracking-widest"
           >
@@ -274,26 +272,29 @@ const Login = () => {
         <div className="w-full max-w-[480px] relative z-10 flex flex-col items-center">
           {/* Glass Login Card */}
           <div className="w-full bg-slate-900/30 backdrop-blur-3xl border border-white/10 rounded-[32px] sm:rounded-[40px] p-6 sm:p-12 shadow-2xl relative">
-            
-            {/* Switch Toggle Pill */}
-            <div className="absolute top-8 right-8">
-              <button
-                onClick={() => setIsAdminLogin(!isAdminLogin)}
-                className="px-4 py-2 rounded-full text-[10px] font-extrabold uppercase tracking-wider bg-white/5 border border-white/20 text-slate-300 hover:text-white hover:bg-white/10 transition-all flex items-center gap-2"
-              >
-                {isAdminLogin ? "User Login" : "Admin Portal"}
-                <Shield className="w-3 h-3" />
-              </button>
-            </div>
 
-            {/* Card Content */}
-            <div className="mt-6 mb-10">
-              <h2 className="text-3xl font-bold text-white mb-2 tracking-tight">
-                {isAdminLogin ? "Admin Access" : "Welcome Back"}
-              </h2>
-              <p className="text-slate-500 text-sm font-medium">
-                Enter your credentials to access your {isAdminLogin ? "admin portal" : "account"}.
-              </p>
+            {/* Switch Toggle Pill */}
+            <div className="flex flex-col sm:block mb-8 sm:mb-10 mt-2 sm:mt-6">
+              {/* Switch Toggle Pill */}
+              <div className="self-end mb-4 sm:mb-0 sm:absolute sm:top-8 sm:right-8">
+                <button
+                  onClick={() => setIsAdminLogin(!isAdminLogin)}
+                  className="px-4 py-2 rounded-full text-[10px] font-extrabold uppercase tracking-wider bg-white/5 border border-white/20 text-slate-300 hover:text-white hover:bg-white/10 transition-all flex items-center gap-2"
+                >
+                  {isAdminLogin ? "User Login" : "Admin Portal"}
+                  <Shield className="w-3 h-3" />
+                </button>
+              </div>
+
+              {/* Card Content */}
+              <div>
+                <h2 className="text-3xl font-bold text-white mb-2 tracking-tight">
+                  {isAdminLogin ? "Admin Access" : "Welcome Back"}
+                </h2>
+                <p className="text-slate-500 text-sm font-medium">
+                  Enter your credentials to access your {isAdminLogin ? "admin portal" : "account"}.
+                </p>
+              </div>
             </div>
 
             {/* Success Alert */}
@@ -319,9 +320,8 @@ const Login = () => {
                     name={isAdminLogin ? "username" : "email"}
                     value={isAdminLogin ? formData.username : formData.email}
                     onChange={handleChange}
-                    className={`w-full bg-black/40 border border-white/5 rounded-2xl pl-12 pr-4 py-4 text-white placeholder:text-slate-700 outline-none focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/20 transition-all ${
-                      (isAdminLogin ? errors.username : errors.email) ? 'border-red-500/50' : ''
-                    }`}
+                    className={`w-full bg-black/40 border border-white/5 rounded-2xl pl-12 pr-4 py-4 text-white placeholder:text-slate-700 outline-none focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/20 transition-all ${(isAdminLogin ? errors.username : errors.email) ? 'border-red-500/50' : ''
+                      }`}
                     placeholder={isAdminLogin ? "Admin username" : "Email address"}
                   />
                 </div>
@@ -345,9 +345,8 @@ const Login = () => {
                     name="password"
                     value={formData.password}
                     onChange={handleChange}
-                    className={`w-full bg-black/40 border border-white/5 rounded-2xl pl-12 pr-12 py-4 text-white placeholder:text-slate-700 outline-none focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/20 transition-all ${
-                      errors.password ? 'border-red-500/50' : ''
-                    }`}
+                    className={`w-full bg-black/40 border border-white/5 rounded-2xl pl-12 pr-12 py-4 text-white placeholder:text-slate-700 outline-none focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/20 transition-all ${errors.password ? 'border-red-500/50' : ''
+                      }`}
                     placeholder="••••••••"
                   />
                   <button
@@ -399,8 +398,8 @@ const Login = () => {
           </div>
 
           <p className="text-[9px] mt-4 text-slate-500/60 font-medium uppercase tracking-[0.15em]">
-              © {new Date().getFullYear()} AKSECURE. ALL RIGHTS RESERVED.
-            </p>
+            © {new Date().getFullYear()} AKSECURE. ALL RIGHTS RESERVED.
+          </p>
         </div>
       </div>
     </div>

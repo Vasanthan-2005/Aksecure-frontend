@@ -18,9 +18,9 @@ export const UserTopNav = () => {
 
     const [showSupport, setShowSupport] = useState(false);
     const [settings, setSettings] = useState({
-        supportPhone: '+91 75502 12046',
-        supportEmail: 'support@aksecuretech.com',
-        supportWhatsApp: '917550212046'
+        supportPhone: '+44 7448499338',
+        supportEmail: 'sivadass.ac@gmail.com',
+        supportWhatsApp: '447448499338'
     });
     const [unreadReplies, setUnreadReplies] = useState(0);
     const supportRef = useRef(null);
@@ -179,39 +179,39 @@ export const UserTopNav = () => {
 
                             {/* Support Dropdown */}
                             {showSupport && (
-                                <div className="absolute right-0 mt-2 w-72 bg-slate-900/90 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl p-4 animate-scale-in z-[60]">
-                                    <h4 className="text-[10px] font-bold text-slate-500 uppercase tracking-[0.2em] mb-4 px-1">Contact Support</h4>
-                                    <div className="space-y-3">
+                                <div className="absolute right-0 mt-2 w-64 max-w-[calc(100vw-2rem)] bg-slate-900/90 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl p-3 animate-scale-in z-[60]">
+                                    <h4 className="text-[10px] font-bold text-slate-500 uppercase tracking-[0.2em] mb-2 px-1">Contact Support</h4>
+                                    <div className="space-y-2">
                                         <div
-                                            className="flex items-center gap-4 p-3 rounded-xl bg-white/5 border border-white/5 hover:bg-white/10 hover:border-blue-500/20 transition-all cursor-pointer group"
+                                            className="flex items-center gap-3 p-2.5 rounded-xl bg-white/5 border border-white/5 hover:bg-white/10 hover:border-blue-500/20 transition-all cursor-pointer group"
                                             onClick={() => window.open(`tel:${settings.supportPhone}`)}
                                         >
-                                            <div className="w-10 h-10 rounded-lg bg-blue-500/10 flex items-center justify-center text-blue-400 group-hover:scale-110 transition-transform">
-                                                <Phone className="w-5 h-5" />
+                                            <div className="w-8 h-8 rounded-lg bg-blue-500/10 flex items-center justify-center text-blue-400 group-hover:scale-110 transition-transform">
+                                                <Phone className="w-4 h-4" />
                                             </div>
-                                            <div>
-                                                <p className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Phone</p>
-                                                <p className="text-sm text-white font-semibold">{settings.supportPhone}</p>
+                                            <div className="min-w-0">
+                                                <p className="text-[9px] text-slate-500 font-bold uppercase tracking-wider">Phone</p>
+                                                <p className="text-xs text-white font-bold truncate">{settings.supportPhone}</p>
                                             </div>
                                         </div>
 
                                         <div
-                                            className="flex items-center gap-4 p-3 rounded-xl bg-white/5 border border-white/5 hover:bg-white/10 hover:border-violet-500/20 transition-all cursor-pointer group"
+                                            className="flex items-center gap-3 p-2.5 rounded-xl bg-white/5 border border-white/5 hover:bg-white/10 hover:border-violet-500/20 transition-all cursor-pointer group"
                                             onClick={() => window.open(`mailto:${settings.supportEmail}`)}
                                         >
-                                            <div className="w-10 h-10 rounded-lg bg-violet-500/10 flex items-center justify-center text-violet-400 group-hover:scale-110 transition-transform">
-                                                <Mail className="w-5 h-5" />
+                                            <div className="w-8 h-8 rounded-lg bg-violet-500/10 flex items-center justify-center text-violet-400 group-hover:scale-110 transition-transform">
+                                                <Mail className="w-4 h-4" />
                                             </div>
-                                            <div>
-                                                <p className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Email</p>
-                                                <p className="text-sm text-white font-semibold">{settings.supportEmail}</p>
+                                            <div className="min-w-0">
+                                                <p className="text-[9px] text-slate-500 font-bold uppercase tracking-wider">Email</p>
+                                                <p className="text-xs text-white font-bold truncate">{settings.supportEmail}</p>
                                             </div>
                                         </div>
                                     </div>
-                                    <div className="mt-4 pt-4 border-t border-white/5">
+                                    <div className="mt-2 pt-2 border-t border-white/5">
                                         <button
                                             onClick={() => window.open(`https://wa.me/${settings.supportWhatsApp}`, '_blank')}
-                                            className="w-full py-2.5 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 text-[10px] font-bold uppercase tracking-wider transition-all border border-emerald-500/20"
+                                            className="w-full py-2.5 rounded-xl bg-emerald-500/5 hover:bg-emerald-500/10 text-emerald-500 text-[10px] font-bold uppercase tracking-widest transition-all border border-emerald-500/20 shadow-lg shadow-emerald-500/5"
                                         >
                                             Chat on WhatsApp
                                         </button>
