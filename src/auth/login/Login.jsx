@@ -176,7 +176,7 @@ const Login = () => {
 
         {/* Top Section: Logo */}
         <div className="relative z-10 flex-none flex items-center gap-3">
-          <img src={logo} alt="AK SecureTech" className="h-20 lg:h-28 w-auto object-contain drop-shadow-[0_0_15px_rgba(37,99,235,0.4)]" />
+          <img src={logo} alt="AK SecureTech" className="h-20 lg:h-28 w-auto object-contain " />
         </div>
 
         {/* Middle Section: Headline, Description & Features */}

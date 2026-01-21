@@ -27,6 +27,8 @@ const TicketForm = ({ category, onSuccess, onCancel }) => {
   const fileInputRef = useRef(null);
   const [isOutletDropdownOpen, setIsOutletDropdownOpen] = useState(false);
   const outletDropdownRef = useRef(null);
+  const [isDragging, setIsDragging] = useState(false);
+  const [uploadError, setUploadError] = useState('');
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -87,12 +89,12 @@ const TicketForm = ({ category, onSuccess, onCancel }) => {
     setError('');
   };
 
-  const handleFileChange = (e) => {
-    const newFiles = Array.from(e.target.files || []);
+  const processFiles = (newFiles) => {
+    setUploadError('');
     const totalPotentialImages = images.length + newFiles.length;
 
     if (totalPotentialImages > MAX_IMAGES) {
-      setError(`You can only have up to ${MAX_IMAGES} images in total.`);
+      setUploadError(`You can only have up to ${MAX_IMAGES} images in total.`);
       const remainingSlots = MAX_IMAGES - images.length;
       if (remainingSlots <= 0) return;
 
@@ -104,12 +106,42 @@ const TicketForm = ({ category, onSuccess, onCancel }) => {
       const updatedImages = [...images, ...newFiles];
       setImages(updatedImages);
       createPreviews(newFiles, true);
-      setError('');
     }
+  };
+
+  const handleFileChange = (e) => {
+    const newFiles = Array.from(e.target.files || []);
+    processFiles(newFiles);
 
     // Reset input value to allow re-selection of same files if needed
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
+    }
+  };
+
+  const handleDrag = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (e.type === 'dragenter' || e.type === 'dragover') {
+      setIsDragging(true);
+    } else if (e.type === 'dragleave') {
+      setIsDragging(false);
+    }
+  };
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+    setUploadError('');
+
+    const droppedFiles = Array.from(e.dataTransfer.files || []);
+    if (droppedFiles.length > 0) {
+      const imageFiles = droppedFiles.filter(file => file.type.startsWith('image/'));
+      if (imageFiles.length < droppedFiles.length) {
+        setUploadError('Only image files are allowed.');
+      }
+      processFiles(imageFiles);
     }
   };
 
@@ -163,6 +195,7 @@ const TicketForm = ({ category, onSuccess, onCancel }) => {
     e.preventDefault();
     setLoading(true);
     setError('');
+    setUploadError('');
 
     if (!formData.category || !formData.title || !formData.description || !formData.outletName) {
       setError('Please fill in all required fields, including selecting an outlet.');
@@ -424,14 +457,18 @@ const TicketForm = ({ category, onSuccess, onCancel }) => {
                     />
                     <label
                       htmlFor="image-upload"
-                      className="flex flex-col items-center justify-center w-full h-40 border-2 border-dashed border-white/10 rounded-3xl bg-slate-950/20 hover:bg-slate-900/50 hover:border-blue-500/30 cursor-pointer transition-all group"
+                      onDragEnter={handleDrag}
+                      onDragOver={handleDrag}
+                      onDragLeave={handleDrag}
+                      onDrop={handleDrop}
+                      className={`flex flex-col items-center justify-center w-full h-40 border-2 border-dashed rounded-3xl bg-slate-950/20 hover:bg-slate-900/50 cursor-pointer transition-all group ${isDragging ? 'border-blue-500 bg-blue-500/10 scale-[1.02]' : 'border-white/10 hover:border-blue-500/30'}`}
                     >
-                      <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                        <div className="w-12 h-12 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
-                          <Upload className="w-6 h-6 text-blue-400" />
+                      <div className="flex flex-col items-center justify-center pt-5 pb-6 pointer-events-none">
+                        <div className={`w-12 h-12 rounded-xl border flex items-center justify-center mb-3 transition-transform ${isDragging ? 'bg-blue-500/20 border-blue-500 scale-110' : 'bg-blue-500/10 border-blue-500/20 group-hover:scale-110'}`}>
+                          <Upload className={`w-6 h-6 ${isDragging ? 'text-blue-300' : 'text-blue-400'}`} />
                         </div>
                         <p className="text-sm font-bold text-slate-300 mb-1">
-                          <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-violet-400">Click to upload</span> or drag and drop
+                          <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-violet-400">{isDragging ? 'Drop images here' : 'Click to upload'}</span> or drag and drop
                         </p>
                         <p className="text-[10px] text-slate-500 font-medium uppercase tracking-widest">
                           JPG, PNG up to {MAX_IMAGES} files
@@ -439,6 +476,15 @@ const TicketForm = ({ category, onSuccess, onCancel }) => {
                       </div>
                     </label>
                   </div>
+
+                  {uploadError && (
+                    <div className="mt-3 px-4 py-2 bg-red-500/10 border border-red-500/20 rounded-xl animate-shake">
+                      <p className="text-xs font-bold text-red-400 flex items-center gap-2">
+                        <span className="w-1 h-1 rounded-full bg-red-400"></span>
+                        {uploadError}
+                      </p>
+                    </div>
+                  )}
 
                   {imagePreviews.length > 0 && (
                     <div className="mt-6 flex flex-wrap gap-4">

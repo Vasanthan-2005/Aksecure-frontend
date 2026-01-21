@@ -1,5 +1,5 @@
 import { Shield, LogOut, Calendar } from 'lucide-react';
-import logo from '../../assets/logo-transparent.png';
+import logo from '../../assets/logo.png';
 
 const AdminNavigation = ({ user, logout, activeTab, setActiveTab, onDashboardClick, onTicketsClick, onUsersClick, onCalendarClick }) => {
   return (
@@ -15,7 +15,7 @@ const AdminNavigation = ({ user, logout, activeTab, setActiveTab, onDashboardCli
             }}
             className="flex items-center gap-3 group hover:opacity-80 cursor-pointer"
           >
-            <img src={logo} alt="Admin Portal" className="h-16 w-16 rounded-lg object-contain shadow-lg shadow-blue-500/20 group-hover:shadow-blue-500/40" />
+            <img src={logo} alt="Admin Portal" className="h-16 w-16 rounded-lg object-contain group-hover:shadow-blue-500/40" />
             <div className="text-left">
               <p className="text-sm md:text-lg font-black text-white tracking-tighter group-hover:text-blue-400">Admin Portal</p>
               <p className="text-[8px] md:text-[10px] text-slate-500 font-black uppercase tracking-[0.2em]">Management System</p>

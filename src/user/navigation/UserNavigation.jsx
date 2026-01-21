@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import logo from '../../assets/logo-transparent.png';
+import logo from '../../assets/logo.png';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { Shield, LogOut, User as UserIcon, Ticket, FileText, Headphones, Phone, Mail, LayoutDashboard, MessageCircle } from 'lucide-react';
@@ -121,7 +121,7 @@ export const UserTopNav = () => {
 
                     {/* Logo Section */}
                     <div className="flex items-center gap-3 group cursor-pointer" onClick={() => navigate('/')}>
-                        <img src={logo} alt="AK SecureTech" className="h-14 w-14 sm:h-20 sm:w-20 rounded-lg object-contain shadow-lg shadow-blue-500/20 group-hover:scale-105 transition-transform duration-300" />
+                        <img src={logo} alt="AK SecureTech" className="h-14 w-14 sm:h-15 sm:w-15 rounded-lg object-contain shadow-lg  group-hover:scale-105 transition-transform duration-300" />
                         <div>
                             <p className="text-sm sm:text-base font-bold text-white tracking-tight group-hover:text-blue-200 transition-colors">AK SecureTech</p>
                             <p className="text-[10px] text-slate-400 font-medium uppercase tracking-wider">User Portal</p>
